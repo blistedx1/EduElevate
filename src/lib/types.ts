@@ -1,8 +1,10 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service v2.0 */
 export interface School {
   id: string;
-  school_code: string;
-  school_name: string;
+  school_code: string; // Branch Code
+  school_name: string; // Coaching / Branch Name
+  branch_code?: string;
+  branch_name?: string;
   board: string;
   city: string;
   state: string;
@@ -15,11 +17,12 @@ export interface School {
   email?: string;
   website?: string;
   established_year?: string;
-  principal_name?: string;
+  principal_name?: string; // Center Director / Academic Head
+  director_name?: string;
   admin_id?: string;
   admin_name?: string;
   admin_pin?: string;
-  logo?: string; // Base64 data URL or URL for School Icon / Logo up to 2MB
+  logo?: string; // Base64 data URL or URL for Institute Emblem / Logo up to 2MB
   logo_url?: string;
   role_permissions?: RolePermissionMatrix;
   status: 'ACTIVE' | 'PENDING' | 'INACTIVE';
@@ -29,6 +32,7 @@ export interface School {
 export interface DemoRequest {
   id: string;
   school_name: string;
+  branch_name?: string;
   city: string;
   strength: string;
   board: string;
@@ -37,7 +41,8 @@ export interface DemoRequest {
   phone: string;
   notes?: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  assigned_school_code?: string;
+  assigned_school_code?: string; // Assigned Branch Code
+  assigned_branch_code?: string;
   created_at?: string;
 }
 

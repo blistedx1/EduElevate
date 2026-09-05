@@ -286,7 +286,7 @@ const INITIAL_ROUTES: BusRouteData[] = [
 
 export function DashboardTransport({
   students = [],
-  schoolName = 'Delhi Public School',
+  schoolName = 'EduElevate Coaching Institute',
   currentUser,
   userRole
 }: DashboardTransportProps) {

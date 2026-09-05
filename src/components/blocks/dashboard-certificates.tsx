@@ -237,17 +237,17 @@ const FormalCertificateDocument: React.FC<FormalCertificateProps> = ({
           </div>
         )}
         <h2 className="font-display font-black text-2xl text-[#122A24] uppercase tracking-tight leading-tight">
-          {selectedSchool?.school_name || 'Delhi Public School'}
+          {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
         </h2>
         <div className="text-xs text-slate-600 font-medium mt-0.5">
-          {selectedSchool?.address || 'Sector 12, Dwarka, New Delhi'} • Phone: {selectedSchool?.phone || '+91 11 2789 0000'}
+          {selectedSchool?.address || 'EduElevate Tower, Sector 12, New Delhi'} • Phone: {selectedSchool?.phone || '+91 11 4987 6543'}
         </div>
         <div className="text-[11px] font-mono text-emerald-800 font-bold mt-0.5 flex items-center justify-center gap-3">
-          <span>CBSE Affiliation No: {selectedSchool?.affiliation_no || '2130042'}</span>
+          <span>Accreditation / Reg No: {selectedSchool?.affiliation_no || 'EE/COACHING/2026'}</span>
           <span>•</span>
-          <span>School Code: {selectedSchool?.oasis_code || '84001'}</span>
+          <span>Branch Code: {selectedSchool?.school_code || selectedSchool?.oasis_code || 'EE2026'}</span>
           <span>•</span>
-          <span>UDISE: {selectedSchool?.udise_code || '07010100101'}</span>
+          <span>Center ID: {selectedSchool?.udise_code || '07010100101'}</span>
         </div>
       </div>
 
@@ -592,7 +592,7 @@ const FormalCertificateDocument: React.FC<FormalCertificateProps> = ({
                 Dear <strong>{t.full_name}</strong>,
               </p>
               <p>
-                With reference to your application and subsequent interview, the Institutional Management is pleased to offer you the appointment as <strong className="text-[#122A24] font-bold">{t.designation || 'Post Graduate Teacher'}</strong> in the Department of <strong className="text-[#122A24] font-bold">{t.department || 'Academics'}</strong> at <strong>{selectedSchool?.school_name || 'Delhi Public School'}</strong>, with effect from <strong className="font-mono font-bold text-[#122A24]">{t.date_of_joining || issueDate}</strong>.
+                With reference to your application and subsequent interview, the Institutional Management is pleased to offer you the appointment as <strong className="text-[#122A24] font-bold">{t.designation || 'Post Graduate Teacher'}</strong> in the Department of <strong className="text-[#122A24] font-bold">{t.department || 'Academics'}</strong> at <strong>{selectedSchool?.school_name || 'EduElevate Coaching Institute'}</strong>, with effect from <strong className="font-mono font-bold text-[#122A24]">{t.date_of_joining || issueDate}</strong>.
               </p>
               <div className="bg-[#F8FAF9] p-4 rounded-2xl border border-[#DCE8E0] space-y-2 text-xs text-slate-700 font-sans">
                 <div className="font-bold text-[#122A24]">Key Terms &amp; Conditions of Service:</div>
@@ -1342,7 +1342,7 @@ export const DashboardCertificates: React.FC<DashboardCertificatesProps> = ({
                         {/* School Header */}
                         <div className="text-center pb-2 border-b border-slate-200">
                           <div className="font-display font-black text-sm text-[#122A24] uppercase tracking-tight leading-tight">
-                            {selectedSchool?.school_name || 'Delhi Public School'}
+                            {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                           </div>
                           <div className="text-[9px] font-mono text-emerald-800 font-bold">
                             CBSE Affil No: {selectedSchool?.affiliation_no || '2130042'} • Session {selectedSession}
@@ -1613,7 +1613,7 @@ export const DashboardCertificates: React.FC<DashboardCertificatesProps> = ({
                   <div className={`w-[320px] h-[500px] rounded-2xl shadow-xl overflow-hidden p-5 flex flex-col justify-between ${selectedTemplate.borderStyle} ${selectedTemplate.cardBg} bg-white text-slate-800`}>
                     <div className="text-center pb-2 border-b border-slate-200">
                       <div className="font-display font-black text-sm text-[#122A24] uppercase">
-                        {selectedSchool?.school_name || 'Delhi Public School'}
+                        {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                       </div>
                       <div className="text-[9px] font-mono text-emerald-800 font-bold">
                         CBSE Affil No: {selectedSchool?.affiliation_no || '2130042'} • Session {selectedSession}

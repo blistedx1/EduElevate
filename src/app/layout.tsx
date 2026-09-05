@@ -4,16 +4,16 @@ import './globals.css';
 import PWAProvider from '@/components/pwa-provider';
 
 export const metadata: Metadata = {
-  title: 'Giterp — School ERP Platform',
-  description: 'Giterp runs attendance, fees, timetables, examinations, transport GPS and CBSE report cards for schools — all on one unified platform.',
-  keywords: 'Giterp, School ERP, CBSE school software, student information system, fees management, school management',
-  applicationName: 'Giterp ERP',
-  authors: [{ name: 'Giterp Technologies' }],
+  title: 'EduElevate — Coaching Management Service',
+  description: 'Enterprise Coaching Management Platform for batches, test series, DPP, biometric attendance, fee installments, and multi-branch operations.',
+  keywords: 'EduElevate, Coaching Management Service, Coaching ERP, Test Series Management, Batch Scheduling, JEE NEET Coaching, Student Information System',
+  applicationName: 'EduElevate',
+  authors: [{ name: 'EduElevate Technologies' }],
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Giterp',
+    title: 'EduElevate',
   },
   icons: {
     icon: [
@@ -67,8 +67,8 @@ export default function RootLayout({
         {/* Mobile PWA Metas */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Giterp ERP" />
-        <meta name="application-name" content="Giterp ERP" />
+        <meta name="apple-mobile-web-app-title" content="EduElevate" />
+        <meta name="application-name" content="EduElevate" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#122A24" />
         <meta name="msapplication-TileColor" content="#122A24" />

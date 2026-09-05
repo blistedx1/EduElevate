@@ -140,7 +140,7 @@ const INITIAL_HOSTEL_ROOMS: HostelRoom[] = [
 
 export function DashboardHostel({
   students = [],
-  schoolName = 'Delhi Public School',
+  schoolName = 'EduElevate Coaching Institute',
   currentUser,
   userRole,
   onUpdateStudent

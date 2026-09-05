@@ -92,11 +92,11 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n======================================================`);
-  console.log(`🎓 EduGit Multi-School ERP Server Live on http://localhost:${PORT}`);
-  console.log(`👉 Landing Page:      http://localhost:${PORT}`);
-  console.log(`👉 School Sign In:    http://localhost:${PORT}/login`);
-  console.log(`👉 Onboard School:    http://localhost:${PORT}/request-demo`);
-  console.log(`👉 ERP App Workspace: http://localhost:${PORT}/app`);
-  console.log(`📡 Database Engine:   Supabase Cloud PostgreSQL 17`);
+  console.log(`🎓 EduElevate Coaching Management Service Live on http://localhost:${PORT}`);
+  console.log(`👉 Landing Page:        http://localhost:${PORT}`);
+  console.log(`👉 Coaching Sign In:    http://localhost:${PORT}/login`);
+  console.log(`👉 Onboard Branch:      http://localhost:${PORT}/request-demo`);
+  console.log(`👉 Coaching Workspace:  http://localhost:${PORT}/app`);
+  console.log(`📡 Multi-Branch Engine: MongoDB Atlas / Local Store`);
   console.log(`======================================================\n`);
 });

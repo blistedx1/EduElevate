@@ -411,7 +411,7 @@ export const Database = {
     let matched = schools.find(s => (s.id || '').toUpperCase() === rawInput || (s.id || '').toUpperCase().replace(/[^A-Z0-9]/g, '') === cleanInput);
     if (matched) return matched;
 
-    // 2. Direct School Code Match
+    // 2. Direct Branch Code Match
     matched = schools.find(s => (s.school_code || '').toUpperCase() === rawInput || (s.school_code || '').toUpperCase().replace(/[^A-Z0-9]/g, '') === cleanInput);
     if (matched) return matched;
 
@@ -433,8 +433,12 @@ export const Database = {
     });
     if (matched) return matched;
 
-    // NOTE: Partial school name match removed to prevent school enumeration (M2).
-    // Only exact school_code or school_id matches are accepted.
+    // Backward and forward compatibility alias for primary branch
+    if (rawInput === 'EE2026' || rawInput === 'EDUELEVATE' || rawInput === 'DPS2026') {
+      const primary = schools.find(s => s.school_code === 'EE2026' || s.school_code === 'DPS2026' || s.id === 'EE2026' || s.id === 'DPS2026');
+      if (primary) return primary;
+    }
+
     return null;
   },
 
@@ -445,7 +449,7 @@ export const Database = {
     const name = (schoolData.school_name || '').trim();
 
     if (!code || !name) {
-      throw new Error('School Code and School Name are required.');
+      throw new Error('Branch Code and Center Name are required.');
     }
 
     const school: School = {
@@ -679,10 +683,10 @@ export const Database = {
       }
       if (!targetSchool) {
         targetSchool = {
-          id: 'DPS2026',
-          school_code: schoolCode || 'DPS2026',
-          school_name: 'Delhi Public International School',
-          board: 'CBSE',
+          id: 'EE2026',
+          school_code: schoolCode || 'EE2026',
+          school_name: 'EduElevate Coaching Institute',
+          board: 'CBSE / Foundation',
           city: 'New Delhi',
           state: 'Delhi',
           status: 'ACTIVE'
@@ -696,7 +700,7 @@ export const Database = {
           username: 'blistedx',
           role: 'AGENCY_SUPERADMIN' as const,
           full_name: 'BlistedX (Agency Superadmin)',
-          email: 'blistedx@giterp.io',
+          email: 'blistedx@eduelevate.in',
           status: 'ACTIVE',
           is_god_admin: true,
           permissions: ['ALL_PERMISSIONS', 'ALL_SCHOOLS', 'GOD_ACCESS', 'MODIFY_ANY', 'DELETE_ANY', 'CREATE_ANY']
@@ -711,7 +715,7 @@ export const Database = {
     }
     if (!activeSchool) {
       const allSchools = await this.getSchools();
-      activeSchool = allSchools.find(s => s.school_code === 'DPS2026') || allSchools[0] || null;
+      activeSchool = allSchools.find(s => s.school_code === 'EE2026' || s.school_code === 'DPS2026') || allSchools[0] || null;
     }
 
     if (!activeSchool || activeSchool.status !== 'ACTIVE') {
@@ -740,8 +744,8 @@ export const Database = {
           school_id: school.id,
           username: username || school.admin_id || 'admin',
           role: 'PRINCIPAL' as const,
-          full_name: school.admin_name || school.principal_name || 'School Administrator',
-          email: `admin@${school.school_code.toLowerCase()}.edu`,
+          full_name: school.admin_name || school.principal_name || 'Center Director / Administrator',
+          email: school.email || `director@eduelevate.in`,
           status: 'ACTIVE',
           permissions: ['ALL_PERMISSIONS', 'SCHOOL_ADMIN', 'MODIFY_ANY', 'DELETE_ANY', 'CREATE_ANY']
         },

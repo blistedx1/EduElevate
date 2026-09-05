@@ -139,7 +139,7 @@ export function DashboardCbseReportCard({
       percentage: Number(aggregatePercentage),
       grade: overallGrade.grade,
       rank: 2,
-      schoolName: selectedSchool?.school_name || 'Delhi Public School'
+      schoolName: selectedSchool?.school_name || 'EduElevate Coaching Institute'
     });
     openWhatsAppDirect(phone, text);
   };
@@ -268,17 +268,17 @@ export function DashboardCbseReportCard({
               </div>
               <div>
                 <h1 className="font-black text-2xl sm:text-3xl text-[#122A24] tracking-wider uppercase font-serif">
-                  {selectedSchool?.school_name || 'DELHI PUBLIC SCHOOL'}
+                  {selectedSchool?.school_name || 'EDUELEVATE COACHING INSTITUTE'}
                 </h1>
                 <p className="text-xs text-slate-600 font-sans tracking-wide">
-                  Affiliated to Central Board of Secondary Education (CBSE), New Delhi
+                  EduElevate Academic &amp; Competitive Assessment Division
                 </p>
                 <div className="text-[10px] font-mono text-slate-500 font-bold space-x-3 pt-0.5">
-                  <span>CBSE Affiliation No: <strong>2130089</strong></span>
+                  <span>CBSE / Reg No: <strong>2130089</strong></span>
                   <span>•</span>
-                  <span>School Code: <strong>{selectedSchool?.school_code || 'DPS2026'}</strong></span>
+                  <span>Branch Code: <strong>{selectedSchool?.school_code || 'EE2026'}</strong></span>
                   <span>•</span>
-                  <span>UDISE: <strong>09280104402</strong></span>
+                  <span>UDISE / Center ID: <strong>09280104402</strong></span>
                 </div>
               </div>
             </div>

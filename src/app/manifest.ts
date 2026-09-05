@@ -3,9 +3,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Giterp — School ERP Platform',
-    short_name: 'Giterp ERP',
-    description: 'Enterprise CBSE School ERP for attendance, fees, exams, transport GPS, homework and school management.',
+    name: 'EduElevate — Coaching Management Service',
+    short_name: 'EduElevate',
+    description: 'Enterprise Coaching Management Platform for batches, test series, DPP, attendance, fee collection and branch management.',
     start_url: '/app',
     id: '/app',
     display: 'standalone',
@@ -54,23 +54,23 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
-        name: 'School Dashboard',
+        name: 'Coaching Dashboard',
         short_name: 'Dashboard',
-        description: 'Open the School Management Dashboard',
+        description: 'Open the Coaching Management Workspace',
         url: '/app',
         icons: [{ src: '/icons/icon.svg', sizes: 'any' }],
       },
       {
-        name: 'Agency Hub',
-        short_name: 'Agency',
-        description: 'Super Admin Multi-School Hub',
+        name: 'Branch Hub',
+        short_name: 'Branches',
+        description: 'Super Admin Multi-Branch Hub',
         url: '/agency',
         icons: [{ src: '/icons/icon.svg', sizes: 'any' }],
       },
       {
         name: 'Login',
         short_name: 'Login',
-        description: 'Sign into school portal',
+        description: 'Sign into coaching portal',
         url: '/login',
         icons: [{ src: '/icons/icon.svg', sizes: 'any' }],
       },

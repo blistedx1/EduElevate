@@ -178,15 +178,15 @@ import BroadcastInboxModal, { getReadBroadcastIds } from '@/components/broadcast
 const TAB_POSTER_CONFIG: Record<string, { title: string; subtitle: string; code: string; highlight: string }> = {
   overview: {
     title: 'OVERVIEW',
-    subtitle: 'EXECUTIVE COMMAND CENTER & CBSE METRICS',
+    subtitle: 'EXECUTIVE COMMAND CENTER & COACHING METRICS',
     code: 'MOD-01 // COCKPIT',
-    highlight: 'REAL-TIME CAMPUS TELEMETRY',
+    highlight: 'REAL-TIME BRANCH TELEMETRY',
   },
   students: {
-    title: 'STUDENTS',
-    subtitle: 'CBSE ENROLLED SCHOLAR REGISTRY & DOSSIERS',
+    title: 'ASPIRANTS & STUDENTS',
+    subtitle: 'ENROLLED ASPIRANTS & BATCH REGISTRY',
     code: 'MOD-02 // SIS',
-    highlight: 'ACADEMIC LIFECYCLE & OASIS',
+    highlight: 'ACADEMIC LIFECYCLE & BATCHES',
   },
   siblings: {
     title: 'SIBLINGS',
@@ -195,14 +195,14 @@ const TAB_POSTER_CONFIG: Record<string, { title: string; subtitle: string; code:
     highlight: 'FAMILY CO-ENROLMENT REGISTRY',
   },
   teachers: {
-    title: 'FACULTY',
-    subtitle: 'ACADEMIC FACULTY & STATUTORY CBSE COMPLIANCE',
+    title: 'FACULTY & MENTORS',
+    subtitle: 'SUBJECT SPECIALISTS & MENTOR DIRECTORY',
     code: 'MOD-03 // HR',
     highlight: 'TEACHING CORPS DIRECTORY',
   },
   classes: {
-    title: 'CLASSES',
-    subtitle: 'COHORT STRUCTURE, TIMETABLE & SECTIONS',
+    title: 'COURSES & BATCHES',
+    subtitle: 'BATCH SCHEDULE, CLASSROOMS & TIMETABLES',
     code: 'MOD-04 // ACADEMIC',
     highlight: 'CURRICULAR ORG MATRIX',
   },
@@ -210,47 +210,47 @@ const TAB_POSTER_CONFIG: Record<string, { title: string; subtitle: string; code:
     title: 'CURRICULUM',
     subtitle: 'ACADEMIC SCHEME & SUBJECT CATALOG',
     code: 'MOD-05 // SYLLABUS',
-    highlight: 'CBSE PEDAGOGICAL STRUCTURE',
+    highlight: 'PEDAGOGICAL STRUCTURE',
   },
   attendance: {
     title: 'ATTENDANCE',
-    subtitle: 'DAILY BIOMETRIC & CLASSROOM ROLLS',
+    subtitle: 'DAILY & BATCH BIOMETRIC ROLLS',
     code: 'MOD-06 // ATTENDANCE',
     highlight: 'REAL-TIME PRESENCE LEDGER',
   },
   fees: {
-    title: 'FINANCE',
-    subtitle: 'FEE STRUCTURES, INVOICING & REVENUE LEDGER',
+    title: 'FEES & INSTALLMENTS',
+    subtitle: 'COURSE FEES, INSTALLMENTS & REVENUE LEDGER',
     code: 'MOD-07 // ACCOUNTS',
-    highlight: 'CBSE FEE COLLECTION ENGINE',
+    highlight: 'FEE COLLECTION ENGINE',
   },
   reports: {
-    title: 'REPORTS',
-    subtitle: 'CROSS-MODULE ANALYTICS & SCHOLAR DOSSIERS',
+    title: 'REPORTS & ANALYTICS',
+    subtitle: 'CROSS-MODULE ANALYTICS & ASPIRANT DOSSIERS',
     code: 'MOD-08 // ANALYTICS',
     highlight: 'INSTITUTIONAL INTELLIGENCE',
   },
   certificates: {
     title: 'DOCUMENTS',
-    subtitle: 'TRANSFER, BONAFIDE & CHARACTER CERTIFICATES',
+    subtitle: 'COURSE COMPLETION, MERIT & BONAFIDE CERTIFICATES',
     code: 'MOD-09 // REGISTRAR',
     highlight: 'OFFICIAL DOCUMENT ENGINE',
   },
   transport: {
     title: 'FLEET',
-    subtitle: 'BUS ROUTES, STOPS, DRIVERS & GPS TELEMETRY',
+    subtitle: 'VAN ROUTES, STOPS, DRIVERS & GPS TELEMETRY',
     code: 'MOD-10 // LOGISTICS',
-    highlight: 'CAMPUS TRANSIT NETWORK',
+    highlight: 'BRANCH TRANSIT NETWORK',
   },
   exams: {
-    title: 'EXAMS',
-    subtitle: 'CBSE MARKSHEETS, BROADSHEETS & WEIGHTAGE',
+    title: 'TEST SERIES & EXAMS',
+    subtitle: 'MOCK TESTS, RANK LISTS & BROADSHEETS',
     code: 'MOD-11 // EVALUATION',
     highlight: 'STANDARDIZED ASSESSMENT SUITE',
   },
   homework: {
-    title: 'HOMEWORK',
-    subtitle: 'DAILY ASSIGNMENTS, PROJECTS & SYLLABUS',
+    title: 'ASSIGNMENTS & DPP',
+    subtitle: 'DAILY PRACTICE PROBLEMS & STUDY MODULES',
     code: 'MOD-12 // COURSEWORK',
     highlight: 'DIGITAL HOMEWORK DESK',
   },
@@ -268,13 +268,13 @@ const TAB_POSTER_CONFIG: Record<string, { title: string; subtitle: string; code:
   },
   notices: {
     title: 'CIRCULARS',
-    subtitle: 'OFFICIAL SCHOOL GAZETTE & BULLETINS',
+    subtitle: 'OFFICIAL COACHING GAZETTE & NOTICE BOARD',
     code: 'MOD-15 // BULLETIN',
     highlight: 'CENTRAL ANNOUNCEMENT BOARD',
   },
   settings: {
-    title: 'SETTINGS',
-    subtitle: 'INSTITUTIONAL CONFIGURATION & RULES',
+    title: 'BRANCH SETTINGS',
+    subtitle: 'BRANCH CONFIGURATION & ACCREDITATION RULES',
     code: 'MOD-16 // SYSTEM',
     highlight: 'CORE ERP INFRASTRUCTURE',
   },
@@ -521,7 +521,7 @@ function ERPWorkspaceContent() {
   const effectiveRole = (currentUser?.role || 'PRINCIPAL').toUpperCase();
 
   // Dynamically compute allowed tabs based on Principal configured role permissions
-  const isPrincipalMaster = ['SUPERADMIN', 'AGENCY_SUPERADMIN', 'PRINCIPAL'].includes(effectiveRole);
+  const isPrincipalMaster = ['SUPERADMIN', 'AGENCY_SUPERADMIN', 'PRINCIPAL', 'ADMIN', 'SCHOOL_ADMIN', 'DIRECTOR', 'CENTER_DIRECTOR', 'COACHING_ADMIN'].includes(effectiveRole);
 
   // Automatically open the role-specific workspace panel on login
   useEffect(() => {
@@ -1421,17 +1421,20 @@ function ERPWorkspaceContent() {
         }
       }
 
-      // Robust Fallback: Always guarantee an active Delhi Public School instance
+      // Robust Fallback: Always guarantee an active EduElevate Coaching Institute instance
       if (!targetSchool) {
         targetSchool = {
-          id: 'DPS2026',
-          school_code: 'DPS2026',
-          school_name: 'Delhi Public School',
+          id: 'EE2026',
+          school_code: 'EE2026',
+          branch_code: 'EE2026',
+          school_name: 'EduElevate Coaching Institute',
+          branch_name: 'Main Center',
           principal_name: 'Dr. Rajesh Sharma',
+          director_name: 'Dr. Rajesh Sharma',
           admin_name: 'Dr. Rajesh Sharma',
           admin_id: 'admin',
           admin_pin: '123456',
-          board: 'CBSE',
+          board: 'IIT-JEE / NEET / CBSE',
           city: 'New Delhi',
           state: 'Delhi',
           address: 'Sector 12, Dwarka, New Delhi',
@@ -1456,7 +1459,7 @@ function ERPWorkspaceContent() {
         }
         
         // Strict Access Control: No 1-click or auto-login fallback.
-        // User MUST have authenticated with school code, ID, and passcode at /login.
+        // User MUST have authenticated with branch code, ID, and passcode at /login.
         if (!activeUserObj) {
           if (typeof window !== 'undefined') {
             window.location.replace('/login');
@@ -3513,32 +3516,32 @@ function ERPWorkspaceContent() {
             {selectedSchool?.logo || settingsForm.logo ? (
               <img
                 src={selectedSchool?.logo || settingsForm.logo}
-                alt="School Logo"
+                alt="Institute Logo"
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-contain bg-white border border-[#DCE8E0] p-0.5 shadow-xs shrink-0 group-hover:scale-105 transition-transform"
               />
             ) : (
               <img
                 src="/giterp-logo.png"
-                alt="Giterp Logo"
+                alt="EduElevate Logo"
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain bg-[#122A24] border border-[#122A24]/30 p-0.5 shadow-xs shrink-0 group-hover:scale-105 transition-transform"
               />
             )}
             <div className="min-w-0 flex-1 pr-2">
               <h1 
                 className="font-display font-bold text-xs sm:text-sm md:text-base lg:text-lg text-[#122A24] tracking-tight leading-tight truncate m-0 group-hover:text-emerald-800 transition-colors"
-                title={selectedSchool?.school_name || 'Delhi Public International School'}
+                title={selectedSchool?.school_name || 'EduElevate Coaching Institute'}
               >
-                {selectedSchool?.school_name || 'Delhi Public International School'}
+                {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
               </h1>
               <div className="font-mono text-[9.5px] sm:text-[10.5px] text-[#2D5A4E] leading-tight mt-0.5 truncate">
-                {selectedSchool?.city ? `${selectedSchool.city} • ` : ''}{selectedSchool?.board || 'CBSE'} Curriculum
+                {selectedSchool?.city ? `${selectedSchool.city} • ` : ''}{selectedSchool?.board || 'Foundation & Target'} Batches
               </div>
             </div>
           </button>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-          {/* Desktop Multi-School Switcher for Super Admin */}
+          {/* Desktop Multi-Branch Switcher for Super Admin */}
           {isSuperAdmin ? (
             <div className="hidden lg:flex items-center gap-2">
               <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-300 text-amber-900 rounded-full text-xs font-bold font-mono shadow-xs">
@@ -3548,11 +3551,11 @@ function ERPWorkspaceContent() {
                   value={selectedSchool?.id || selectedSchool?.school_code || ''}
                   onChange={(e) => handleSwitchSchool(e.target.value)}
                   className="bg-transparent border-none text-xs font-bold text-amber-950 focus:outline-none cursor-pointer pr-1 font-sans"
-                  title="Switch School Tenant (Super Admin Only)"
+                  title="Switch Coaching Branch (Super Admin Only)"
                 >
                   {availableSchools.map((sch) => (
                     <option key={sch.id} value={sch.id}>
-                      {sch.school_name} [{sch.school_code}]
+                      {sch.school_name} [Branch: {sch.school_code}]
                     </option>
                   ))}
                 </select>
@@ -3562,7 +3565,7 @@ function ERPWorkspaceContent() {
                 href="/agency"
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#122A24] text-white text-xs font-semibold no-underline hover:bg-[#1C443A] transition-colors shadow-2xs"
               >
-                <span>Agency Cloud</span>
+                <span>Branch Hub</span>
                 <span>↗</span>
               </Link>
             </div>
@@ -3922,7 +3925,7 @@ function ERPWorkspaceContent() {
                 }`}
               >
                 <span className="flex items-center gap-3">
-                  <GraduationCap className="h-4 w-4 shrink-0" /> Faculty &amp; Staff
+                  <GraduationCap className="h-4 w-4 shrink-0" /> Faculty &amp; Mentors
                 </span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
                   activeTab === 'teachers' ? 'bg-[#122A24] text-white' : 'bg-white/20 text-white'
@@ -3940,7 +3943,7 @@ function ERPWorkspaceContent() {
                 }`}
               >
                 <span className="flex items-center gap-3">
-                  <Layers className="h-4 w-4 shrink-0" /> Classes &amp; Sections
+                  <Layers className="h-4 w-4 shrink-0" /> Courses &amp; Batches
                 </span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
                   activeTab === 'classes' ? 'bg-[#122A24] text-white' : 'bg-white/20 text-white'
@@ -4428,7 +4431,7 @@ function ERPWorkspaceContent() {
               }`}
             >
               <span className="flex items-center gap-3">
-                <Users className="h-4 w-4 shrink-0" /> Faculty &amp; Staff
+                <Users className="h-4 w-4 shrink-0" /> Faculty &amp; Mentors
               </span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
                 activeTab === 'teachers' ? 'bg-[#122A24] text-white' : 'bg-white/20 text-white'
@@ -4446,7 +4449,7 @@ function ERPWorkspaceContent() {
               }`}
             >
               <span className="flex items-center gap-3">
-                <Layers className="h-4 w-4 shrink-0" /> Classes &amp; Sections
+                <Layers className="h-4 w-4 shrink-0" /> Courses &amp; Batches
               </span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
                 activeTab === 'classes' ? 'bg-[#122A24] text-white' : 'bg-white/20 text-white'
@@ -6958,7 +6961,7 @@ function ERPWorkspaceContent() {
                   aria-hidden="true" 
                   className="pointer-events-none select-none absolute right-2 sm:right-6 top-1 font-poster font-black uppercase text-[#122A24]/[0.06] sm:text-[#122A24]/[0.08] text-7xl sm:text-9xl lg:text-[130px] leading-none z-0 tracking-tight"
                 >
-                  CLASSES
+                  BATCHES
                 </div>
 
                 {/* Top Breadcrumb & Action Toolbar */}
@@ -6966,18 +6969,18 @@ function ERPWorkspaceContent() {
                   <div>
                     <div className="flex items-center gap-3">
                       <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">
-                        Classes &amp; Sections Directory
+                        Courses &amp; Batches Directory
                       </h1>
                       <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-[#EBF5EF] text-[#1C443A] border border-[#C5E2CF]">
-                        {filteredClasses.length} Active Divisions (Pre-Primary to XII-B)
+                        {filteredClasses.length} Active Batches &amp; Divisions
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-[#2D5A4E] font-mono mt-1">
-                      <span>DPS2026</span>
+                      <span>{selectedSchool?.school_code || 'EE2026'}</span>
                       <span>/</span>
-                      <span>Curriculum Hierarchy</span>
+                      <span>Target &amp; Foundation Hierarchy</span>
                       <span>/</span>
-                      <span className="text-[#122A24] font-semibold">CBSE Affiliated Structure</span>
+                      <span className="text-[#122A24] font-semibold">EduElevate Academic Structure</span>
                     </div>
                   </div>
 
@@ -8039,10 +8042,10 @@ function ERPWorkspaceContent() {
                 <div className="pb-3 border-b border-[#E8F0EA] flex items-center justify-between flex-wrap gap-2">
                   <div>
                     <h2 className="font-display font-bold text-base sm:text-lg text-[#122A24]">
-                      Institutional Profile &amp; CBSE/Government Compliance Registry
+                      Branch Profile &amp; Coaching Center Configuration
                     </h2>
                     <p className="text-[11px] text-[#2D5A4E] mt-0.5">
-                      Update official school codes (UDISE+, OASIS, CBSE Affiliation), campus location, and credentials.
+                      Update official branch codes, accreditation/reg numbers, campus location, and center credentials.
                     </p>
                   </div>
                   {settingsSuccess && (
@@ -8053,12 +8056,12 @@ function ERPWorkspaceContent() {
                 </div>
 
                 <form onSubmit={handleUpdateSettings} className="space-y-6 text-xs">
-                  {/* GROUP 0: INSTITUTIONAL CREST & SCHOOL LOGO (MAX 2 MB) */}
+                  {/* GROUP 0: INSTITUTIONAL CREST & LOGO (MAX 2 MB) */}
                   <div className="p-4 sm:p-5 rounded-2xl bg-[#F9FCFA] border border-[#DCE8E0] space-y-4">
                     <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-[#E8F0EA]">
                       <div className="font-display font-bold text-xs sm:text-sm text-[#122A24] flex items-center gap-2">
                         <span className="w-5 h-5 rounded-full bg-[#122A24] text-white flex items-center justify-center text-[10px] font-mono">1</span>
-                        <span>Institutional Crest &amp; School Logo</span>
+                        <span>Institutional Crest &amp; Coaching Logo</span>
                       </div>
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
                         Max 2.0 MB • PNG, JPG, SVG, WebP
@@ -8071,7 +8074,7 @@ function ERPWorkspaceContent() {
                         <div className="flex flex-col items-center">
                           <div className="w-20 h-20 rounded-2xl bg-white border-2 border-[#122A24] shadow-xs flex items-center justify-center overflow-hidden p-1">
                             {settingsForm.logo ? (
-                              <img src={settingsForm.logo} alt="School Logo Preview" className="w-full h-full object-contain" />
+                              <img src={settingsForm.logo} alt="Institute Logo Preview" className="w-full h-full object-contain" />
                             ) : (
                               <div className="flex flex-col items-center justify-center text-slate-400 text-center">
                                 <Building2 className="w-8 h-8 text-slate-300" />
@@ -8085,7 +8088,7 @@ function ERPWorkspaceContent() {
                         <div className="flex flex-col items-center">
                           <div className="w-20 h-20 rounded-full bg-white border-2 border-emerald-600 shadow-xs flex items-center justify-center overflow-hidden p-1">
                             {settingsForm.logo ? (
-                              <img src={settingsForm.logo} alt="School Seal Preview" className="w-full h-full object-contain rounded-full" />
+                              <img src={settingsForm.logo} alt="Institute Seal Preview" className="w-full h-full object-contain rounded-full" />
                             ) : (
                               <div className="flex flex-col items-center justify-center text-slate-400 text-center">
                                 <Award className="w-8 h-8 text-slate-300" />
@@ -8102,14 +8105,14 @@ function ERPWorkspaceContent() {
                         <div>
                           <div className="font-bold text-xs text-[#122A24]">Upload Institutional Emblem</div>
                           <p className="text-[11px] text-[#2D5A4E] leading-relaxed mt-0.5">
-                            This logo will automatically appear on the Top Navbar, Student &amp; Staff ID Cards, Transfer Certificates, Bonafides, and Institutional Invoices.
+                            This logo will automatically appear on the Top Navbar, Student &amp; Staff ID Cards, Transfer Certificates, Bonafides, and Invoices.
                           </p>
                         </div>
 
                         <div className="flex items-center justify-center sm:justify-start gap-2.5 flex-wrap pt-1">
                           <label className="px-4 py-2 bg-[#122A24] hover:bg-[#1C443A] text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors">
                             <UploadCloud className="w-4 h-4" />
-                            <span>{settingsForm.logo ? 'Change School Logo (Max 2MB)' : 'Upload School Logo (Max 2MB)'}</span>
+                            <span>{settingsForm.logo ? 'Change Coaching Logo (Max 2MB)' : 'Upload Coaching Logo (Max 2MB)'}</span>
                             <input
                               type="file"
                               accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/webp"
@@ -8137,18 +8140,18 @@ function ERPWorkspaceContent() {
                   <div className="p-4 sm:p-5 rounded-2xl bg-[#F9FCFA] border border-[#DCE8E0] space-y-3.5">
                     <div className="font-display font-bold text-xs sm:text-sm text-[#122A24] flex items-center gap-2">
                       <span className="w-5 h-5 rounded-full bg-[#122A24] text-white flex items-center justify-center text-[10px] font-mono">2</span>
-                      <span>School Identity &amp; Principal Leadership</span>
+                      <span>Coaching Identity &amp; Center Leadership</span>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                       <div className="sm:col-span-2">
-                        <label className="block font-semibold text-[#122A24] mb-1">Official School Full Name *</label>
+                        <label className="block font-semibold text-[#122A24] mb-1">Official Coaching Full Name *</label>
                         <input
                           type="text"
                           required
                           value={settingsForm.school_name}
                           onChange={(e) => setSettingsForm({ ...settingsForm, school_name: e.target.value })}
-                          placeholder="e.g. Delhi Public International School"
+                          placeholder="e.g. EduElevate Coaching Institute"
                           className="w-full px-3.5 py-2.5 border border-[#DCE8E0] rounded-xl text-xs font-bold text-[#122A24] bg-white"
                         />
                       </div>
@@ -8158,7 +8161,7 @@ function ERPWorkspaceContent() {
                           type="text"
                           value={settingsForm.established_year}
                           onChange={(e) => setSettingsForm({ ...settingsForm, established_year: e.target.value })}
-                          placeholder="e.g. 1998"
+                          placeholder="e.g. 2018"
                           className="w-full px-3.5 py-2.5 border border-[#DCE8E0] rounded-xl text-xs font-mono bg-white"
                         />
                       </div>
@@ -8166,22 +8169,22 @@ function ERPWorkspaceContent() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div>
-                        <label className="block font-semibold text-[#122A24] mb-1">Principal / Head of Institution</label>
+                        <label className="block font-semibold text-[#122A24] mb-1">Center Director / Head of Institution</label>
                         <input
                           type="text"
                           value={settingsForm.principal_name}
                           onChange={(e) => setSettingsForm({ ...settingsForm, principal_name: e.target.value })}
-                          placeholder="e.g. Dr. Rajesh Sharma"
+                          placeholder="e.g. Dr. Rajesh Sharma (Director)"
                           className="w-full px-3.5 py-2.5 border border-[#DCE8E0] rounded-xl text-xs bg-white"
                         />
                       </div>
                       <div>
-                        <label className="block font-semibold text-[#122A24] mb-1">Curriculum Board</label>
+                        <label className="block font-semibold text-[#122A24] mb-1">Courses &amp; Focus</label>
                         <input
                           type="text"
                           value={settingsForm.board}
                           onChange={(e) => setSettingsForm({ ...settingsForm, board: e.target.value })}
-                          placeholder="e.g. CBSE / CISCE / State"
+                          placeholder="e.g. CBSE / JEE / NEET / Foundation"
                           className="w-full px-3.5 py-2.5 border border-[#DCE8E0] rounded-xl text-xs font-mono bg-white"
                         />
                       </div>
@@ -8193,10 +8196,10 @@ function ERPWorkspaceContent() {
                     <div className="font-display font-bold text-xs sm:text-sm text-[#1C443A] flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-2">
                         <span className="w-5 h-5 rounded-full bg-[#1C443A] text-white flex items-center justify-center text-[10px] font-mono">2</span>
-                        <span>Government &amp; CBSE Compliance Codes</span>
+                        <span>Accreditation &amp; Government/Board Compliance Codes</span>
                       </div>
                       <span className="text-[10px] font-mono uppercase font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                        OASIS &amp; UDISE+ Standard
+                        Accreditation &amp; UDISE+ Standard
                       </span>
                     </div>
 
@@ -8212,7 +8215,7 @@ function ERPWorkspaceContent() {
                         />
                       </div>
                       <div>
-                        <label className="block font-semibold text-[#122A24] mb-1">CBSE OASIS School Code</label>
+                        <label className="block font-semibold text-[#122A24] mb-1">Center Registration / OASIS Code</label>
                         <input
                           type="text"
                           value={settingsForm.oasis_code}
@@ -8222,12 +8225,12 @@ function ERPWorkspaceContent() {
                         />
                       </div>
                       <div>
-                        <label className="block font-semibold text-[#122A24] mb-1">CBSE Affiliation Number</label>
+                        <label className="block font-semibold text-[#122A24] mb-1">Affiliation / Branch Registry No.</label>
                         <input
                           type="text"
                           value={settingsForm.affiliation_no}
                           onChange={(e) => setSettingsForm({ ...settingsForm, affiliation_no: e.target.value })}
-                          placeholder="e.g. 2130042"
+                          placeholder="e.g. EE/COACHING/2026"
                           className="w-full px-3.5 py-2.5 border border-[#C5E2CF] rounded-xl text-xs font-mono font-bold text-emerald-900 bg-white"
                         />
                       </div>
@@ -8557,9 +8560,9 @@ function ERPWorkspaceContent() {
                           : 'Admin ID:'} <strong>{currentUser?.username || profileForm.username || 'EMP01'}</strong>
                       </span>
                       <span>•</span>
-                      <span>School: <strong>{selectedSchool?.school_name || 'Delhi Public School'}</strong></span>
+                      <span>Center: <strong>{selectedSchool?.school_name || 'EduElevate Coaching Institute'}</strong></span>
                       <span>•</span>
-                      <span>Code: <strong>{selectedSchool?.school_code || 'DPS2026'}</strong></span>
+                      <span>Branch Code: <strong>{selectedSchool?.school_code || 'EE2026'}</strong></span>
                     </div>
                   </div>
                 </div>
@@ -8743,7 +8746,7 @@ function ERPWorkspaceContent() {
                               ? '🔒 Protected: Modifying this only changes YOUR student passcode and CANNOT change school admin PIN or faculty credentials.'
                               : currentUser?.role === 'TEACHER'
                               ? '🔒 Protected: Modifying this only changes YOUR teacher passcode and CANNOT change the school admin PIN.'
-                              : 'Used to log into the administrative portal alongside School Code.'}
+                              : 'Used to log into the administrative portal alongside Branch Code.'}
                           </p>
                         </div>
 

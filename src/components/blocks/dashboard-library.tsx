@@ -320,7 +320,7 @@ export function DashboardLibrary({
     const st = students.find(s => s.id === circ.student_id);
     const phone = st?.parent_phone || st?.phone || '';
     const text =
-      `📚 *LIBRARY OVERDUE NOTICE — ${selectedSchool?.school_name?.toUpperCase() || 'DELHI PUBLIC SCHOOL'}*\n\n` +
+      `📚 *LIBRARY OVERDUE NOTICE — ${selectedSchool?.school_name?.toUpperCase() || 'EDUELEVATE COACHING INSTITUTE'}*\n\n` +
       `Dear Parent,\n\n` +
       `This is to inform that the library book borrowed by your ward:\n` +
       `👤 *Scholar:* ${circ.student_name} (${circ.class_name} - ${circ.section})\n` +
@@ -329,7 +329,7 @@ export function DashboardLibrary({
       `⚠️ *Scheduled Due Date:* ${circ.due_date}\n` +
       `💰 *Accrued Overdue Fine:* ₹${circ.fine_amount} (₹5/day)\n\n` +
       `Kindly instruct your ward to return the book to the Central Library tomorrow to prevent escalation of overdue charges.\n\n` +
-      `_Librarian Desk, ${selectedSchool?.school_name || 'Delhi Public School'}_`;
+      `_Librarian Desk, ${selectedSchool?.school_name || 'EduElevate Coaching Institute'}_`;
 
     openWhatsAppDirect(phone, text);
   };
@@ -960,7 +960,7 @@ export function DashboardLibrary({
             <div className="border border-slate-300 p-5 rounded-2xl space-y-4 font-serif text-slate-800">
               <div className="text-center border-b pb-3 space-y-1">
                 <h2 className="font-black text-xl uppercase tracking-wider text-[#122A24]">
-                  {selectedSchool?.school_name || 'DELHI PUBLIC SCHOOL'}
+                  {selectedSchool?.school_name || 'EDUELEVATE COACHING INSTITUTE'}
                 </h2>
                 <div className="text-xs font-mono text-slate-500">
                   CENTRAL LIBRARY &amp; RESOURCE CENTER • CIRCULATION REGISTER

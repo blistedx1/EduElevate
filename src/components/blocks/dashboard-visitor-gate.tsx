@@ -250,18 +250,18 @@ export function DashboardVisitorGate({
   const handleSendWhatsAppDeparture = (pass: StudentGatePass) => {
     const phone = pass.parent_phone;
     const text =
-      `🛡️ *CBSE EARLY DISPERSAL GATE PASS CONFIRMATION*\n` +
-      `*${selectedSchool?.school_name?.toUpperCase() || 'DELHI PUBLIC SCHOOL'}*\n\n` +
+      `🛡️ *EARLY DISPERSAL GATE PASS CONFIRMATION*\n` +
+      `*${selectedSchool?.school_name?.toUpperCase() || 'EDUELEVATE COACHING INSTITUTE'}*\n\n` +
       `Dear Parent,\n\n` +
-      `Your ward has safely departed the school campus via Security Main Gate:\n` +
+      `Your ward has safely departed the center campus via Security Main Gate:\n` +
       `👤 *Scholar:* ${pass.student_name} (${pass.class_name} - ${pass.section})\n` +
       `🎫 *Gate Pass No:* ${pass.pass_no}\n` +
       `⏰ *Departure Time:* ${pass.issued_at}\n` +
       `🤝 *Escorted By:* ${pass.parent_name} (${pass.escort_relation})\n` +
       `📋 *Reason:* ${pass.reason}\n` +
       `✍️ *Authorized By:* ${pass.authorized_by}\n\n` +
-      `This electronic confirmation is generated under CBSE Child Safety Security Norms.\n\n` +
-      `_Campus Security Directorate, ${selectedSchool?.school_name || 'Delhi Public School'}_`;
+      `This electronic confirmation is generated under Child Safety Security Norms.\n\n` +
+      `_Campus Security Directorate, ${selectedSchool?.school_name || 'EduElevate Coaching Institute'}_`;
 
     openWhatsAppDirect(phone, text);
   };
@@ -848,7 +848,7 @@ export function DashboardVisitorGate({
             <div className="border-2 border-slate-800 p-5 rounded-2xl space-y-4 font-serif text-slate-900 bg-white">
               <div className="text-center border-b-2 border-slate-800 pb-3 space-y-1">
                 <h2 className="font-black text-xl uppercase tracking-wider text-[#122A24]">
-                  {selectedSchool?.school_name || 'DELHI PUBLIC SCHOOL'}
+                  {selectedSchool?.school_name || 'EDUELEVATE COACHING INSTITUTE'}
                 </h2>
                 <div className="text-xs font-mono font-bold text-slate-600 uppercase">
                   CBSE CHILD SAFETY PROTOCOL • EARLY DISPERSAL GATE PASS

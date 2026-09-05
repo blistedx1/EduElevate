@@ -373,7 +373,7 @@ export function DashboardDataHub({
     setActiveReportModal({
       isOpen: true,
       title: 'Official CBSE Student Master Enrollment Register',
-      subtitle: `Statutory Academic Roll Call & Demographics (${selectedSchool?.school_name || 'Delhi Public School'})`,
+      subtitle: `Statutory Academic Roll Call & Demographics (${selectedSchool?.school_name || 'EduElevate Coaching Institute'})`,
       filterSummary: [
         { label: 'Class Scope', value: filterClass === 'ALL' ? 'All Classes' : filterClass },
         { label: 'Section', value: filterSection === 'ALL' ? 'All Sections' : `Sec ${filterSection}` },

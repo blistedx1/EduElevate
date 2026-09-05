@@ -1148,7 +1148,7 @@ export function DashboardApprovals({
             <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-4 font-mono">
               <div className="text-center pb-3 border-b border-slate-300 space-y-0.5">
                 <div className="font-bold text-base text-[#122A24] font-serif uppercase tracking-wider">
-                  {selectedSchool?.school_name || 'Delhi Public School'}
+                  {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                 </div>
                 <div className="text-[11px] text-slate-500">
                   Affiliated to Central Board of Secondary Education (CBSE)

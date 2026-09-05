@@ -64,24 +64,24 @@ export default function RequestDemoPage() {
       <div className="panel">
         <Link className="brand" href="/">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/giterp-logo.png" alt="Giterp Logo" className="w-10 h-10 rounded-xl object-contain shadow-sm bg-[#122A24] border border-white/20 p-1" />
+          <img src="/giterp-logo.png" alt="EduElevate Logo" className="w-10 h-10 rounded-xl object-contain shadow-sm bg-[#122A24] border border-white/20 p-1" />
           <span className="brand-text">
-            Giterp
-            <span>Manage • Integrate • Grow</span>
+            EduElevate
+            <span>Manage • Mentor • Elevate</span>
           </span>
         </Link>
 
         <div className="panel-mid">
           <p className="eyebrow">Request a Demo</p>
-          <h1>Tell us about your school — we'll take it from there.</h1>
+          <h1>Tell us about your coaching institute — we'll take it from there.</h1>
           <p>
-            There's no self-serve signup. Our team reviews every request and sets your school up directly, so your data and roles start correctly from day one.
+            There's no self-serve signup. Our team reviews every request and provisions your coaching branch directly, so your batches and mentor roles start correctly from day one.
           </p>
 
           <ul className="whatnext">
-            <li><span className="b">01.</span> We review your request within 2 business days.</li>
-            <li><span className="b">02.</span> A short call to understand your current process.</li>
-            <li><span className="b">03.</span> We create your school's workspace and issue a school code.</li>
+            <li><span className="b">01.</span> We review your branch request within 2 business days.</li>
+            <li><span className="b">02.</span> A quick discussion to map your course batches &amp; faculty roles.</li>
+            <li><span className="b">03.</span> We create your coaching workspace and issue a unique Branch Code.</li>
           </ul>
         </div>
 
@@ -96,25 +96,25 @@ export default function RequestDemoPage() {
       {/* Right form panel */}
       <div className="formside">
         <div className="card">
-          <p className="kicker">New School</p>
+          <p className="kicker">New Coaching Branch</p>
           <h2>Request a demo</h2>
-          <p className="sub">A few details so our team can reach out and set things up.</p>
+          <p className="sub">A few details so our team can reach out and configure your branch workspace.</p>
 
           <form onSubmit={handleSubmit}>
             <div className="grid2">
               <div className="field">
-                <label htmlFor="schoolName">School name</label>
+                <label htmlFor="schoolName">Coaching / Institute name</label>
                 <input
                   type="text"
                   id="schoolName"
                   value={formData.schoolName}
                   onChange={(e) => setFormData({ ...formData, schoolName: e.target.value })}
-                  placeholder="e.g. Ashoka Public School"
+                  placeholder="e.g. EduElevate Institute, Lucknow Branch"
                   required
                 />
               </div>
               <div className="field">
-                <label htmlFor="city">City</label>
+                <label htmlFor="city">Branch City</label>
                 <input
                   type="text"
                   id="city"
@@ -128,24 +128,24 @@ export default function RequestDemoPage() {
 
             <div className="grid2">
               <div className="field">
-                <label htmlFor="strength">Approx. students</label>
+                <label htmlFor="strength">Aspirant strength</label>
                 <input
                   type="text"
                   id="strength"
                   value={formData.strength}
                   onChange={(e) => setFormData({ ...formData, strength: e.target.value })}
-                  placeholder="e.g. 600"
+                  placeholder="e.g. 500"
                   required
                 />
               </div>
               <div className="field">
-                <label htmlFor="board">Board / curriculum</label>
+                <label htmlFor="board">Courses / Target exams</label>
                 <input
                   type="text"
                   id="board"
                   value={formData.board}
                   onChange={(e) => setFormData({ ...formData, board: e.target.value })}
-                  placeholder="e.g. CBSE, ICSE, State"
+                  placeholder="e.g. JEE, NEET, CBSE, Foundation"
                 />
               </div>
             </div>
@@ -157,7 +157,7 @@ export default function RequestDemoPage() {
                 id="contactName"
                 value={formData.contactName}
                 onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                placeholder="e.g. Rina Verma, Principal"
+                placeholder="e.g. Dr. Rajesh Sharma, Center Director"
                 required
               />
             </div>
@@ -170,7 +170,7 @@ export default function RequestDemoPage() {
                   id="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="you@school.edu"
+                  placeholder="you@eduelevate.in"
                   required
                 />
               </div>

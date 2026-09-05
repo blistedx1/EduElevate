@@ -2642,7 +2642,7 @@ export function DashboardAttendance({
                     className: selectedClass.class_name,
                     section: selectedClass.section,
                     date: attendanceDate,
-                    schoolName: selectedSchool?.school_name || 'Delhi Public School'
+                    schoolName: selectedSchool?.school_name || 'EduElevate Coaching Institute'
                   });
                   return (
                     <div key={s.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-2 text-xs">

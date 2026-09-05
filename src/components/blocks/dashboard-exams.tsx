@@ -5048,7 +5048,7 @@ export function DashboardExams({
                   {selectedSchool?.school_name || schoolName}
                 </h2>
                 <p className="text-xs text-slate-600 font-medium font-mono">
-                  Affiliated to CBSE, New Delhi • School Code: {selectedSchool?.school_code || '84001'} • Affiliation No: {selectedSchool?.affiliation_no || '2130042'}
+                  EduElevate Coaching Network • Branch Code: {selectedSchool?.school_code || 'EE2026'} • Reg No: {selectedSchool?.affiliation_no || 'EE/COACHING/2026'}
                 </p>
                 <div className="inline-block mt-1 px-4 py-1 bg-[#122A24] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-full shadow-xs">
                   OFFICIAL EXAMINATION DATESHEET • SESSION {selectedSession}
@@ -5527,7 +5527,7 @@ export function DashboardExams({
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-[11px] font-mono font-bold text-[#1C443A] pt-1">
                   <span>CBSE AFFIL: {selectedSchool?.affiliation_no || '2130042'}</span>
                   <span>•</span>
-                  <span>SCHOOL CODE: {selectedSchool?.school_code || '84001'}</span>
+                  <span>BRANCH CODE: {selectedSchool?.school_code || 'EE2026'}</span>
                   <span>•</span>
                   <span>UDISE: {selectedSchool?.udise_code || '07010100101'}</span>
                 </div>

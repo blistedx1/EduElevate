@@ -892,8 +892,8 @@ export function DashboardFees({
       className: `${reportItem.className} (${reportItem.section})`,
       pendingAmount: reportItem.totalPending,
       dueDate: reportPeriod === 'APRIL_ANNUAL' ? '10-Apr-2026' : '10th of current month',
-      feeTitle: `${reportItem.tuitionPending > 0 ? 'Tuition' : ''} ${reportItem.transportPending > 0 ? 'Transport' : ''} ${reportItem.annualPending > 0 ? 'Annual' : ''} Fees`.trim() || 'School Dues',
-      schoolName: selectedSchool?.school_name || 'Delhi Public School'
+      feeTitle: `${reportItem.tuitionPending > 0 ? 'Tuition' : ''} ${reportItem.transportPending > 0 ? 'Transport' : ''} ${reportItem.annualPending > 0 ? 'Annual' : ''} Fees`.trim() || 'Coaching Dues',
+      schoolName: selectedSchool?.school_name || 'EduElevate Coaching Institute'
     });
     openWhatsAppDirect(phone, text);
   };
@@ -910,7 +910,7 @@ export function DashboardFees({
       receiptNo: `RCPT-${s.id.slice(-4)}-${Date.now().toString().slice(-4)}`,
       paymentMode: 'Digital Receipt Docket',
       date: new Date().toLocaleDateString('en-GB'),
-      schoolName: selectedSchool?.school_name || 'Delhi Public School'
+      schoolName: selectedSchool?.school_name || 'EduElevate Coaching Institute'
     });
     openWhatsAppDirect(phone, text);
   };
@@ -4540,13 +4540,13 @@ export function DashboardFees({
                     <div className="flex items-start justify-between border-b border-[#122A24] pb-2">
                       <div>
                         <h3 className="font-display font-black text-sm sm:text-base text-[#122A24] uppercase tracking-tight">
-                          {selectedSchool?.school_name || 'Delhi Public International School'}
+                          {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                         </h3>
                         <p className="text-[10px] text-slate-600 font-medium">
-                          {selectedSchool?.address || 'Sector 12, Dwarka, New Delhi'} • Tel: {selectedSchool?.phone || '+91 11 2789 0000'}
+                          {selectedSchool?.address || 'EduElevate Tower, Sector 12, New Delhi'} • Tel: {selectedSchool?.phone || '+91 11 4987 6543'}
                         </p>
                         <p className="text-[9.5px] font-semibold text-emerald-800">
-                          CBSE Affiliation No: {selectedSchool?.affiliation_no || '2130042'} | School Code: {selectedSchool?.oasis_code || '84001'}
+                          Accreditation / Reg No: {selectedSchool?.affiliation_no || 'EE/COACHING/2026'} | Branch Code: {selectedSchool?.school_code || selectedSchool?.oasis_code || 'EE2026'}
                         </p>
                       </div>
                       <div className="text-right">
@@ -5054,13 +5054,13 @@ export function DashboardFees({
               {/* Institutional Header */}
               <div className="text-center border-b-2 border-[#122A24] pb-3">
                 <div className="font-display font-black text-xl text-[#122A24] tracking-tight uppercase">
-                  {selectedSchool?.school_name || 'Delhi Public International School'}
+                  {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                 </div>
                 <div className="text-xs text-slate-600 font-medium mt-0.5">
-                  {selectedSchool?.address || 'Sector 12, Dwarka, New Delhi'} • Phone: {selectedSchool?.phone || '+91 11 2789 0000'}
+                  {selectedSchool?.address || 'EduElevate Tower, Sector 12, New Delhi'} • Phone: {selectedSchool?.phone || '+91 11 4987 6543'}
                 </div>
                 <div className="text-[11px] font-mono font-bold text-[#1C443A] mt-1">
-                  CBSE Affiliation No: {selectedSchool?.affiliation_no || '2130042'} | School Code: {selectedSchool?.oasis_code || '84001'}
+                  Accreditation / Reg No: {selectedSchool?.affiliation_no || 'EE/COACHING/2026'} | Branch Code: {selectedSchool?.school_code || selectedSchool?.oasis_code || 'EE2026'}
                 </div>
                 <div className="inline-block mt-2 px-3 py-0.5 bg-[#122A24] text-white text-[11px] font-bold uppercase rounded-md tracking-wider">
                   Official Student Fee Slip • Session {selectedSession || '2026-27'}
@@ -5856,7 +5856,7 @@ export function DashboardFees({
             {/* Payslip Content */}
             <div className="p-5 border-2 border-[#122A24] rounded-2xl space-y-4 bg-white text-slate-800 font-mono text-xs">
               <div className="text-center border-b-2 border-[#122A24] pb-2 font-sans">
-                <div className="font-black text-lg text-[#122A24] uppercase">{selectedSchool?.school_name || 'Delhi Public School'}</div>
+                <div className="font-black text-lg text-[#122A24] uppercase">{selectedSchool?.school_name || 'EduElevate Coaching Institute'}</div>
                 <div className="text-xs text-slate-600">{selectedSchool?.address || 'Sector 12, Dwarka, New Delhi'}</div>
                 <div className="text-[11px] font-bold text-emerald-800 mt-1 uppercase">Monthly Salary Disbursement Slip</div>
               </div>

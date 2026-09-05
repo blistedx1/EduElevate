@@ -43,21 +43,21 @@ export async function POST(request: Request) {
         await transporter.sendMail({
           from: `"Giterp ERP" <${process.env.SMTP_USER}>`,
           to: originalReq.email,
-          subject: `🎉 Your Giterp School ERP Account is Ready (${result.school.school_name})`,
+          subject: `🎉 Your EduElevate Coaching Account is Ready (${result.school.school_name})`,
           html: `
             <div style="font-family: Arial, sans-serif; background: #F8FAFC; padding: 25px; color: #0F172A;">
               <div style="max-width: 550px; margin: 0 auto; background: #FFFFFF; border: 1px solid #E2E8F0; padding: 25px; border-radius: 10px;">
-                <h2 style="color: #122A24; margin-top: 0;">Welcome to Giterp Cloud ERP!</h2>
+                <h2 style="color: #122A24; margin-top: 0;">Welcome to EduElevate!</h2>
                 <p>Dear ${originalReq.contact_name},</p>
-                <p>Your demo & onboarding application for <strong>${result.school.school_name}</strong> has been approved. Your dedicated institutional workspace is now active.</p>
+                <p>Your onboarding application for <strong>${result.school.school_name}</strong> has been approved. Your coaching branch workspace is now active.</p>
                 
                 <div style="background: #122A24; color: #FFFFFF; padding: 18px; border-radius: 8px; font-family: monospace; font-size: 14px; margin: 20px 0;">
-                  <div style="margin-bottom: 8px;">🏫 School Code: <strong>${result.school.school_code}</strong></div>
+                  <div style="margin-bottom: 8px;">🏢 Branch Code: <strong>${result.school.school_code}</strong></div>
                   <div style="margin-bottom: 8px;">👤 Admin ID / Username: <strong>${result.school.admin_id}</strong></div>
                   <div>🔑 Temporary Password: <strong>${result.school.admin_pin}</strong></div>
                 </div>
 
-                <p><a href="http://localhost:3000/login" style="display: inline-block; background: #C4432B; color: #FFFFFF; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Sign In to School Portal →</a></p>
+                <p><a href="http://localhost:3000/login" style="display: inline-block; background: #C4432B; color: #FFFFFF; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Sign In to Coaching Portal →</a></p>
                 
                 <p style="font-size: 12px; color: #64748B; margin-top: 25px;">Please change your password upon initial sign in.</p>
               </div>

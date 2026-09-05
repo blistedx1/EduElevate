@@ -631,18 +631,18 @@ export function DashboardAgency() {
             <div className="flex justify-between items-center px-6 py-4 border-b border-[var(--line)] font-mono text-xs tracking-wider uppercase text-[var(--ink-navy)] bg-slate-50/70">
               <span className="flex items-center gap-2 font-semibold">
                 <span className="w-2 h-2 rounded-full bg-[var(--board-2)] inline-block" />
-                Active Institutional Tenants
+                Active Coaching Branches &amp; Centers
               </span>
-              <span>{schools.length} active databases</span>
+              <span>{schools.length} active branch databases</span>
             </div>
 
             <div className="overflow-x-auto">
               <div className="sheet-ruled px-6 py-4 min-w-[580px]">
                 <div className="grid grid-cols-[1fr_120px_120px_100px_160px] gap-3 items-center h-10 text-xs font-mono tracking-wider uppercase text-slate-500 font-semibold border-b border-[var(--line)]">
-                  <span>Institution Name</span>
-                  <span>School Code</span>
+                  <span>Branch / Center Name</span>
+                  <span>Branch Code</span>
                   <span>Admin Username</span>
-                  <span>Board</span>
+                  <span>Curriculum / Target</span>
                   <span className="text-right">Actions</span>
                 </div>
 
@@ -669,7 +669,7 @@ export function DashboardAgency() {
                         type="button"
                         onClick={() => handleOpenPurgeModal(s)}
                         className="inline-flex items-center gap-1 font-mono text-[11px] text-rose-600 hover:text-white hover:bg-rose-600 border border-rose-200 px-2 py-1 rounded transition-colors cursor-pointer"
-                        title="Purge School Data (MongoDB + Local DB)"
+                        title="Purge Branch Data (MongoDB + Local DB)"
                       >
                         <Trash2 className="w-3 h-3" />
                         <span>Purge</span>
@@ -680,7 +680,7 @@ export function DashboardAgency() {
 
                 {filteredSchools.length === 0 && !loading && (
                   <div className="py-12 text-center space-y-2 text-slate-500 text-xs">
-                    No active schools yet. Approve incoming requests from the Requests tab above.
+                    No active coaching branches yet. Approve incoming requests from the Requests tab above.
                   </div>
                 )}
               </div>
@@ -695,30 +695,30 @@ export function DashboardAgency() {
           <div className="bg-white rounded-2xl border border-[var(--line)] p-8 max-w-lg w-full shadow-2xl space-y-6 animate-fade-up">
             <div className="border-b border-slate-200 pb-4">
               <span className="font-mono text-xs text-[var(--red-pen)] font-semibold uppercase tracking-wider">
-                Institutional Approval
+                Branch Approval
               </span>
               <h2 className="font-display font-semibold text-2xl text-[var(--ink-navy)] mt-1">
-                Approve & Provision School
+                Approve &amp; Provision Coaching Branch
               </h2>
               <p className="text-xs text-slate-600 mt-1">
-                Grant access to <strong>{selectedReq.school_name}</strong> and issue login credentials.
+                Grant access to <strong>{selectedReq.school_name}</strong> and issue branch credentials.
               </p>
             </div>
 
             <div className="space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-[var(--ink-navy)] mb-1">
-                  Assigned School Code (Unique Identifier)
+                  Assigned Branch Code (Unique Identifier)
                 </label>
                 <input
                   type="text"
                   value={customCode}
                   onChange={(e) => setCustomCode(e.target.value.toUpperCase())}
-                  placeholder="e.g. APS-2026"
+                  placeholder="e.g. EE-2026"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono font-bold text-sm text-[var(--ink-navy)] uppercase bg-slate-50"
                 />
                 <p className="text-[11px] text-slate-500 mt-1">
-                  The school code will be required by teachers, admins, and students to log in.
+                  The branch code will be required by faculty, staff, and students to log in.
                 </p>
               </div>
 

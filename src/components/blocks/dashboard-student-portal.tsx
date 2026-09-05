@@ -245,7 +245,7 @@ export function DashboardStudentPortal({
               <span>•</span>
               <span>Roll: <strong>#{student.roll_no || '16'}</strong></span>
               <span>•</span>
-              <span className="text-emerald-800 font-bold">{selectedSchool?.school_name || 'Delhi Public School'}</span>
+              <span className="text-emerald-800 font-bold">{selectedSchool?.school_name || 'EduElevate Coaching Institute'}</span>
             </div>
           </div>
         </div>
@@ -343,10 +343,10 @@ export function DashboardStudentPortal({
                   Central Board of Secondary Education (CBSE) • New Delhi
                 </div>
                 <h2 className="font-display font-black text-2xl sm:text-3xl text-[#122A24] uppercase tracking-tight">
-                  {selectedSchool?.school_name || 'Delhi Public School'}
+                  {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                 </h2>
                 <div className="text-xs text-slate-600 font-medium">
-                  {selectedSchool?.address || 'Sector 12, R.K. Puram, New Delhi'} • CBSE Affil No: <strong>{selectedSchool?.affiliation_no || '2130001'}</strong> • School Code: <strong>{selectedSchool?.school_code || 'DPS2026'}</strong>
+                  {selectedSchool?.address || 'EduElevate Tower, Sector 12, New Delhi'} • Reg No: <strong>{selectedSchool?.affiliation_no || 'EE/COACHING/2026'}</strong> • Branch Code: <strong>{selectedSchool?.school_code || 'EE2026'}</strong>
                 </div>
                 <div className="inline-block mt-2 px-4 py-1 rounded-full bg-[#122A24] text-white font-mono text-xs font-bold tracking-wider">
                   ANNUAL ACADEMIC PROGRESS REPORT • SESSION {selectedSession}
@@ -1056,7 +1056,7 @@ export function DashboardStudentPortal({
                   My Issued Certificates &amp; Credentials
                 </h2>
                 <p className="text-xs text-[#2D5A4E]">
-                  Cryptographically verified certificates issued by {selectedSchool?.school_name || 'Delhi Public School'}
+                  Cryptographically verified certificates issued by {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                 </p>
               </div>
 
@@ -1120,10 +1120,10 @@ export function DashboardStudentPortal({
             <div className="flex justify-between items-start pb-3 border-b-2 border-[#122A24]">
               <div>
                 <div className="font-display font-extrabold text-lg text-[#122A24] tracking-tight">
-                  {selectedSchool?.school_name || 'Delhi Public School'}
+                  {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
                 </div>
                 <div className="text-[11px] text-slate-500">
-                  CBSE Affiliation No: {selectedSchool?.affiliation_no || '2130042'} • School Code: {selectedSchool?.oasis_code || '84001'}
+                  Reg No: {selectedSchool?.affiliation_no || 'EE/COACHING/2026'} • Branch Code: {selectedSchool?.school_code || selectedSchool?.oasis_code || 'EE2026'}
                 </div>
                 <div className="text-xs font-bold text-emerald-800 mt-0.5">
                   Official Institutional Fee Receipt • Session {selectedSession}

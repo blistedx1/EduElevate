@@ -42,13 +42,13 @@ export function InstitutionalReportModal({
 }: InstitutionalReportModalProps) {
   if (!isOpen) return null;
 
-  const schoolName = (school as any)?.name || school?.school_name || 'Delhi Public School, Sector 12';
-  const schoolCode = school?.school_code || school?.id || 'DPS2026';
-  const affNo = school?.affiliation_no || (school as any)?.affiliation_number || 'AFF/2026/0894';
-  const schoolAddress = school?.address || 'Pocket 4, Institutional Area, City Campus, Delhi NCR - 110075';
-  const schoolPhone = school?.phone || (school as any)?.contact_phone || '+91 11 2805 1200';
-  const schoolEmail = school?.email || (school as any)?.contact_email || 'info@dps2026.edu.in';
-  const principalName = school?.principal_name || 'Dr. Aniruddh Shastri (Principal)';
+  const schoolName = (school as any)?.name || school?.school_name || 'EduElevate Coaching Institute, City Campus';
+  const schoolCode = school?.school_code || school?.id || 'EE2026';
+  const affNo = school?.affiliation_no || (school as any)?.affiliation_number || 'EE/COACHING/2026';
+  const schoolAddress = school?.address || 'EduElevate Tower, Sector 12, Pre-Medical & Engineering Division, New Delhi - 110075';
+  const schoolPhone = school?.phone || (school as any)?.contact_phone || '+91 11 4987 6543';
+  const schoolEmail = school?.email || (school as any)?.contact_email || 'director@eduelevate.in';
+  const principalName = school?.principal_name || 'Dr. Aniruddh Shastri (Center Director)';
 
   const currentDate = new Date().toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -265,10 +265,10 @@ export function InstitutionalReportModal({
                     {schoolName}
                   </h1>
                   <p className="text-[11px] font-semibold text-[#2D5A4E]">
-                    Recognized Senior Secondary Institution &bull; New Delhi
+                    Pre-Medical &amp; Engineering Division &bull; New Delhi
                   </p>
                   <p className="text-[10.5px] font-mono text-slate-600">
-                    Affiliation No: <strong>{affNo}</strong> &bull; School Code: <strong>{schoolCode}</strong>
+                    Affiliation / Reg No: <strong>{affNo}</strong> &bull; Branch Code: <strong>{schoolCode}</strong>
                   </p>
                   <p className="text-[10px] text-slate-500">
                     {schoolAddress} &bull; Ph: {schoolPhone} &bull; Email: {schoolEmail}

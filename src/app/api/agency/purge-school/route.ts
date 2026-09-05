@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     // 1. Authorization Guard
     if (!isAgencyAdmin) {
       return NextResponse.json(
-        { success: false, error: 'Forbidden. Only Agency Superadmin can execute whole-school data purges.' },
+        { success: false, error: 'Forbidden. Only Superadmin can execute branch data purges.' },
         { status: 403 }
       );
     }
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     if (!school_id) {
       return NextResponse.json(
-        { success: false, error: 'School ID or School Code is required.' },
+        { success: false, error: 'Branch ID or Branch Code is required.' },
         { status: 400 }
       );
     }

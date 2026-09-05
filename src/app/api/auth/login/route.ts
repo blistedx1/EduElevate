@@ -41,10 +41,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    let { school_code, username, password, role } = body;
-    const effectiveSchoolCode = (school_code && typeof school_code === 'string' && school_code.trim()) ? school_code.trim().toUpperCase() : 'DPS2026';
+    let { branch_code, school_code, username, password, pin, role } = body;
+    const effectivePassword = password || pin;
+    const rawCode = branch_code || school_code;
+    const effectiveBranchCode = (rawCode && typeof rawCode === 'string' && rawCode.trim()) ? rawCode.trim().toUpperCase() : 'EE2026';
 
-    const auth = await Database.authenticateUser(effectiveSchoolCode, username, password, role);
+    const auth = await Database.authenticateUser(effectiveBranchCode, username, effectivePassword, role);
 
     if (!auth) {
       // Increment failure count
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
       loginAttempts.set(ip, { count: current.count + 1, firstAttempt: current.firstAttempt });
 
       return NextResponse.json(
-        { success: false, error: 'Invalid credentials or unauthorized school access.' },
+        { success: false, error: 'Invalid credentials or unauthorized coaching branch access.' },
         { status: 401 }
       );
     }

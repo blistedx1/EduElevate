@@ -29,7 +29,7 @@ export interface DashboardHomeworkProps {
 
 export function DashboardHomework({
   students = [],
-  schoolName = 'DPS International — CBSE',
+  schoolName = 'EduElevate Coaching — Foundation & Target',
   userRole = 'PRINCIPAL',
   currentUser
 }: DashboardHomeworkProps) {

@@ -538,11 +538,11 @@ export function DashboardOverview({
             <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#C5E2CF] shadow-2xs shrink-0">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
               <span className="font-bold text-[#122A24]">
-                {selectedSchool?.school_name || 'Delhi Public International School'}
+                {selectedSchool?.school_name || 'EduElevate Coaching Institute'}
               </span>
             </span>
-            <span className="inline-flex items-center whitespace-nowrap bg-[#122A24] text-white px-2.5 py-1 rounded-lg font-bold shadow-2xs shrink-0">
-              {selectedSchool?.school_code || 'DPS2026'}
+            <span className="inline-flex items-center whitespace-nowrap bg-[#122A24] text-white px-2.5 py-1 rounded-lg font-bold shadow-2xs shrink-0" title="Branch Code">
+              Branch: {selectedSchool?.school_code || 'EE2026'}
             </span>
             <span className="inline-flex items-center whitespace-nowrap bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[#1C443A] font-bold border border-[#C5E2CF] shadow-2xs shrink-0" title="UDISE+ School Registry Code">
               UDISE: {selectedSchool?.udise_code || '07010100101'}
@@ -587,7 +587,18 @@ export function DashboardOverview({
               </>
             ) : (
               <>
-                Today's daily attendance ledger is <strong className="font-bold text-amber-800">Pending Roll Call</strong>. Click <strong className="font-bold text-[#122A24]">Mark Attendance</strong> to record today's turnout.
+                Today's daily attendance ledger is <strong className="font-bold text-amber-800">Pending Roll Call</strong>. Click{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('attendance');
+                    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="font-bold text-[#122A24] hover:text-emerald-800 underline underline-offset-2 cursor-pointer bg-transparent border-none p-0 inline font-sans text-xs sm:text-[13.5px]"
+                >
+                  Mark Attendance
+                </button>{' '}
+                to record today's turnout.
               </>
             )}
           </p>
@@ -597,10 +608,15 @@ export function DashboardOverview({
           {userRole === 'TEACHER' ? (
             <>
               <button
-                onClick={() => setActiveTab('attendance')}
-                className="whitespace-nowrap px-4.5 py-2.5 rounded-xl bg-[#122A24] hover:bg-[#1C443A] text-white text-xs font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer border-none shrink-0 active:scale-95"
+                id="btn-teacher-attendance"
+                type="button"
+                onClick={() => {
+                  setActiveTab('attendance');
+                  if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="whitespace-nowrap px-4 py-2.5 rounded-xl bg-[#122A24] hover:bg-[#1C443A] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer border border-[#122A24] shrink-0 active:scale-95"
               >
-                <CalendarCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <CalendarCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>Take Attendance</span>
               </button>
               <button
@@ -663,10 +679,16 @@ export function DashboardOverview({
           ) : (
             <>
               <button
-                onClick={() => setActiveTab('attendance')}
-                className="whitespace-nowrap px-4.5 py-2.5 rounded-xl bg-[#122A24] hover:bg-[#1C443A] text-white text-xs font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer border-none shrink-0 active:scale-95 hover:scale-[1.02]"
+                id="btn-mark-attendance"
+                type="button"
+                onClick={() => {
+                  setActiveTab('attendance');
+                  if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="whitespace-nowrap px-4 py-2.5 rounded-xl bg-[#122A24] hover:bg-[#1C443A] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer border border-[#122A24] shrink-0 active:scale-95 hover:scale-[1.02]"
+                title="Open Daily Attendance Ledger"
               >
-                <CalendarCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <CalendarCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>Mark Attendance</span>
               </button>
               <button
@@ -700,107 +722,107 @@ export function DashboardOverview({
       {/* ─────────────────────────────────────────────────────────────
           ROW 2: 4 SPACIOUS CORE KPI STAT CARDS (ROLE ADAPTIVE)
           ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch min-w-0">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 items-stretch min-w-0">
         
         {userRole === 'TEACHER' ? (
           <>
             {/* Teacher Card 1: My Class Attendance */}
             <div 
               onClick={() => setActiveTab('attendance')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">My Class Turnout (10-A)</span>
-                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <UserCheck className="w-4.5 h-4.5 text-emerald-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">My Class Turnout (10-A)</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <UserCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-emerald-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">96.2%</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">96.2%</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-200 truncate">
                     38/40 Scholars Present
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
                 <span>Class Roster</span>
-                <span className="font-semibold text-emerald-800 font-mono text-[11px]">✓ Attendance Locked</span>
+                <span className="font-semibold text-emerald-800 font-mono text-[10px] sm:text-[11px]">✓ Locked</span>
               </div>
             </div>
 
             {/* Teacher Card 2: Today's Teaching Schedule */}
             <div 
               onClick={() => setActiveTab('classes')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">Teaching Schedule</span>
-                <div className="w-9 h-9 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <BookOpen className="w-4.5 h-4.5 text-blue-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Teaching Schedule</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <BookOpen className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-blue-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">4 Periods</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-                    Next: Period 3 Physics Lab
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">4 Periods</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-blue-200 truncate">
+                    Next: Period 3 Lab
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
                 <span>Today's Load</span>
-                <span className="font-semibold text-blue-800 font-mono text-[11px]">Class 10-A, 9-B</span>
+                <span className="font-semibold text-blue-800 font-mono text-[10px] sm:text-[11px]">Class 10-A, 9-B</span>
               </div>
             </div>
 
             {/* Teacher Card 3: Active Homework Assigner */}
             <div 
               onClick={() => setActiveTab('homework')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">Active Coursework</span>
-                <div className="w-9 h-9 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <FileText className="w-4.5 h-4.5 text-amber-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Active Coursework</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <FileText className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">3 Tasks</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-                    Maths Ex 4.2 &amp; Science Ch 3
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">3 Tasks</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-amber-200 truncate">
+                    Maths Ex 4.2 &amp; Science
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
                 <span>Submissions</span>
-                <span className="font-semibold text-slate-700 font-mono text-[11px]">34 / 40 Submitted</span>
+                <span className="font-semibold text-slate-700 font-mono text-[10px] sm:text-[11px]">34 / 40 Submitted</span>
               </div>
             </div>
 
             {/* Teacher Card 4: Faculty Leave Quota */}
             <div 
               onClick={() => setActiveTab('approvals')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">Leave Balance</span>
-                <div className="w-9 h-9 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <CheckCircle2 className="w-4.5 h-4.5 text-purple-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Leave Balance</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <CheckCircle2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-purple-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">18 Days</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">18 Days</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-purple-200 truncate">
                     8 Casual • 10 Medical
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>CBSE Leave Rule</span>
-                <span className="font-semibold text-emerald-800 font-mono text-[11px]">Eligible to Apply</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>Leave Rule</span>
+                <span className="font-semibold text-emerald-800 font-mono text-[10px] sm:text-[11px]">Eligible</span>
               </div>
             </div>
           </>
@@ -809,100 +831,100 @@ export function DashboardOverview({
             {/* Student Card 1: My Attendance */}
             <div 
               onClick={() => setActiveTab('attendance')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">My Attendance</span>
-                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <UserCheck className="w-4.5 h-4.5 text-emerald-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">My Attendance</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <UserCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-emerald-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">95.4%</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    118 / 124 School Days Present
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">95.4%</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-200 truncate">
+                    118 / 124 Days Present
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>CBSE 75% Criteria</span>
-                <span className="font-semibold text-emerald-800 font-mono text-[11px]">✓ Satisfied (+20.4%)</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>Criteria</span>
+                <span className="font-semibold text-emerald-800 font-mono text-[10px] sm:text-[11px]">✓ Satisfied</span>
               </div>
             </div>
 
             {/* Student Card 2: CBSE Academic Grade */}
             <div 
               onClick={() => setActiveTab('exams')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">Term 1 Assessment</span>
-                <div className="w-9 h-9 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <Award className="w-4.5 h-4.5 text-purple-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Term 1 Assessment</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <Award className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-purple-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">Grade A1</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">Grade A1</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-purple-200 truncate">
                     94.6% Aggregate (473/500)
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>Rank in Class</span>
-                <span className="font-semibold text-purple-900 font-mono text-[11px]">#2 of 40 Scholars</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>Rank</span>
+                <span className="font-semibold text-purple-900 font-mono text-[10px] sm:text-[11px]">#2 of 40</span>
               </div>
             </div>
 
             {/* Student Card 3: Homework Diary */}
             <div 
               onClick={() => setActiveTab('homework')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">Homework Diary</span>
-                <div className="w-9 h-9 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <FileText className="w-4.5 h-4.5 text-amber-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Homework Diary</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <FileText className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">2 Tasks Due</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-                    Maths Linear Equations &amp; English
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">2 Tasks Due</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-amber-200 truncate">
+                    Maths &amp; English
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
                 <span>Due Date</span>
-                <span className="font-semibold text-amber-800 font-mono text-[11px]">Tomorrow Morning</span>
+                <span className="font-semibold text-amber-800 font-mono text-[10px] sm:text-[11px]">Tomorrow Morning</span>
               </div>
             </div>
 
             {/* Student Card 4: Fee Clearance */}
             <div 
               onClick={() => setActiveTab('fees')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">Fee Account</span>
-                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <CreditCard className="w-4.5 h-4.5 text-emerald-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Fee Account</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <CreditCard className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-emerald-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">₹0 Due</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    Term 1 Clearance Granted
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">₹0 Due</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-200 truncate">
+                    Term 1 Cleared
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>Receipt Status</span>
-                <span className="font-semibold text-emerald-800 font-mono text-[11px]">✓ Verified &amp; Paid</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>Status</span>
+                <span className="font-semibold text-emerald-800 font-mono text-[10px] sm:text-[11px]">✓ Verified</span>
               </div>
             </div>
           </>
@@ -911,101 +933,101 @@ export function DashboardOverview({
             {/* Parent Card 1: Ward Today Attendance */}
             <div 
               onClick={() => setActiveTab('attendance')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">Ward Presence (Today)</span>
-                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <UserCheck className="w-4.5 h-4.5 text-emerald-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Ward Presence (Today)</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <UserCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-emerald-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-emerald-900 tracking-tight">PRESENT</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Punch In: 08:15 AM (Morning Assembly)</span>
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-emerald-900 tracking-tight">PRESENT</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1 truncate">
+                    <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
+                    <span>08:15 AM</span>
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>Overall Turnout</span>
-                <span className="font-semibold text-emerald-800 font-mono text-[11px]">95.4% Satisfactory</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>Overall</span>
+                <span className="font-semibold text-emerald-800 font-mono text-[10px] sm:text-[11px]">95.4%</span>
               </div>
             </div>
 
             {/* Parent Card 2: Report Card & Grade */}
             <div 
               onClick={() => setActiveTab('exams')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-purple-800 transition-colors">Term 1 Performance</span>
-                <div className="w-9 h-9 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <Award className="w-4.5 h-4.5 text-purple-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-purple-800 transition-colors truncate">Term 1 Performance</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <Award className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-purple-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">Grade A1</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
-                    94.6% Aggregate (Top 5%)
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">Grade A1</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-purple-200 truncate">
+                    94.6% Aggregate
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>CBSE Marksheet</span>
-                <span className="font-semibold text-purple-900 font-mono text-[11px]">✓ Available to Download</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>Marksheet</span>
+                <span className="font-semibold text-purple-900 font-mono text-[10px] sm:text-[11px]">✓ Available</span>
               </div>
             </div>
 
             {/* Parent Card 3: Fee Invoices & Payment */}
             <div 
               onClick={() => setActiveTab('fees')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors">School Fee Portal</span>
-                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <CreditCard className="w-4.5 h-4.5 text-emerald-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-800 transition-colors truncate">Coaching Fee Portal</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <CreditCard className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-emerald-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">₹0 Current Due</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    Term 1 Paid • Term 2 Due Oct 15
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">₹0 Due</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-200 truncate">
+                    Term 1 Paid
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>Payment Mode</span>
-                <span className="font-semibold text-emerald-800 font-mono text-[11px]">UPI / Cards Enabled</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>Payment</span>
+                <span className="font-semibold text-emerald-800 font-mono text-[10px] sm:text-[11px]">UPI / Cards</span>
               </div>
             </div>
 
             {/* Parent Card 4: Transport & GPS */}
             <div 
               onClick={() => setActiveTab('broadcast')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs tile-hover-card group cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-blue-800 transition-colors">Bus &amp; Transit Telemetry</span>
-                <div className="w-9 h-9 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all">
-                  <Bus className="w-4.5 h-4.5 text-blue-700" />
+                <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-blue-800 transition-colors truncate">Transit Telemetry</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 transition-all shrink-0">
+                  <Bus className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-blue-700" />
                 </div>
               </div>
-              <div className="my-3">
-                <div className="font-display font-bold text-3xl text-[#122A24] tracking-tight">Route #14</div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-                    Stop: Sector 62 Crossing
+              <div className="my-2 sm:my-3">
+                <div className="font-display font-bold text-2xl sm:text-3xl text-[#122A24] tracking-tight">Route #14</div>
+                <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-blue-200 truncate">
+                    Sector 62 Crossing
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 flex items-center justify-between">
-                <span>Driver Telemetry</span>
-                <span className="font-semibold text-emerald-800 font-mono text-[11px]">🟢 GPS Live &amp; Safe</span>
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2 sm:pt-2.5 flex items-center justify-between">
+                <span>GPS Status</span>
+                <span className="font-semibold text-emerald-800 font-mono text-[10px] sm:text-[11px]">🟢 Live &amp; Safe</span>
               </div>
             </div>
           </>
@@ -1014,34 +1036,34 @@ export function DashboardOverview({
             {/* 1. Stat Card 1: Student Attendance (Today) */}
             <div 
               onClick={() => setActiveTab('attendance')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
             >
               {/* Subtle Ambient Color Splash */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/5 rounded-full blur-xl pointer-events-none group-hover:bg-emerald-400/10 transition-colors" />
 
               <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors truncate">
                     Student Attendance (Today)
                   </span>
                 </div>
-                <div className={`w-10 h-10 rounded-2xl ${isStudentAttendanceMarkedToday ? 'bg-emerald-50 text-emerald-700 border-emerald-200/70' : 'bg-amber-50 text-amber-700 border-amber-200/70'} border flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
-                  <UserCheck className="w-5 h-5" />
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-2xl ${isStudentAttendanceMarkedToday ? 'bg-emerald-50 text-emerald-700 border-emerald-200/70' : 'bg-amber-50 text-amber-700 border-amber-200/70'} border flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shrink-0`}>
+                  <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
 
-              <div className="my-3 relative z-10">
-                <div className="font-display font-extrabold text-3xl sm:text-4xl text-[#122A24] tracking-tight flex items-baseline gap-2 group-hover:text-emerald-950 transition-colors">
+              <div className="my-2 sm:my-3 relative z-10">
+                <div className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-[#122A24] tracking-tight flex items-baseline gap-1.5 sm:gap-2 group-hover:text-emerald-950 transition-colors flex-wrap">
                   <span>{isStudentAttendanceMarkedToday ? studentAttendanceRate : 0}%</span>
-                  <span className="text-sm font-mono font-medium text-slate-400">
+                  <span className="text-xs sm:text-sm font-mono font-medium text-slate-400">
                     ({isStudentAttendanceMarkedToday ? studentPresentCount : 0}/{totalStudentsCount})
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-2.5">
+                <div className="flex items-center gap-2 mt-2 sm:mt-2.5">
                   {isStudentAttendanceMarkedToday ? (
-                    <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50/90 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 whitespace-nowrap group-hover:bg-emerald-100 transition-colors shadow-2xs">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-800 bg-emerald-50/90 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-emerald-200 flex items-center gap-1 sm:gap-1.5 whitespace-nowrap group-hover:bg-emerald-100 transition-colors shadow-2xs">
+                      <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
                       <span>
                         {studentTodayRecords.length >= (classes.length || 1)
                           ? `All Classes Logged (${studentAttendanceRate}%)`
@@ -1049,17 +1071,17 @@ export function DashboardOverview({
                       </span>
                     </span>
                   ) : (
-                    <span className="text-[11px] font-semibold text-amber-800 bg-amber-50/90 px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1.5 whitespace-nowrap group-hover:bg-amber-100 transition-colors shadow-2xs">
-                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] font-semibold text-amber-800 bg-amber-50/90 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-amber-200 flex items-center gap-1 sm:gap-1.5 whitespace-nowrap group-hover:bg-amber-100 transition-colors shadow-2xs">
+                      <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600 shrink-0" />
                       <span>Not Marked Today (0%)</span>
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-3 flex items-center justify-between relative z-10">
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 sm:pt-3 flex items-center justify-between relative z-10">
                 <span>{isStudentAttendanceMarkedToday ? 'Absent Today' : 'Status'}</span>
-                <span className={`font-semibold px-2.5 py-0.5 rounded-lg text-[11px] ${isStudentAttendanceMarkedToday ? 'text-rose-700 bg-rose-50 border border-rose-200/60' : 'text-amber-800 bg-amber-50 border border-amber-200/60'}`}>
+                <span className={`font-semibold px-2 sm:px-2.5 py-0.5 rounded-lg text-[10px] sm:text-[11px] ${isStudentAttendanceMarkedToday ? 'text-rose-700 bg-rose-50 border border-rose-200/60' : 'text-amber-800 bg-amber-50 border border-amber-200/60'}`}>
                   {isStudentAttendanceMarkedToday ? `${studentAbsentCount} students` : 'Pending Roll Call'}
                 </span>
               </div>
@@ -1068,48 +1090,48 @@ export function DashboardOverview({
             {/* 2. Stat Card 2: Faculty Attendance (Today) */}
             <div 
               onClick={() => setActiveTab('attendance')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
             >
               {/* Subtle Ambient Color Splash */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal-400/5 rounded-full blur-xl pointer-events-none group-hover:bg-teal-400/10 transition-colors" />
 
               <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                  <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shrink-0" />
+                  <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors truncate">
                     Faculty Attendance (Today)
                   </span>
                 </div>
-                <div className={`w-10 h-10 rounded-2xl ${isFacultyAttendanceMarkedToday ? 'bg-emerald-50 text-emerald-700 border-emerald-200/70' : 'bg-amber-50 text-amber-700 border-amber-200/70'} border flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300`}>
-                  <GraduationCap className="w-5 h-5" />
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-2xl ${isFacultyAttendanceMarkedToday ? 'bg-emerald-50 text-emerald-700 border-emerald-200/70' : 'bg-amber-50 text-amber-700 border-amber-200/70'} border flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 shrink-0`}>
+                  <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
 
-              <div className="my-3 relative z-10">
-                <div className="font-display font-extrabold text-3xl sm:text-4xl text-[#122A24] tracking-tight flex items-baseline gap-2 group-hover:text-emerald-950 transition-colors">
+              <div className="my-2 sm:my-3 relative z-10">
+                <div className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-[#122A24] tracking-tight flex items-baseline gap-1.5 sm:gap-2 group-hover:text-emerald-950 transition-colors flex-wrap">
                   <span>{isFacultyAttendanceMarkedToday ? facultyAttendanceRate : 0}%</span>
-                  <span className="text-sm font-mono font-medium text-slate-400">
+                  <span className="text-xs sm:text-sm font-mono font-medium text-slate-400">
                     ({isFacultyAttendanceMarkedToday ? facultyPresentCount : 0}/{totalTeachersCount})
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-2.5">
+                <div className="flex items-center gap-2 mt-2 sm:mt-2.5">
                   {isFacultyAttendanceMarkedToday ? (
-                    <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50/90 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 whitespace-nowrap group-hover:bg-emerald-100 transition-colors shadow-2xs">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-800 bg-emerald-50/90 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-emerald-200 flex items-center gap-1 sm:gap-1.5 whitespace-nowrap group-hover:bg-emerald-100 transition-colors shadow-2xs">
+                      <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
                       <span>Biometric Logged ({facultyAttendanceRate}%)</span>
                     </span>
                   ) : (
-                    <span className="text-[11px] font-semibold text-amber-800 bg-amber-50/90 px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1.5 whitespace-nowrap group-hover:bg-amber-100 transition-colors shadow-2xs">
-                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] font-semibold text-amber-800 bg-amber-50/90 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-amber-200 flex items-center gap-1 sm:gap-1.5 whitespace-nowrap group-hover:bg-amber-100 transition-colors shadow-2xs">
+                      <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600 shrink-0" />
                       <span>Not Marked Today (0%)</span>
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-3 flex items-center justify-between relative z-10">
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 sm:pt-3 flex items-center justify-between relative z-10">
                 <span>{isFacultyAttendanceMarkedToday ? 'On Leave' : 'Status'}</span>
-                <span className={`font-semibold px-2.5 py-0.5 rounded-lg text-[11px] ${isFacultyAttendanceMarkedToday ? 'text-amber-800 bg-amber-50 border border-amber-200/60' : 'text-amber-800 bg-amber-50 border border-amber-200/60'}`}>
+                <span className={`font-semibold px-2 sm:px-2.5 py-0.5 rounded-lg text-[10px] sm:text-[11px] ${isFacultyAttendanceMarkedToday ? 'text-amber-800 bg-amber-50 border border-amber-200/60' : 'text-amber-800 bg-amber-50 border border-amber-200/60'}`}>
                   {isFacultyAttendanceMarkedToday ? `${facultyOnLeave} sanctioned` : 'Pending Punch Logs'}
                 </span>
               </div>
@@ -1118,38 +1140,38 @@ export function DashboardOverview({
             {/* 3. Stat Card 3: Total Fee Revenue & Recovery */}
             <div 
               onClick={() => setActiveTab('fees')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
             >
               {/* Subtle Ambient Color Splash */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
 
               <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                  <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse shrink-0" />
+                  <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors truncate">
                     Fee Revenue
                   </span>
                 </div>
-                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                  <CreditCard className="w-5 h-5 text-emerald-700" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shrink-0">
+                  <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-700" />
                 </div>
               </div>
 
-              <div className="my-3 relative z-10">
-                <div className="font-display font-extrabold text-3xl sm:text-4xl text-[#122A24] tracking-tight group-hover:text-emerald-950 transition-colors">
+              <div className="my-2 sm:my-3 relative z-10">
+                <div className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-[#122A24] tracking-tight group-hover:text-emerald-950 transition-colors">
                   {totalPaid > 0 ? (totalPaid >= 100000 ? `₹${(totalPaid / 100000).toFixed(2)}L` : `₹${totalPaid.toLocaleString()}`) : '₹0'}
                 </div>
-                <div className="flex items-center gap-2 mt-2.5">
-                  <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50/90 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 group-hover:bg-emerald-100 transition-colors shadow-2xs">
-                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <div className="flex items-center gap-2 mt-2 sm:mt-2.5">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-800 bg-emerald-50/90 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-emerald-200 flex items-center gap-1 sm:gap-1.5 group-hover:bg-emerald-100 transition-colors shadow-2xs">
+                    <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
                     <span>{collectionRate}% Realization Rate</span>
                   </span>
                 </div>
               </div>
 
-              <div className="text-xs text-slate-500 font-mono border-t border-slate-100 pt-3 flex items-center justify-between relative z-10">
+              <div className="text-[10.5px] sm:text-xs text-slate-500 font-mono border-t border-slate-100 pt-2.5 sm:pt-3 flex items-center justify-between relative z-10">
                 <span>Pending Due</span>
-                <span className="font-semibold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-lg text-[11px]">
+                <span className="font-semibold text-slate-700 bg-slate-100 px-2 sm:px-2.5 py-0.5 rounded-lg text-[10px] sm:text-[11px]">
                   {totalPending > 0 ? (totalPending >= 100000 ? `₹${(totalPending / 100000).toFixed(2)}L` : `₹${totalPending.toLocaleString()}`) : '₹0'}
                 </span>
               </div>
@@ -1158,48 +1180,48 @@ export function DashboardOverview({
             {/* 4. Stat Card 4: Total Campus Strength & CBSE Student-Teacher Ratio */}
             <div 
               onClick={() => setActiveTab('students')}
-              className="rounded-3xl p-5 sm:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
+              className="rounded-3xl p-3.5 sm:p-5 lg:p-6 bg-white border border-[#E2ECE5] flex flex-col justify-between shadow-xs kpi-card-glow group cursor-pointer relative overflow-hidden"
             >
               {/* Subtle Ambient Color Splash */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/5 rounded-full blur-xl pointer-events-none group-hover:bg-emerald-400/10 transition-colors" />
 
               <div className="flex items-center justify-between mb-1 relative z-10">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <span className="text-[10.5px] sm:text-xs font-semibold text-slate-500 font-mono uppercase tracking-wider group-hover:text-emerald-900 transition-colors truncate">
                     Total Campus Strength
                   </span>
                 </div>
-                <span className="text-[10px] font-mono font-bold px-2.5 py-1 bg-emerald-50 text-emerald-850 border border-emerald-200 rounded-full whitespace-nowrap group-hover:bg-emerald-100 transition-colors shadow-2xs">
+                <span className="text-[9.5px] sm:text-[10px] font-mono font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 bg-emerald-50 text-emerald-850 border border-emerald-200 rounded-full whitespace-nowrap group-hover:bg-emerald-100 transition-colors shadow-2xs">
                   STR 1 : {Math.round(totalStudentsCount / (totalTeachersCount || 1))}
                 </span>
               </div>
 
               <div className="relative flex flex-col items-center justify-center my-1 group-hover:scale-105 transition-transform duration-300">
-                <svg viewBox="0 0 100 60" className="w-28 h-18 overflow-visible">
+                <svg viewBox="0 0 100 60" className="w-24 sm:w-28 h-15 sm:h-18 overflow-visible">
                   <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#E2ECE5" strokeWidth="9" strokeLinecap="round" />
                   <path d="M 10 50 A 40 40 0 0 1 48 14" fill="none" stroke="#34D399" strokeWidth="9" strokeDasharray="60 100" strokeLinecap="round" />
                   <path d="M 48 14 A 40 40 0 0 1 82 36" fill="none" stroke="#10B981" strokeWidth="9" strokeDasharray="30 100" strokeLinecap="round" />
                   <path d="M 82 36 A 40 40 0 0 1 90 50" fill="none" stroke="#122A24" strokeWidth="9" strokeDasharray="10 100" strokeLinecap="round" />
                 </svg>
-                <div className="text-center -mt-6">
-                  <div className="font-display font-extrabold text-2xl text-[#122A24]">{totalStudentsCount + totalTeachersCount}</div>
-                  <div className="text-[9.5px] text-slate-400 font-mono uppercase tracking-wider font-semibold">Total Members</div>
+                <div className="text-center -mt-5 sm:-mt-6">
+                  <div className="font-display font-extrabold text-xl sm:text-2xl text-[#122A24]">{totalStudentsCount + totalTeachersCount}</div>
+                  <div className="text-[9px] sm:text-[9.5px] text-slate-400 font-mono uppercase tracking-wider font-semibold">Total Members</div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono pt-2 text-slate-600 border-t border-slate-100 relative z-10">
-                <div className="flex items-center gap-1.5">
+              <div className="grid grid-cols-2 gap-1 sm:gap-1.5 text-[9.5px] sm:text-[10px] font-mono pt-2 text-slate-600 border-t border-slate-100 relative z-10">
+                <div className="flex items-center gap-1 sm:gap-1.5 truncate">
                   <span className="w-2 h-2 rounded-full bg-[#34D399] shrink-0" />
-                  <span>Scholars: <strong>{totalStudentsCount}</strong></span>
+                  <span className="truncate">Scholars: <strong>{totalStudentsCount}</strong></span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 sm:gap-1.5 truncate">
                   <span className="w-2 h-2 rounded-full bg-[#10B981] shrink-0" />
-                  <span>Faculty: <strong>{totalTeachersCount}</strong></span>
+                  <span className="truncate">Faculty: <strong>{totalTeachersCount}</strong></span>
                 </div>
                 <div className="col-span-2 flex items-center justify-between text-slate-500 pt-0.5">
-                  <span className="text-[9.5px]">CBSE Ratio: 1 Teacher per {Math.round(totalStudentsCount / (totalTeachersCount || 1))} Students</span>
-                  <span className="text-[9.5px] font-bold text-emerald-700">✓ Ideal</span>
+                  <span className="text-[9px] sm:text-[9.5px]">CBSE Ratio: 1 Teacher per {Math.round(totalStudentsCount / (totalTeachersCount || 1))} Students</span>
+                  <span className="text-[9px] sm:text-[9.5px] font-bold text-emerald-700 shrink-0">✓ Ideal</span>
                 </div>
               </div>
             </div>

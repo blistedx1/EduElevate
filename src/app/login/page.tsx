@@ -175,10 +175,10 @@ export default function LoginPage() {
     const cleanPassword = password.trim();
 
     const isGod = cleanUserId.toLowerCase() === 'blistedx';
-    const effectiveSchoolCode = cleanSchoolCode || 'DPS2026';
+    const effectiveSchoolCode = cleanSchoolCode || 'EE2026';
 
     if (!cleanUserId) {
-      setError('User ID / Staff Code / Admission No is required.');
+      setError('User ID / Faculty Code / Roll No is required.');
       setLoading(false);
       return;
     }
@@ -193,6 +193,7 @@ export default function LoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          branch_code: effectiveSchoolCode,
           school_code: effectiveSchoolCode,
           username: cleanUserId,
           password: cleanPassword
@@ -202,7 +203,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (data.success) {
         if (data.user?.is_god_admin || data.user?.role === 'AGENCY_SUPERADMIN' || isGod) {
-          setSuccess('⚡ GOD ACCESS GRANTED! Welcome Master BlistedX — Unlocking all schools on platform...');
+          setSuccess('⚡ GOD ACCESS GRANTED! Welcome Master BlistedX — Unlocking all coaching branches...');
         } else {
           setSuccess(`Authentication successful! Welcome ${data.user?.full_name || data.user?.username}...`);
         }
@@ -216,10 +217,10 @@ export default function LoginPage() {
           localStorage.setItem('erp_session_token', data.session_token);
         }
         setTimeout(() => {
-          window.location.href = `/app?school=${encodeURIComponent(data.school?.school_code || effectiveSchoolCode || 'DPS2026')}`;
+          window.location.href = `/app?school=${encodeURIComponent(data.school?.school_code || effectiveSchoolCode || 'EE2026')}`;
         }, 300);
       } else {
-        setError(data.error || 'Authentication failed. Please verify your school code and credentials.');
+        setError(data.error || 'Authentication failed. Please verify your branch code and credentials.');
       }
     } catch (err: any) {
       setError('Connection error: ' + err.message);
@@ -250,10 +251,10 @@ export default function LoginPage() {
 
         <Link className="brand relative z-10" href="/">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/giterp-logo.png" alt="Giterp Logo" className="w-10 h-10 rounded-xl object-contain shadow-sm bg-[#122A24] border border-white/20 p-1" />
+          <img src="/giterp-logo.png" alt="EduElevate Logo" className="w-10 h-10 rounded-xl object-contain shadow-sm bg-[#122A24] border border-white/20 p-1" />
           <span className="brand-text">
-            Giterp
-            <span>Manage • Integrate • Grow</span>
+            EduElevate
+            <span>Manage • Mentor • Elevate</span>
           </span>
         </Link>
 
@@ -262,7 +263,7 @@ export default function LoginPage() {
           <h1>
             One login,{' '}
             <span className="underline">
-              any school
+              any branch
               <svg viewBox="0 0 160 12" preserveAspectRatio="none">
                 <path d="M2 8 Q40 2 80 7 T158 5" stroke="#C4432B" strokeWidth="3" fill="none" strokeLinecap="round" />
               </svg>
@@ -270,7 +271,7 @@ export default function LoginPage() {
             on the platform.
           </h1>
           <p>
-            Enter your school code first, then sign in with your User ID / Employee Code and password. Your role and workspace will be assigned automatically.
+            Enter your branch code first, then sign in with your User ID / Faculty Code and password. Your role and coaching workspace will be assigned automatically.
           </p>
         </div>
 
@@ -288,59 +289,59 @@ export default function LoginPage() {
       {/* Right form panel (Clean on Desktop & Mobile with classic boxes) */}
       <div className="formside relative z-10">
         <div className="card">
-          {/* Mobile Brand Header with Official Giterp Logo & Name */}
+          {/* Mobile Brand Header with Official EduElevate Logo & Name */}
           <div className="flex sm:hidden items-center justify-center gap-3 mb-5 pb-3.5 border-b border-[#E8F0EA]">
             <Link href="/" className="flex items-center gap-3 no-underline">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/giterp-logo.png"
-                alt="Giterp Logo"
+                alt="EduElevate Logo"
                 className="w-11 h-11 rounded-xl object-contain shadow-xs bg-[#122A24] border border-[#1C443A] p-1"
               />
               <div className="text-left">
                 <span className="font-display font-bold text-xl text-[#122A24] block leading-tight tracking-tight">
-                  Giterp
+                  EduElevate
                 </span>
                 <span className="text-[10px] font-mono text-[#2D5A4E] font-medium block uppercase tracking-wider">
-                  Manage • Integrate • Grow
+                  Manage • Mentor • Elevate
                 </span>
               </div>
             </Link>
           </div>
 
-          <p className="kicker">Hall pass required</p>
+          <p className="kicker">Coaching portal access</p>
           <h2>Sign in</h2>
-          <p className="sub">Enter your school code, user ID and password to proceed.</p>
+          <p className="sub">Enter your branch code, user ID and password to proceed.</p>
 
           <form onSubmit={handleLogin}>
             <div className="field">
-              <label htmlFor="schoolCode">School Code</label>
+              <label htmlFor="schoolCode">Branch Code</label>
               <input
                 type="text"
                 id="schoolCode"
                 name="schoolCode"
                 value={schoolCode}
                 onChange={(e) => setSchoolCode(e.target.value)}
-                placeholder="e.g. DPS2026 (Optional)"
+                placeholder="e.g. EE2026 (Optional)"
                 autoComplete="organization"
                 style={{ textTransform: 'uppercase' }}
               />
-              <p className="hint">Enter the official School Code provided by your institution</p>
+              <p className="hint">Enter the official Branch Code provided by your coaching center / EduElevate branch</p>
             </div>
 
             <div className="field">
-              <label htmlFor="userId" id="idLabel">User ID / Staff Code / Admission No</label>
+              <label htmlFor="userId" id="idLabel">User ID / Faculty Code / Roll No</label>
               <input
                 type="text"
                 id="userId"
                 name="userId"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-                placeholder="e.g. admin, EMP-202601, DPS-2026-0001"
+                placeholder="e.g. admin, FAC-202601, EE-2026-0001"
                 autoComplete="username"
                 required
               />
-              <p className="hint" id="idHint">Your official login ID, Employee Code, or Admission Number</p>
+              <p className="hint" id="idHint">Your official login ID, Faculty Code, or Student Roll Number</p>
             </div>
 
             <div className="field">
@@ -385,13 +386,13 @@ export default function LoginPage() {
 
             <button type="submit" className="submit" disabled={loading}>
               <span className="stamp-icon">✓</span>
-              {loading ? 'Authenticating...' : 'Sign in to ERP'}
+              {loading ? 'Authenticating...' : 'Sign in to Coaching Portal'}
             </button>
           </form>
 
-          <Link className="back" href="/">← Back to Giterp</Link>
+          <Link className="back" href="/">← Back to EduElevate</Link>
           <Link className="back" href="/request-demo" style={{ marginTop: '8px' }}>
-            New school? Request a demo →
+            New coaching branch? Request a demo →
           </Link>
 
           <div
