@@ -16,7 +16,7 @@ export function getCleanPhone(phone?: string): string {
 }
 
 /**
- * Returns all detected siblings for a given student in the school directory.
+ * Returns all detected siblings for a given student in the branch directory.
  * Strict CBSE matching criteria:
  * 1. Both Father AND Mother match (and both are non-empty)
  * 2. Primary 10-digit Guardian Mobile match + (Father match OR Mother match)

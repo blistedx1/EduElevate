@@ -1,7 +1,7 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 /**
  * MongoDB Data Normalization & Migration Script
- * Migrates all records to use clean unhyphenated school code 'DPS2026' and user IDs 'DPS2026001', etc.
+ * Migrates all records to use clean unhyphenated Branch Code 'DPS2026' and user IDs 'DPS2026001', etc.
  */
 require('dotenv').config();
 const { MongoClient } = require('mongodb');

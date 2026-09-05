@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -307,7 +307,7 @@ export function DashboardAgency() {
           <div className="text-center space-y-2">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-[#122A24] border-2 border-emerald-500/50 p-1.5 flex items-center justify-center shadow-lg">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/giterp-logo.png" alt="Giterp Logo" className="w-full h-full object-contain" />
+              <img src="/eduelevate-logo.png" alt="EduElevate Logo" className="w-full h-full object-contain" />
             </div>
             <div className="pt-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10.5px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300 uppercase tracking-wider">
@@ -369,7 +369,7 @@ export function DashboardAgency() {
           {/* Footer Back Link */}
           <div className="pt-4 border-t border-[#E8F0EA] text-center">
             <Link href="/app" className="text-xs text-[#2D5A4E] hover:text-[#122A24] font-medium no-underline">
-              ← Return to School ERP Workspace
+              ← Return to Coaching ERP Workspace
             </Link>
           </div>
         </div>
@@ -384,11 +384,11 @@ export function DashboardAgency() {
         <div className="flex items-center gap-4 sm:gap-6 min-w-0">
           <Link href="/" className="flex items-center gap-2 sm:gap-3 no-underline min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/giterp-logo.png" alt="Giterp Logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain bg-[#122A24] border border-[#122A24]/30 p-1 shadow-xs shrink-0" />
+            <img src="/eduelevate-logo.png" alt="EduElevate Logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain bg-[#122A24] border border-[#122A24]/30 p-1 shadow-xs shrink-0" />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <span className="font-display font-semibold text-sm sm:text-lg text-[var(--ink-navy)] tracking-tight truncate">
-                  Giterp AgencyOS
+                  EduElevate AgencyOS
                 </span>
                 <span className="hidden sm:inline-block font-mono text-[10px] sm:text-[10.5px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--board-1)] text-white font-semibold shrink-0 whitespace-nowrap">
                   Admin Console
@@ -785,7 +785,7 @@ export function DashboardAgency() {
       {/* Footer */}
       <footer className="border-t border-[var(--line)] py-7 bg-white">
         <div className="max-w-[1160px] mx-auto px-6 sm:px-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p className="m-0">Giterp AgencyOS · Multi-Tenant School ERP Cloud</p>
+          <p className="m-0">EduElevate AgencyOS · Multi-Tenant Coaching ERP Cloud</p>
           <div className="flex gap-6 text-[13px]">
             <Link href="/" className="hover:text-[var(--ink-navy)] no-underline">
               Public Home

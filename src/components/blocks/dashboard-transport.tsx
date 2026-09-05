@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -162,7 +162,7 @@ const INITIAL_ROUTES: BusRouteData[] = [
       { id: 's2', name: 'Alambagh Chauraha', scheduledTime: '08:00 AM', distanceKm: 4.2, lat: 26.8150, lng: 80.9020 },
       { id: 's3', name: 'Charbagh Railway Station', scheduledTime: '08:15 AM', distanceKm: 8.5, lat: 26.8322, lng: 80.9238 },
       { id: 's4', name: 'Chowk Chauraha (Heritage Gate)', scheduledTime: '08:30 AM', distanceKm: 13.1, lat: 26.8680, lng: 80.9050 },
-      { id: 's5', name: 'School Campus Main Gate', scheduledTime: '08:50 AM', distanceKm: 18.0, lat: 26.8520, lng: 80.9400 }
+      { id: 's5', name: 'coaching center Main Gate', scheduledTime: '08:50 AM', distanceKm: 18.0, lat: 26.8520, lng: 80.9400 }
     ],
     pathCoords: [
       { x: 50, y: 150 },
@@ -185,7 +185,7 @@ const INITIAL_ROUTES: BusRouteData[] = [
     driverStatus: 'PRESENT',
     baseSpeed: 30,
     stops: [
-      { id: 's-aft-1', name: 'School Campus Main Gate (Departure)', scheduledTime: '01:45 PM', distanceKm: 0, lat: 26.8520, lng: 80.9400 },
+      { id: 's-aft-1', name: 'coaching center Main Gate (Departure)', scheduledTime: '01:45 PM', distanceKm: 0, lat: 26.8520, lng: 80.9400 },
       { id: 's-aft-2', name: 'Chowk Chauraha (Heritage Gate)', scheduledTime: '02:05 PM', distanceKm: 4.8, lat: 26.8680, lng: 80.9050 },
       { id: 's-aft-3', name: 'Charbagh Railway Station', scheduledTime: '02:20 PM', distanceKm: 9.5, lat: 26.8322, lng: 80.9238 },
       { id: 's-aft-4', name: 'Alambagh Chauraha', scheduledTime: '02:35 PM', distanceKm: 13.8, lat: 26.8150, lng: 80.9020 },
@@ -219,7 +219,7 @@ const INITIAL_ROUTES: BusRouteData[] = [
       { id: 'r4-s5', name: 'Sunrise Villa Stop', scheduledTime: '07:45 AM', distanceKm: 12.1, lat: 26.8560, lng: 80.9450 },
       { id: 'r4-s6', name: 'Park View Stop', scheduledTime: '07:53 AM', distanceKm: 14.6, lat: 26.8610, lng: 80.9520 },
       { id: 'r4-s7', name: 'Shanti Nagar Stop', scheduledTime: '08:02 AM', distanceKm: 16.9, lat: 26.8670, lng: 80.9580 },
-      { id: 'r4-s8', name: 'Anand School Campus Gate', scheduledTime: '08:20 AM', distanceKm: 19.5, lat: 26.8720, lng: 80.9650 }
+      { id: 'r4-s8', name: 'Anand coaching center Gate', scheduledTime: '08:20 AM', distanceKm: 19.5, lat: 26.8720, lng: 80.9650 }
     ],
     pathCoords: [
       { x: 50, y: 150 },
@@ -248,7 +248,7 @@ const INITIAL_ROUTES: BusRouteData[] = [
       { id: 'g2', name: 'Patrakarpuram Chauraha', scheduledTime: '08:05 AM', distanceKm: 3.8, lat: 26.8480, lng: 80.9900 },
       { id: 'g3', name: 'Lohia Hospital Circle', scheduledTime: '08:20 AM', distanceKm: 7.2, lat: 26.8580, lng: 80.9850 },
       { id: 'g4', name: 'Polytechnic Flyover Junction', scheduledTime: '08:35 AM', distanceKm: 11.5, lat: 26.8720, lng: 80.9820 },
-      { id: 'g5', name: 'School Campus Main Gate', scheduledTime: '08:50 AM', distanceKm: 16.2, lat: 26.8520, lng: 80.9400 }
+      { id: 'g5', name: 'coaching center Main Gate', scheduledTime: '08:50 AM', distanceKm: 16.2, lat: 26.8520, lng: 80.9400 }
     ],
     pathCoords: [
       { x: 40, y: 130 },
@@ -273,7 +273,7 @@ const INITIAL_ROUTES: BusRouteData[] = [
       { id: 'i1', name: 'Indira Nagar Block C', scheduledTime: '08:00 AM', distanceKm: 0, lat: 26.8750, lng: 80.9850 },
       { id: 'i2', name: 'Munshipulia Metro Station', scheduledTime: '08:15 AM', distanceKm: 3.2, lat: 26.8820, lng: 80.9920 },
       { id: 'i3', name: 'Kalyanpur Crossing', scheduledTime: '08:30 AM', distanceKm: 6.8, lat: 26.8900, lng: 80.9780 },
-      { id: 'i4', name: 'School Campus Main Gate', scheduledTime: '08:45 AM', distanceKm: 11.4, lat: 26.8520, lng: 80.9400 }
+      { id: 'i4', name: 'coaching center Main Gate', scheduledTime: '08:45 AM', distanceKm: 11.4, lat: 26.8520, lng: 80.9400 }
     ],
     pathCoords: [
       { x: 60, y: 160 },
@@ -422,7 +422,7 @@ export function DashboardTransport({
     stops: [
       { id: '1', name: '', scheduledTime: '07:30 AM', distanceKm: 0 },
       { id: '2', name: '', scheduledTime: '08:00 AM', distanceKm: 5 },
-      { id: '3', name: 'School Campus Main Gate', scheduledTime: '08:30 AM', distanceKm: 12 }
+      { id: '3', name: 'coaching center Main Gate', scheduledTime: '08:30 AM', distanceKm: 12 }
     ]
   });
 
@@ -446,7 +446,7 @@ export function DashboardTransport({
       initialStops = [
         {
           id: `s-aft-start-${Date.now()}`,
-          name: schoolStop?.name ? `${schoolStop.name} (Departure)` : 'School Campus Main Gate',
+          name: schoolStop?.name ? `${schoolStop.name} (Departure)` : 'coaching center Main Gate',
           scheduledTime: '01:45 PM',
           distanceKm: 0,
           lat: schoolStop?.lat || 26.8520,
@@ -463,7 +463,7 @@ export function DashboardTransport({
       ];
     } else if (targetShift === 'AFTERNOON') {
       initialStops = [
-        { id: 's-aft-1', name: 'School Campus Main Gate (Departure)', scheduledTime: '01:45 PM', distanceKm: 0, lat: 26.8520, lng: 80.9400 },
+        { id: 's-aft-1', name: 'coaching center Main Gate (Departure)', scheduledTime: '01:45 PM', distanceKm: 0, lat: 26.8520, lng: 80.9400 },
         { id: 's-aft-2', name: 'Chowk Chauraha (Heritage Gate)', scheduledTime: '02:05 PM', distanceKm: 4.8, lat: 26.8680, lng: 80.9050 },
         { id: 's-aft-3', name: 'Charbagh Railway Station', scheduledTime: '02:20 PM', distanceKm: 9.5, lat: 26.8322, lng: 80.9238 },
         { id: 's-aft-4', name: 'Alambagh Chauraha', scheduledTime: '02:35 PM', distanceKm: 13.8, lat: 26.8150, lng: 80.9020 },
@@ -471,7 +471,7 @@ export function DashboardTransport({
       ];
     } else if (targetShift === 'EVENING') {
       initialStops = [
-        { id: 's-eve-1', name: 'School Campus Main Gate (Campus Gate)', scheduledTime: '04:30 PM', distanceKm: 0, lat: 26.8520, lng: 80.9400 },
+        { id: 's-eve-1', name: 'coaching center Main Gate (Campus Gate)', scheduledTime: '04:30 PM', distanceKm: 0, lat: 26.8520, lng: 80.9400 },
         { id: 's-eve-2', name: 'Polytechnic Flyover Express Hub', scheduledTime: '04:50 PM', distanceKm: 5.5, lat: 26.8720, lng: 80.9820 },
         { id: 's-eve-3', name: 'Gomti Nagar Extension Arterial Hub', scheduledTime: '05:10 PM', distanceKm: 11.2, lat: 26.8350, lng: 80.9980 },
         { id: 's-eve-4', name: 'City Terminal Junction', scheduledTime: '05:30 PM', distanceKm: 16.5, lat: 26.8378, lng: 80.8872 }
@@ -482,7 +482,7 @@ export function DashboardTransport({
         { id: '2', name: 'Alambagh Chauraha', scheduledTime: '08:00 AM', distanceKm: 4.5, lat: 26.8150, lng: 80.9020 },
         { id: '3', name: 'Charbagh Station', scheduledTime: '08:15 AM', distanceKm: 8.5, lat: 26.8322, lng: 80.9238 },
         { id: '4', name: 'Chowk Chauraha', scheduledTime: '08:30 AM', distanceKm: 13.0, lat: 26.8680, lng: 80.9050 },
-        { id: '5', name: 'School Campus Main Gate', scheduledTime: '08:50 AM', distanceKm: 18.0, lat: 26.8520, lng: 80.9400 }
+        { id: '5', name: 'coaching center Main Gate', scheduledTime: '08:50 AM', distanceKm: 18.0, lat: 26.8520, lng: 80.9400 }
       ];
     }
 
@@ -990,7 +990,7 @@ export function DashboardTransport({
     }
 
     if (activeShift === 'AFTERNOON') {
-      // Reverse order: originates at School Campus, visits residential stops in reverse to drop kids home
+      // Reverse order: originates at coaching center, visits residential stops in reverse to drop kids home
       const schoolStop = baseStops[baseStops.length - 1];
       const otherStops = baseStops.slice(0, baseStops.length - 1).reverse();
       const dropStops: RouteStop[] = [
@@ -1946,7 +1946,7 @@ export function DashboardTransport({
                 Route Logistics &amp; Driver Studio
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Configure official school bus routes, intermediate stops, arrival timings, and driver contact assignments.
+                Configure official center transport routes, intermediate stops, arrival timings, and driver contact assignments.
               </p>
             </div>
 
@@ -2949,7 +2949,7 @@ export function DashboardTransport({
                               )}
                             </div>
                             <span className="text-[11px] text-slate-400 font-medium block">
-                              {isFinalDropPoint ? (activeShift === 'MORNING' ? 'School Campus Main Arrival' : 'Shift Final Drop Terminus') : idx === 0 && activeShift !== 'MORNING' ? 'Campus Departure Gate' : `Stop #${idx + 1}`}
+                              {isFinalDropPoint ? (activeShift === 'MORNING' ? 'coaching center Main Arrival' : 'Shift Final Drop Terminus') : idx === 0 && activeShift !== 'MORNING' ? 'Campus Departure Gate' : `Stop #${idx + 1}`}
                             </span>
                           </div>
                         </div>
@@ -3084,7 +3084,7 @@ export function DashboardTransport({
                       Next Approaching Stop
                     </span>
                     <h4 className="font-bold text-base text-[#122A24] leading-tight">
-                      {nextDriverStop?.name || 'School Campus'}
+                      {nextDriverStop?.name || 'coaching center'}
                     </h4>
                     <p className="text-xs text-slate-500 font-medium mt-0.5">
                       Distance: <strong className="text-slate-800 font-mono">{liveDistanceToNextKm} km</strong> away &bull; Scheduled: {nextDriverStop?.scheduledTime}
@@ -3506,7 +3506,7 @@ export function DashboardTransport({
                     EMERGENCY DRIVER SOS
                   </h3>
                   <p className="text-xs text-slate-600">
-                    One-tap priority emergency hotline for school bus drivers in distress:
+                    One-tap priority emergency hotline for center transport drivers in distress:
                   </p>
                 </div>
 
@@ -3740,10 +3740,10 @@ export function DashboardTransport({
                 <Shield className="w-3.5 h-3.5" /> Parent &amp; Guardian Live Portal
               </span>
               <h2 className="font-display font-extrabold text-xl text-[#122A24] mt-2">
-                Live School Bus Arrival Radar
+                Live center transport Arrival Radar
               </h2>
               <p className="text-xs text-slate-500">
-                Track your ward&apos;s assigned school bus, distance remaining to your bus stop, and instant arrival ETA.
+                Track your ward&apos;s assigned center transport, distance remaining to your bus stop, and instant arrival ETA.
               </p>
             </div>
 

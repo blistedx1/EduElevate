@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
 
@@ -25,7 +25,7 @@ async function updateNoticesRefNo() {
       else matter = 'ACAD';
     }
     
-    // Format: FIRST SCHOOL NAME (DPS)/YEAR(2026)/DATE(30/8)/MATTER/0001
+    // Format: FIRST Center Name (DPS)/YEAR(2026)/DATE(30/8)/MATTER/0001
     const refNo = `DPS/2026/30/8/${matter}/${String(count).padStart(4, '0')}`;
     const date = n.date || (n.created_at ? n.created_at.split('T')[0] : '2026-08-30');
     const createdAt = n.created_at || new Date().toISOString();

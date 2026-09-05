@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
 import { sendWebPushNotification } from '@/lib/web-push';
 
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       url = '/app',
       audience = 'ALL',
       urgent = false,
-      senderName = 'School Administration',
+      senderName = 'Coaching Administration',
       senderRole = 'ADMIN'
     } = body;
 

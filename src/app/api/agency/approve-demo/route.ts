@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
 import { Database } from '@/lib/db';
 import nodemailer from 'nodemailer';
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         );
 
         await transporter.sendMail({
-          from: `"Giterp ERP" <${process.env.SMTP_USER}>`,
+          from: `"EduElevate ERP" <${process.env.SMTP_USER}>`,
           to: originalReq.email,
           subject: `🎉 Your EduElevate Coaching Account is Ready (${result.school.school_name})`,
           html: `

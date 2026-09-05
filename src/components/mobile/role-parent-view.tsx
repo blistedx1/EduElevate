@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState } from 'react';
@@ -99,10 +99,10 @@ export default function RoleParentView({ activeTab, setActiveTab }: RoleParentVi
     fetchRecent();
     const interval = setInterval(fetchRecent, 20000);
     const onLivePush = () => fetchRecent();
-    window.addEventListener('giterp_broadcast', onLivePush);
+    window.addEventListener('eduelevate_broadcast', onLivePush);
     return () => {
       clearInterval(interval);
-      window.removeEventListener('giterp_broadcast', onLivePush);
+      window.removeEventListener('eduelevate_broadcast', onLivePush);
     };
   }, []);
 
@@ -198,7 +198,7 @@ export default function RoleParentView({ activeTab, setActiveTab }: RoleParentVi
 
   // Bus Stop timeline
   const busStops = [
-    { name: 'DPS School Campus (Start)', time: '02:00 PM', passed: true },
+    { name: 'DPS coaching center (Start)', time: '02:00 PM', passed: true },
     { name: 'South Ext Ring Road Stop', time: '02:18 PM', passed: true },
     { name: 'Green Park Main Gate (Your Stop)', time: '02:26 PM', current: true, eta: '4 mins away' },
     { name: 'Hauz Khas Metro Junction', time: '02:35 PM', passed: false },
@@ -252,7 +252,7 @@ export default function RoleParentView({ activeTab, setActiveTab }: RoleParentVi
           ───────────────────────────────────────────────────────────── */}
       {activeTab === 'home' && (
         <div className="space-y-4 animate-fade-in">
-          {/* Latest School Broadcast Alert Card for Parents */}
+          {/* Latest coaching broadcast Alert Card for Parents */}
           {recentBroadcasts.length > 0 && (
             <div className={`p-4 rounded-2xl border shadow-sm transition-all ${
               recentBroadcasts[0].urgent
@@ -819,7 +819,7 @@ export default function RoleParentView({ activeTab, setActiveTab }: RoleParentVi
                 <QrCode className="w-10 h-10 text-white" />
                 <div>
                   <div className="text-xs font-bold text-white">Smart RFID Gate Pass</div>
-                  <div className="text-[9px] text-neutral-400">Scan at School Bus & Main Gate Turnstile</div>
+                  <div className="text-[9px] text-neutral-400">Scan at center transport & Main Gate Turnstile</div>
                 </div>
               </div>
               <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950 px-2 py-1 rounded border border-emerald-800">

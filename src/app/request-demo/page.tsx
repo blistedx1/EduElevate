@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState } from 'react';
@@ -64,7 +64,7 @@ export default function RequestDemoPage() {
       <div className="panel">
         <Link className="brand" href="/">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/giterp-logo.png" alt="EduElevate Logo" className="w-10 h-10 rounded-xl object-contain shadow-sm bg-[#122A24] border border-white/20 p-1" />
+          <img src="/eduelevate-logo.png" alt="EduElevate Logo" className="w-10 h-10 rounded-xl object-contain shadow-sm bg-[#122A24] border border-white/20 p-1" />
           <span className="brand-text">
             EduElevate
             <span>Manage • Mentor • Elevate</span>
@@ -220,7 +220,7 @@ export default function RequestDemoPage() {
             )}
           </form>
 
-          <Link className="back" href="/">← Back to Giterp</Link>
+          <Link className="back" href="/">← Back to EduElevate</Link>
         </div>
       </div>
     </div>

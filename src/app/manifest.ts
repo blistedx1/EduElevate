@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {

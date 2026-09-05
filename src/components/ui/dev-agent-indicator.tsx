@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -69,7 +69,7 @@ export default function DevAgentIndicator() {
     if (typeof window !== 'undefined') {
       const keys = Object.keys(localStorage);
       keys.forEach(k => {
-        if (k.startsWith('giterp_') || k === 'current_school' || k === 'current_user') {
+        if (k.startsWith('eduelevate_') || k === 'current_school' || k === 'current_user') {
           localStorage.removeItem(k);
         }
       });

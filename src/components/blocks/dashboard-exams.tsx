@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -2475,7 +2475,7 @@ export function DashboardExams({
               {isTeacher && (
                 <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 font-medium flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <span>Faculty Permission: Teachers can schedule classroom unit tests and quizzes. Official School Examinations are scheduled by School Administration.</span>
+                  <span>Faculty Permission: Teachers can schedule classroom unit tests and quizzes. Official School Examinations are scheduled by Coaching Administration.</span>
                 </div>
               )}
 
@@ -4575,7 +4575,7 @@ export function DashboardExams({
             
             {/* Broadsheet Banner Header */}
             <div className="border border-[#122A24]/30 rounded-2xl p-4 sm:p-5 space-y-3 bg-[#FCFDFC]">
-              {/* Row 1: School Name + Session | CONSOLIDATION SHEET | Class Teacher */}
+              {/* Row 1: Center Name + Session | CONSOLIDATION SHEET | Class Teacher */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8F0EA] pb-3">
                 <div className="flex items-center gap-2 font-display font-black text-xs sm:text-sm text-[#122A24] tracking-tight">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0" />

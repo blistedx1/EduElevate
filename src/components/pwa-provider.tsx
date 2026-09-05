@@ -196,7 +196,7 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
             }
           }
           if (event.data && event.data.type === 'NEW_BROADCAST') {
-            window.dispatchEvent(new CustomEvent('giterp_broadcast', { detail: event.data.payload }));
+            window.dispatchEvent(new CustomEvent('eduelevate_broadcast', { detail: event.data.payload }));
           }
         };
         navigator.serviceWorker.addEventListener('message', handleSwMessage);

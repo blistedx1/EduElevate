@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -142,7 +142,7 @@ export function DashboardVisitorGate({
       parent_phone: '9811223344',
       escort_relation: 'Father',
       reason: 'Sudden high fever (Infirmary Medical Referral)',
-      authorized_by: 'Head of School / Vice Principal',
+      authorized_by: 'Center Director / Vice Principal',
       issued_at: '11:15 AM',
       status: 'DEPARTED',
       date: new Date().toISOString().split('T')[0]

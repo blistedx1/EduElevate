@@ -1,10 +1,10 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 /**
  * WhatsApp & SMS Automated Communication Utility
  * Formats high-conversion institutional messages and provides instant WhatsApp direct links
  */
 
-// Clean phone numbers into international format (defaulting to +91 for Indian CBSE schools)
+// Clean phone numbers into international format (defaulting to +91 for Indian EduElevate Coachings)
 export function sanitizePhoneForWhatsApp(phone: string): string {
   if (!phone) return '';
   let clean = phone.replace(/[^0-9]/g, '');
@@ -60,7 +60,7 @@ export interface FeeReceiptParams {
 export function buildFeeReceiptText(params: FeeReceiptParams): string {
   return `🧾 *FEE PAYMENT ACKNOWLEDGEMENT — ${params.schoolName.toUpperCase()}*\n\n` +
     `Dear Parent,\n\n` +
-    `We gratefully acknowledge the receipt of school fees for your ward:\n` +
+    `We gratefully acknowledge the receipt of coaching fees for your ward:\n` +
     `👤 *Student:* ${params.studentName} (${params.className})\n` +
     `🔢 *Receipt No:* ${params.receiptNo}\n` +
     `💵 *Amount Received:* ₹${params.paidAmount.toLocaleString('en-IN')}\n` +
@@ -84,7 +84,7 @@ export function buildMorningAbsentText(params: MorningAbsentParams): string {
   return `⚠️ *MORNING ATTENDANCE ALERT — ${params.schoolName.toUpperCase()}*\n\n` +
     `Dear Parent/Guardian,\n\n` +
     `Your ward *${params.studentName}* of *${params.className} - Section ${params.section}* has been marked *ABSENT* during morning roll call today (${params.date}).\n\n` +
-    `If this absence is unintentional or you have not submitted a prior leave application, please contact the School Reception immediately for child safety verification.\n\n` +
+    `If this absence is unintentional or you have not submitted a prior leave application, please contact the Center Reception immediately for child safety verification.\n\n` +
     `_Student Welfare Desk, ${params.schoolName}_`;
 }
 

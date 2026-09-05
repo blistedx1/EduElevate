@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import { apiFetch } from '@/lib/api-client';
@@ -206,11 +206,11 @@ export default function MobileShell({
       }
     };
 
-    window.addEventListener('giterp_broadcast', handleBroadcastEvent);
+    window.addEventListener('eduelevate_broadcast', handleBroadcastEvent);
 
     return () => {
       clearInterval(timer);
-      window.removeEventListener('giterp_broadcast', handleBroadcastEvent);
+      window.removeEventListener('eduelevate_broadcast', handleBroadcastEvent);
     };
   }, []);
 
@@ -278,7 +278,7 @@ export default function MobileShell({
           })
         });
 
-        setPushMessage('🎉 Web Push active! You will receive all school broadcasts instantly.');
+        setPushMessage('🎉 Web Push active! You will receive all coaching broadcasts instantly.');
       } else {
         setPushMessage('✅ Notifications active on this device!');
       }
@@ -376,10 +376,10 @@ export default function MobileShell({
       <header className="w-full max-w-5xl px-4 py-3 mb-2 hidden md:flex items-center justify-between bg-neutral-800/80 backdrop-blur border border-neutral-700/60 rounded-2xl text-white shadow-xl">
         <div className="flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/giterp-logo.png" alt="Giterp Logo" className="w-9 h-9 rounded-xl object-contain bg-[#122A24] border border-white/20 p-1 shadow-md" />
+          <img src="/eduelevate-logo.png" alt="EduElevate Logo" className="w-9 h-9 rounded-xl object-contain bg-[#122A24] border border-white/20 p-1 shadow-md" />
           <div>
             <h1 className="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
-              Giterp Mobile Native ERP
+              EduElevate Mobile Native ERP
               <span className="text-[10px] uppercase font-bold tracking-widest bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30">
                 PWA / Native Shell
               </span>
@@ -526,7 +526,7 @@ export default function MobileShell({
                 </button>
               </div>
               <p className="text-xs text-neutral-500 mb-4">
-                Experience Giterp ERP through the customized views tailored for each school stakeholder.
+                Experience EduElevate ERP through the customized views tailored for each school stakeholder.
               </p>
 
               <div className="space-y-2.5">
@@ -732,7 +732,7 @@ export default function MobileShell({
                       <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-2">
                         <Bus className="w-4 h-4" />
                       </div>
-                      <div className="text-xs font-bold text-blue-950">Track School Bus</div>
+                      <div className="text-xs font-bold text-blue-950">Track center transport</div>
                       <div className="text-[10px] text-blue-700">Live GPS & ETA alert</div>
                     </button>
 

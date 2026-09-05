@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState } from 'react';
@@ -119,7 +119,7 @@ export default function AppInfoModal({ isOpen, onClose }: AppInfoModalProps) {
 
             <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
               <div className="text-[10px] text-slate-400 uppercase font-bold">Deployment Host</div>
-              <div className="font-bold text-[#122A24]">giterp.vercel.app</div>
+              <div className="font-bold text-[#122A24]">eduelevate.vercel.app</div>
             </div>
           </div>
 

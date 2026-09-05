@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -713,7 +713,7 @@ export const DashboardCertificates: React.FC<DashboardCertificatesProps> = ({
   // Custom Parameters
   const [issueDate, setIssueDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [certRefPrefix, setCertRefPrefix] = useState<string>(`CERT-${selectedSession.replace(/[^0-9]/g, '').slice(0, 4)}-${Math.floor(1000 + Math.random() * 9000)}`);
-  const [signatoryTitle, setSignatoryTitle] = useState<string>('Principal / Head of School');
+  const [signatoryTitle, setSignatoryTitle] = useState<string>('Principal / Center Director');
   const [customRemarks, setCustomRemarks] = useState<string>('');
 
   // Modals & QR Scan Simulator
@@ -839,7 +839,7 @@ export const DashboardCertificates: React.FC<DashboardCertificatesProps> = ({
 
   // Helper to generate the exact attendance payload URL
   const getAttendancePayload = (s: Student) => {
-    return `giterp://attend?school=${encodeURIComponent(selectedSchool?.school_code || 'DPS2026')}&student_id=${s.id}&adm_no=${encodeURIComponent(s.admission_no || s.id)}&name=${encodeURIComponent(s.full_name)}&action=MARK_PRESENT`;
+    return `eduelevate://attend?school=${encodeURIComponent(selectedSchool?.school_code || 'DPS2026')}&student_id=${s.id}&adm_no=${encodeURIComponent(s.admission_no || s.id)}&name=${encodeURIComponent(s.full_name)}&action=MARK_PRESENT`;
   };
 
   return (

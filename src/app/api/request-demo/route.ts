@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
 import { Database } from '@/lib/db';
 import { sendDemoRequestEmail } from '@/lib/email';
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
     if (!schoolName || !contactName || !email) {
       return NextResponse.json(
-        { success: false, error: 'School name, contact name, and email are required.' },
+        { success: false, error: 'Center Name, contact name, and email are required.' },
         { status: 400 }
       );
     }

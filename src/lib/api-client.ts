@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 /**
  * apiFetch: drop-in client-side replacement for fetch()
  * Automatically attaches the signed session token from localStorage as an Authorization: Bearer header.

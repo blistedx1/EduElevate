@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -337,7 +337,7 @@ export function DashboardStudentPortal({
           {examSubTab === 'report_card' ? (
             /* OFFICIAL CBSE FORMAT REPORT CARD */
             <div className="bg-white rounded-3xl border-2 border-[#DCE8E0] shadow-sm p-6 sm:p-10 space-y-6 print:p-0 print:border-none">
-              {/* Header: School Affiliation & Crest */}
+              {/* Header: Institute Accreditation & Crest */}
               <div className="text-center pb-5 border-b-2 border-[#122A24]/10 space-y-1 relative">
                 <div className="text-[11px] font-mono uppercase tracking-widest text-[#2D5A4E] font-bold">
                   Central Board of Secondary Education (CBSE) • New Delhi
@@ -1205,7 +1205,7 @@ export function DashboardStudentPortal({
                       <td className="py-2.5 px-3 text-slate-400">3</td>
                       <td className="py-2.5 px-3">
                         <span className="font-semibold text-slate-900">Transportation / Bus Route Charge</span>
-                        <div className="text-[11px] text-slate-500">GPS verified institutional school bus transport</div>
+                        <div className="text-[11px] text-slate-500">GPS verified institutional center transport transport</div>
                       </td>
                       <td className="py-2.5 px-3 text-right font-semibold tabular-nums text-slate-900">
                         ₹{(Number(activeReceiptModal.transportFee ?? activeReceiptModal.transport_fee) || 0).toLocaleString('en-IN')}

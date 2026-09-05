@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState } from 'react';
@@ -115,10 +115,10 @@ export default function RoleTeacherView({ activeTab, setActiveTab }: RoleTeacher
     fetchRecent();
     const interval = setInterval(fetchRecent, 20000);
     const onLivePush = () => fetchRecent();
-    window.addEventListener('giterp_broadcast', onLivePush);
+    window.addEventListener('eduelevate_broadcast', onLivePush);
     return () => {
       clearInterval(interval);
-      window.removeEventListener('giterp_broadcast', onLivePush);
+      window.removeEventListener('eduelevate_broadcast', onLivePush);
     };
   }, []);
 
@@ -180,7 +180,7 @@ export default function RoleTeacherView({ activeTab, setActiveTab }: RoleTeacher
           ───────────────────────────────────────────────────────────── */}
       {activeTab === 'home' && (
         <div className="space-y-4 animate-fade-in">
-          {/* Latest School Broadcast Alert Card */}
+          {/* Latest coaching broadcast Alert Card */}
           {recentBroadcasts.length > 0 && (
             <div className={`p-4 rounded-2xl border shadow-sm transition-all ${
               recentBroadcasts[0].urgent

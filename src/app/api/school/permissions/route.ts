@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
 import { Database } from '@/lib/db';
 import { DEFAULT_ROLE_PERMISSIONS, RolePermissionMatrix } from '@/lib/types';
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     const { school_id, permissions } = body;
 
     if (!school_id) {
-      return NextResponse.json({ success: false, error: 'School ID is required' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Branch ID is required' }, { status: 400 });
     }
 
     if (!permissions || typeof permissions !== 'object') {

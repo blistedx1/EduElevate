@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -32,7 +32,7 @@ export function DashboardBroadcast({ schoolName = 'DPS International — CBSE', 
   const isDriver = userRole === 'DRIVER';
   const [targetAudience, setTargetAudience] = useState<'ALL' | 'PARENTS' | 'FACULTY' | 'BUS_PARENTS'>('ALL');
   const [broadcastTitle, setBroadcastTitle] = useState('Heavy Rain Alert: School Dispersal Schedule Adjusted');
-  const [broadcastBody, setBroadcastBody] = useState('Due to city meteorological forecast of torrential rain, school will disperse at 01:00 PM today. School buses will depart accordingly.');
+  const [broadcastBody, setBroadcastBody] = useState('Due to city meteorological forecast of torrential rain, school will disperse at 01:00 PM today. center transportes will depart accordingly.');
   const [isUrgent, setIsUrgent] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -315,7 +315,7 @@ export function DashboardBroadcast({ schoolName = 'DPS International — CBSE', 
       // Direct local notification test
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
-          new Notification('🔔 CBSE School ERP Alert Test', {
+          new Notification('🔔 EduElevate Coaching ERP Alert Test', {
             body: 'This is a live Web Push notification sent through the Service Worker!',
             icon: '/icons/icon-192.png',
             badge: '/icons/icon.svg',
@@ -328,7 +328,7 @@ export function DashboardBroadcast({ schoolName = 'DPS International — CBSE', 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: '🔔 CBSE School ERP Alert Test',
+          title: '🔔 EduElevate Coaching ERP Alert Test',
           body: 'This is a live Web Push notification sent through the Service Worker even when the app is minimized!',
           url: '/app',
           urgent: true
@@ -492,7 +492,7 @@ export function DashboardBroadcast({ schoolName = 'DPS International — CBSE', 
                 <Radio className="w-6 h-6 text-emerald-700" />
               </div>
               <h3 className="font-display font-bold text-base text-[#122A24]">
-                Notice Board &amp; Official School Broadcasts
+                Notice Board &amp; Official coaching broadcasts
               </h3>
               <p className="text-xs text-slate-500 max-w-md mx-auto">
                 Bus Drivers have read-only access to broadcast notices. You can view all school-wide announcements, route advisories, and weather alerts in the live feed.

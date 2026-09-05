@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 const { Client } = require('pg');
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
@@ -118,7 +118,7 @@ const freshHolidays = [
 
 async function resetAllDataToFreshDps() {
   console.log('===============================================================');
-  console.log('🧹 RESETTING ALL DEMO DATA TO FRESH DELHI PUBLIC SCHOOL ERP');
+  console.log('🧹 RESETTING ALL DEMO DATA TO FRESH DELHI PUBLIC Coaching ERP');
   console.log('===============================================================\n');
 
   // 1. RESET COCKROACHDB
@@ -256,7 +256,7 @@ async function resetAllDataToFreshDps() {
 
   console.log('\n===============================================================');
   console.log('🎉 SUCCESS: FRESH DELHI PUBLIC SCHOOL (DPS) ERP INITIALIZED!');
-  console.log('  • School Name        : Delhi Public School (DPS2026)');
+  console.log('  • Center Name        : Delhi Public School (DPS2026)');
   console.log('  • Board / Affiliation: CBSE Affiliation No. CBSE/AFF/2130001');
   console.log('  • Academic Session   : 2026-27');
   console.log('  • Classrooms Ready   : Nursery to Class 12 (All Streams & Sections)');

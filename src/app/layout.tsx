@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import PWAProvider from '@/components/pwa-provider';
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#232e1a',
+  themeColor: '#122A24',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,

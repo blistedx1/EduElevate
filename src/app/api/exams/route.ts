@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
 import { Database } from '@/lib/db';
 import { ScheduledExamItem } from '@/lib/types';
@@ -28,21 +28,21 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // 🔒 RESTRICTION: Teachers can ONLY schedule classroom tests and unit quizzes (CLASS_TEST).
-    // Official School Examinations (SCHOOL_EXAM) can ONLY be scheduled by School Administration.
+    // Official School Examinations (SCHOOL_EXAM) can ONLY be scheduled by Coaching Administration.
     if (auth.role === 'TEACHER') {
       if (Array.isArray(body.exams)) {
         const hasSchoolExam = body.exams.some((e: any) => e.type === 'SCHOOL_EXAM' || !e.type);
         if (hasSchoolExam) {
           return NextResponse.json({
             success: false,
-            error: 'Access Denied: Teachers can only schedule classroom tests and unit quizzes. Official School Examinations must be scheduled by School Administration.'
+            error: 'Access Denied: Teachers can only schedule classroom tests and unit quizzes. Official School Examinations must be scheduled by Coaching Administration.'
           }, { status: 403 });
         }
       } else {
         if (body.type === 'SCHOOL_EXAM' || !body.type) {
           return NextResponse.json({
             success: false,
-            error: 'Access Denied: Teachers can only schedule classroom tests and unit quizzes. Official School Examinations must be scheduled by School Administration.'
+            error: 'Access Denied: Teachers can only schedule classroom tests and unit quizzes. Official School Examinations must be scheduled by Coaching Administration.'
           }, { status: 403 });
         }
       }

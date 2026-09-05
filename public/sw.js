@@ -14,6 +14,7 @@ const PRECACHE_ASSETS = [
   '/icon.png',
   '/apple-touch-icon.png',
   '/logo.png',
+  '/eduelevate-logo.png',
   '/icons/icon.svg',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
@@ -234,7 +235,7 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     Promise.all([
       // Show the OS-level notification
-      self.registration.showNotification(data.title || 'Giterp School ERP', notificationOptions),
+      self.registration.showNotification(data.title || 'EduElevate Coaching ERP', notificationOptions),
       // Forward payload to all open app tabs in real time (in-app toast)
       self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
         clientList.forEach((client) => {

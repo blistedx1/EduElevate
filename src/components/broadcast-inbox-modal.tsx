@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -45,7 +45,7 @@ interface BroadcastInboxModalProps {
   userName?: string;
 }
 
-const STORAGE_KEY = 'giterp_read_broadcast_ids_v1';
+const STORAGE_KEY = 'eduelevate_read_broadcast_ids_v1';
 
 export function getReadBroadcastIds(): Set<string> {
   if (typeof window === 'undefined') return new Set();
@@ -129,7 +129,7 @@ export default function BroadcastInboxModal({
             url: payload.url || '/app',
             audience: payload.audience || 'ALL',
             urgent: !!payload.urgent,
-            senderName: payload.senderName || 'School Administration',
+            senderName: payload.senderName || 'Coaching Administration',
             timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
             createdAt: new Date().toISOString()
           };
@@ -141,8 +141,8 @@ export default function BroadcastInboxModal({
     };
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('giterp_broadcast', handleLiveBroadcast);
-      return () => window.removeEventListener('giterp_broadcast', handleLiveBroadcast);
+      window.addEventListener('eduelevate_broadcast', handleLiveBroadcast);
+      return () => window.removeEventListener('eduelevate_broadcast', handleLiveBroadcast);
     }
   }, []);
 
@@ -422,7 +422,7 @@ export default function BroadcastInboxModal({
           {loading && broadcasts.length === 0 ? (
             <div className="py-16 flex flex-col items-center justify-center text-slate-400 gap-3">
               <div className="w-8 h-8 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
-              <span className="text-xs font-mono">Loading school broadcast repository...</span>
+              <span className="text-xs font-mono">Loading coaching broadcast repository...</span>
             </div>
           ) : filteredBroadcasts.length === 0 ? (
             <div className="py-16 px-4 text-center flex flex-col items-center justify-center text-slate-400 gap-2">
@@ -518,7 +518,7 @@ export default function BroadcastInboxModal({
                   <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                     <span className="flex items-center gap-1 truncate text-slate-500">
                       <ShieldAlert className="w-3 h-3 text-emerald-700 shrink-0" />
-                      <span>{item.senderName || 'School Administration'}</span>
+                      <span>{item.senderName || 'Coaching Administration'}</span>
                     </span>
 
                     <div className="flex items-center gap-2 shrink-0">

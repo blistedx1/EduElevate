@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import { apiFetch } from '@/lib/api-client';
@@ -66,8 +66,8 @@ export default function RolePrincipalView({ activeTab, setActiveTab }: RolePrinc
 
   // Broadcast State
   const [broadcastAudience, setBroadcastAudience] = useState<'ALL' | 'PARENTS' | 'TEACHERS' | 'TRANSPORT'>('ALL');
-  const [broadcastTitle, setBroadcastTitle] = useState('Heavy Rain Alert: School Timings Adjusted');
-  const [broadcastBody, setBroadcastBody] = useState('Due to city meteorological forecast of torrential rain, school will disperse at 01:00 PM today. School buses will depart accordingly.');
+  const [broadcastTitle, setBroadcastTitle] = useState('Heavy Rain Alert: Batch Timings Adjusted');
+  const [broadcastBody, setBroadcastBody] = useState('Due to city meteorological forecast of torrential rain, school will disperse at 01:00 PM today. center transportes will depart accordingly.');
   const [isUrgent, setIsUrgent] = useState(true);
   const [isSendingBroadcast, setIsSendingBroadcast] = useState(false);
   const [broadcastSuccessMsg, setBroadcastSuccessMsg] = useState<string | null>(null);

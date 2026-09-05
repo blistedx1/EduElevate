@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React from 'react';
@@ -254,7 +254,7 @@ export function InstitutionalReportModal({
             <div className="border-b-2 border-[#122A24] pb-5 space-y-2">
               <div className="flex items-start justify-between gap-4">
                 
-                {/* School Logo / Crest Placeholder */}
+                {/* Center logo / Crest Placeholder */}
                 <div className="w-16 h-16 rounded-2xl bg-[#122A24] text-white flex items-center justify-center shrink-0 shadow-xs">
                   <Building2 className="w-9 h-9 text-emerald-400" />
                 </div>
@@ -386,7 +386,7 @@ export function InstitutionalReportModal({
             <div className="pt-8 border-t border-slate-300 space-y-6 report-signature-block">
               <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
                 <div>
-                  * This is an official institutional report generated from School ERP Core.
+                  * This is an official institutional report generated from Coaching ERP Core.
                 </div>
                 <div>
                   Status: <strong>VERIFIED &amp; LOCKED</strong>

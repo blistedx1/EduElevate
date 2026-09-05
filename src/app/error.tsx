@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useEffect } from 'react';
@@ -12,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('[Giterp Application Error Caught]:', error);
+    console.error('[EduElevate Application Error Caught]:', error);
   }, [error]);
 
   const handleClearAndReload = () => {
@@ -62,7 +62,7 @@ export default function GlobalError({
         </div>
 
         <p className="text-[10px] text-slate-400 font-mono">
-          Giterp Multi-School ERP • Auto-Recovery Active
+          EduElevate Multi-Coaching ERP • Auto-Recovery Active
         </p>
       </div>
     </div>

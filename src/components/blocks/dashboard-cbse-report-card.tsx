@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -451,7 +451,7 @@ export function DashboardCbseReportCard({
             </div>
             <div>
               <div className="h-10 flex items-end justify-center">
-                <span className="font-serif italic text-slate-800 font-bold text-sm">Head of School</span>
+                <span className="font-serif italic text-slate-800 font-bold text-sm">Center Director</span>
               </div>
               <div className="border-t border-slate-300 pt-1 font-bold text-[#122A24]">
                 Principal / Official Seal

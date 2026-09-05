@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 /**
  * auth-guard.ts — Server-side Session Token & API Protection
  *
@@ -17,7 +17,7 @@ import { createHmac } from 'crypto';
 // Server secret — MUST be set in .env as SESSION_SECRET for production.
 const SERVER_SECRET =
   process.env.SESSION_SECRET ||
-  'giterp-dev-secret-change-in-production-2026';
+  'eduelevate-dev-secret-change-in-production-2026';
 
 export interface TokenPayload {
   userId: string;

@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -4618,7 +4618,7 @@ export function DashboardFees({
                         </tr>
                         <tr>
                           <td className="py-1 px-2">2</td>
-                          <td className="py-1 px-2">Transport / School Bus Facility Charges</td>
+                          <td className="py-1 px-2">Transport / center transport Facility Charges</td>
                           <td className="py-1 px-2 text-right font-semibold">₹{(inv.transport_fee || Math.round((inv.amount || 0) * 0.15)).toLocaleString()}</td>
                           <td className="py-1 px-2 text-right font-bold text-emerald-800">₹{(inv.transport_fee || Math.round((paid || 0) * 0.15)).toLocaleString()}</td>
                           <td className="py-1 px-2 text-right font-semibold text-rose-700">₹{Math.max(0, (inv.transport_fee || Math.round((inv.amount || 0) * 0.15)) - (inv.transport_fee || Math.round((paid || 0) * 0.15))).toLocaleString()}</td>

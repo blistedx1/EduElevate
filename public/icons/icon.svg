@@ -1,41 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0D1F1A" />
-      <stop offset="50%" stop-color="#122A24" />
-      <stop offset="100%" stop-color="#1B3F36" />
-    </linearGradient>
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#34D399" />
-      <stop offset="100%" stop-color="#059669" />
-    </linearGradient>
-    <linearGradient id="parchmentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="100%" stop-color="#D1FAE5" />
-    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
   </defs>
 
-  <!-- Background rounded rect -->
-  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
-  <rect width="504" height="504" x="4" y="4" rx="106" fill="none" stroke="#34D399" stroke-opacity="0.3" stroke-width="4"/>
+  <!-- Dark Chalkboard App Tile Background -->
+  <rect width="512" height="512" rx="110" fill="#122A24"/>
+  <rect width="504" height="504" x="4" y="4" rx="106" fill="none" stroke="#34D399" stroke-opacity="0.25" stroke-width="4"/>
 
-  <!-- Academic / Coaching Shield and Chevron Emblem -->
-  <g transform="translate(256, 205)">
-    <!-- Outer ambient glow ring -->
-    <circle r="120" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-opacity="0.35" stroke-dasharray="8,8"/>
-    
-    <!-- Stylized Chevron Arrow Up (Elevate) -->
-    <path d="M-70,50 L0,-20 L70,50 L46,68 L0,22 L-46,68 Z" fill="url(#goldGrad)" opacity="0.95"/>
-    
-    <!-- Stylized Top Academic Cap / Roof -->
-    <path d="M0,-80 L80,-36 L0,8 L-80,-36 Z" fill="url(#parchmentGrad)"/>
-    <path d="M-55,-20 L-55,32 Q0,68 55,32 L55,-20 L42,-14 L42,26 Q0,54 -42,26 L-42,-14 Z" fill="url(#goldGrad)"/>
-    
-    <!-- Tassel -->
-    <path d="M68,-28 L78,-14 L76,16 L72,16 L71,-14 Z" fill="#34D399"/>
+  <!-- Exact Shield Emblem from User Upload -->
+  <g filter="url(#shadow)" transform="translate(0, 8)">
+    <!-- Top Black Chevron Roof -->
+    <polygon points="256,58 376,120 334,148 256,106 178,148 136,120" fill="#18181B"/>
+
+    <!-- Left Red Wing / Bracket -->
+    <polygon points="136,134 100,134 100,326 190,384 212,356 142,308 142,168" fill="#C61A29"/>
+
+    <!-- Right Red Wing / Bracket -->
+    <polygon points="376,134 412,134 412,326 322,384 300,356 370,308 370,168" fill="#C61A29"/>
+
+    <!-- Center Hexagonal Shield: Outer White Trim -->
+    <polygon points="256,112 352,162 352,318 256,380 160,318 160,162" fill="#FFFFFF"/>
+
+    <!-- Center Hexagonal Shield: Deep Navy Blue Body -->
+    <polygon points="256,124 340,168 340,310 256,368 172,310 172,168" fill="#0C2548"/>
+
+    <!-- Bold Capital 'E' -->
+    <text x="256" y="295" text-anchor="middle" font-family="'Impact', 'Arial Black', -apple-system, sans-serif" font-size="172" font-weight="900" fill="#FFFFFF">E</text>
+
+    <!-- Bottom Black Diamond / Point -->
+    <polygon points="256,394 306,422 256,450 206,422" fill="#18181B"/>
   </g>
-
-  <!-- Brand Typography -->
-  <text x="256" y="380" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" fill="#FFFFFF" letter-spacing="1.5">EDUELEVATE</text>
-  <text x="256" y="416" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="700" fill="#34D399" letter-spacing="4">COACHING ERP</text>
 </svg>

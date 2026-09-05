@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 /**
  * Seed MongoDB with Initial Demo School & Admin Account
  * Run with: node test/seed_mongodb.js

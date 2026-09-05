@@ -1,7 +1,7 @@
 {
   "name": "multi-school-erp-core",
   "version": "1.2.1",
-  "description": "Multi-Tenant Enterprise School ERP Database & Core Engine",
+  "description": "Multi-Tenant Enterprise Coaching ERP Database & Core Engine",
   "main": "server.js",
   "scripts": {
     "dev": "next dev",

@@ -1,6 +1,6 @@
-# 🎓 Giterp — Multi-School Enterprise ERP Platform (PWA v1.2.0)
+# 🎓 EduElevate — Multi-School Enterprise ERP Platform (PWA v1.2.0)
 
-A high-performance, installable Progressive Web App (PWA) and multi-tenant CBSE School ERP suite ready for instant deployment on **Vercel** and **Netlify**, powered by an online **MongoDB Atlas** cloud database.
+A high-performance, installable Progressive Web App (PWA) and multi-tenant EduElevate Coaching ERP suite ready for instant deployment on **Vercel** and **Netlify**, powered by an online **MongoDB Atlas** cloud database.
 
 ---
 
@@ -55,5 +55,5 @@ A high-performance, installable Progressive Web App (PWA) and multi-tenant CBSE 
 - **Emergency Broadcast**: Multi-channel SMS, Email, and Web Push notifications.
 - **Notice Board**: Central gazette and digital circulars.
 - **Audit Logs & Security Trail**: Tamper-evident administrative audit records.
-- **Institutional Settings**: School profile, CBSE affiliation codes, UDISE+, OASIS, and custom branding logos.
+- **Institutional Settings**: Center Profile, CBSE affiliation codes, UDISE+, OASIS, and custom branding logos.
 

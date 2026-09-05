@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
@@ -661,10 +661,10 @@ function ERPWorkspaceContent() {
     checkUnreadBroadcasts();
     const timer = setInterval(checkUnreadBroadcasts, 25000);
     const onLivePush = () => checkUnreadBroadcasts();
-    window.addEventListener('giterp_broadcast', onLivePush);
+    window.addEventListener('eduelevate_broadcast', onLivePush);
     return () => {
       clearInterval(timer);
-      window.removeEventListener('giterp_broadcast', onLivePush);
+      window.removeEventListener('eduelevate_broadcast', onLivePush);
     };
   }, [checkUnreadBroadcasts]);
 
@@ -898,11 +898,11 @@ function ERPWorkspaceContent() {
     setMounted(true);
     if (typeof window !== 'undefined') {
       try {
-        const storedPerms = localStorage.getItem('giterp_role_permissions');
+        const storedPerms = localStorage.getItem('eduelevate_role_permissions');
         if (storedPerms) {
           try { setRolePermissions(JSON.parse(storedPerms)); } catch (_) {}
         }
-        const storedSess = localStorage.getItem('giterp_active_session');
+        const storedSess = localStorage.getItem('eduelevate_active_session');
         if (storedSess) setSelectedSession(storedSess);
 
         const storedUser = localStorage.getItem('current_user');
@@ -1119,21 +1119,21 @@ function ERPWorkspaceContent() {
     'TGT - Trained Graduate Teacher (Classes VI-X)',
     'PRT - Primary Teacher (Classes I-V)',
     'NTT - Nursery / Kindergarten Teacher',
-    'Principal / Head of School',
+    'Principal / Center Director',
     'Vice-Principal / Academic Coordinator',
     'Special Educator (Mandatory CBSE Norm)',
-    'School Counselor & Wellness Teacher (Mandatory)',
+    'Academic Counselor & Wellness Teacher (Mandatory)',
     'PET - Physical Education Teacher / Sports Master',
     'Librarian / Head of Library',
     'Computer / IT & AI Faculty',
     'Art & Craft Teacher',
     'Music & Performing Arts Teacher',
     'Lab Assistant / Science Technician',
-    'Administrative Officer (School Administration & Operations)',
+    'Administrative Officer (Coaching Administration & Operations)',
     'Accounts Head / Senior Accountant (Finance & Fees)',
     'Office Executive / Administrative Assistant',
     'Accountant / Cashier / Fee Counter Incharge',
-    'School Bus Driver / Transport Operator',
+    'center transport Driver / Transport Operator',
     'Gate Security Guard / Head Watchman'
   ];
 
@@ -1149,7 +1149,7 @@ function ERPWorkspaceContent() {
     'RCI Recognized Degree / Diploma in Special Ed (Special Educator Norm)',
     'NTT / Early Childhood Care Education - ECCE (Pre-Primary Norm)',
     'Ph.D / Doctorate in Subject / Education',
-    'MBA / Post Graduate in Management (School Administration)',
+    'MBA / Post Graduate in Management (Coaching Administration)',
     'M.Com / B.Com / CA Inter / Finance Graduate (Accounts & Finance)',
     'Class 10th / 12th + Heavy Commercial Driving License (Transport)',
     'Class 10th / 12th + Security Guard Training Certificate (Security)'
@@ -1167,7 +1167,7 @@ function ERPWorkspaceContent() {
     'Fine Arts, Performing Arts & Music',
     'Special Education & Inclusive Learning',
     'Pre-Primary & Foundational Learning (ECCE)',
-    'School Administration & Office Operations',
+    'Coaching Administration & Office Operations',
     'Accounts, Finance & Fee Collection Counter',
     'Transport & Bus Fleet Operations',
     'Campus Security & Safety Department'
@@ -1292,28 +1292,28 @@ function ERPWorkspaceContent() {
     logo: ''
   });
 
-  // School Logo Upload Handler (Max 2MB)
+  // Center logo Upload Handler (Max 2MB)
   const handleSchoolLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const maxBytes = 2 * 1024 * 1024; // 2 MB limit
     if (file.size > maxBytes) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      alert(`Selected file is ${sizeMb} MB. School logo / icon must be 2 MB or smaller.`);
+      alert(`Selected file is ${sizeMb} MB. Center logo / icon must be 2 MB or smaller.`);
       return;
     }
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = reader.result as string;
       setSettingsForm(prev => ({ ...prev, logo: base64 }));
-      showAdminToast('School logo uploaded to preview. Click "Save Institutional Profile" to persist.');
+      showAdminToast('Center logo uploaded to preview. Click "Save Institutional Profile" to persist.');
     };
     reader.readAsDataURL(file);
   };
 
   const handleRemoveSchoolLogo = () => {
     setSettingsForm(prev => ({ ...prev, logo: '' }));
-    showAdminToast('School logo removed.');
+    showAdminToast('Center logo removed.');
   };
 
   useEffect(() => {
@@ -1331,8 +1331,8 @@ function ERPWorkspaceContent() {
           const parsedSchool = JSON.parse(storedSchool);
           setSelectedSchool(parsedSchool);
           const cleanId = (parsedSchool.school_code || parsedSchool.id || 'DPS2026').replace(/[^A-Z0-9]/gi, '');
-          const activeSession = localStorage.getItem('giterp_active_session') || selectedSession || '2026-27';
-          const cachedBackup = localStorage.getItem(`giterp_offline_backup_${cleanId}_${activeSession}`) || localStorage.getItem(`giterp_offline_backup_${cleanId}`);
+          const activeSession = localStorage.getItem('eduelevate_active_session') || selectedSession || '2026-27';
+          const cachedBackup = localStorage.getItem(`eduelevate_offline_backup_${cleanId}_${activeSession}`) || localStorage.getItem(`eduelevate_offline_backup_${cleanId}`);
           if (cachedBackup) {
             const data = JSON.parse(cachedBackup);
             if (data.overview) setOverview(data.overview);
@@ -1493,7 +1493,7 @@ function ERPWorkspaceContent() {
         if (targetSchool.role_permissions) {
           setRolePermissions(targetSchool.role_permissions);
           if (typeof window !== 'undefined') {
-            localStorage.setItem('giterp_role_permissions', JSON.stringify(targetSchool.role_permissions));
+            localStorage.setItem('eduelevate_role_permissions', JSON.stringify(targetSchool.role_permissions));
           }
         }
         const isTeacherRole = activeUserObj?.role?.toUpperCase() === 'TEACHER';
@@ -1640,7 +1640,7 @@ function ERPWorkspaceContent() {
     // 0ms Instant SWR Hydration: Display cached data immediately so user experiences ZERO lag!
     let hasHydrated = false;
     if (typeof window !== 'undefined') {
-      const offlineBackup = localStorage.getItem(`giterp_offline_backup_${cleanId}_${targetSession}`) || localStorage.getItem(`giterp_offline_backup_${cleanId}`);
+      const offlineBackup = localStorage.getItem(`eduelevate_offline_backup_${cleanId}_${targetSession}`) || localStorage.getItem(`eduelevate_offline_backup_${cleanId}`);
       if (offlineBackup) {
         try {
           const cachedData = JSON.parse(offlineBackup);
@@ -1722,8 +1722,8 @@ function ERPWorkspaceContent() {
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem('last_active_school_id', cleanId);
-          localStorage.setItem('giterp_active_session', targetSession);
-          localStorage.removeItem(`giterp_cache_${cleanId}`);
+          localStorage.setItem('eduelevate_active_session', targetSession);
+          localStorage.removeItem(`eduelevate_cache_${cleanId}`);
 
           // For small/medium datasets, save offline cache; for 5,000+ datasets, save metadata summary
           const backupPayload = JSON.stringify({
@@ -1739,7 +1739,7 @@ function ERPWorkspaceContent() {
             timestamp: Date.now()
           });
 
-          localStorage.setItem(`giterp_offline_backup_${cleanId}_${targetSession}`, backupPayload);
+          localStorage.setItem(`eduelevate_offline_backup_${cleanId}_${targetSession}`, backupPayload);
         } catch (storageErr) {
           console.warn('[Storage] Local storage quota reached. Offline cache bypassed; live MongoDB memory active.');
         }
@@ -1755,7 +1755,7 @@ function ERPWorkspaceContent() {
   const handleSwitchSession = async (newSession: string) => {
     setSelectedSession(newSession);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('giterp_active_session', newSession);
+      localStorage.setItem('eduelevate_active_session', newSession);
     }
     if (selectedSchool) {
       await loadSchoolData(selectedSchool.school_code || selectedSchool.id, newSession);
@@ -2816,7 +2816,7 @@ function ERPWorkspaceContent() {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('current_user');
         localStorage.removeItem('current_school');
-        localStorage.removeItem('giterp_role_permissions');
+        localStorage.removeItem('eduelevate_role_permissions');
         localStorage.removeItem('erp_session_token'); // Invalidate signed session token
         try {
           Object.keys(localStorage).forEach((key) => {
@@ -3521,7 +3521,7 @@ function ERPWorkspaceContent() {
               />
             ) : (
               <img
-                src="/giterp-logo.png"
+                src="/eduelevate-logo.png"
                 alt="EduElevate Logo"
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain bg-[#122A24] border border-[#122A24]/30 p-0.5 shadow-xs shrink-0 group-hover:scale-105 transition-transform"
               />
@@ -3719,13 +3719,13 @@ function ERPWorkspaceContent() {
         <div className="lg:hidden bg-amber-50/95 backdrop-blur-xs border-b border-amber-200/90 px-3.5 py-1.5 flex items-center justify-between gap-2 text-xs shadow-2xs">
           <div className="flex items-center gap-1 text-amber-900 font-mono font-bold text-[10.5px] shrink-0">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            <span>⚡ SCHOOL:</span>
+            <span>⚡ BRANCH:</span>
           </div>
           <select
             value={selectedSchool?.id || selectedSchool?.school_code || ''}
             onChange={(e) => handleSwitchSchool(e.target.value)}
             className="flex-1 bg-white border border-amber-300 text-amber-950 font-bold text-[11px] rounded-lg px-2 py-1 truncate focus:outline-none cursor-pointer shadow-2xs"
-            title="Switch School Tenant"
+            title="Switch Branch Tenant"
           >
             {availableSchools.map((sch) => (
               <option key={sch.id} value={sch.id}>
@@ -3767,19 +3767,19 @@ function ERPWorkspaceContent() {
                 {selectedSchool?.logo || settingsForm.logo ? (
                   <img
                     src={selectedSchool?.logo || settingsForm.logo}
-                    alt="School Logo"
+                    alt="Center logo"
                     className="w-9 h-9 rounded-xl object-contain bg-white border border-white/20 p-0.5 shadow-xs shrink-0 group-hover:scale-105 transition-transform"
                   />
                 ) : (
                   <img
-                    src="/giterp-logo.png"
-                    alt="Giterp Logo"
+                    src="/eduelevate-logo.png"
+                    alt="EduElevate Logo"
                     className="w-9 h-9 rounded-xl object-contain bg-[#122A24] border border-white/20 p-0.5 shadow-xs shrink-0 group-hover:scale-105 transition-transform"
                   />
                 )}
                 <div>
                   <div className="font-display font-bold text-sm text-white truncate max-w-[160px] group-hover:text-emerald-300 transition-colors">
-                    {selectedSchool?.school_name || 'Giterp'}
+                    {selectedSchool?.school_name || 'EduElevate'}
                   </div>
                   <div className="text-[10px] font-mono text-emerald-300">
                     {selectedSchool?.school_code || 'DPS2026'} • {selectedSchool?.board || 'CBSE'}
@@ -3799,7 +3799,7 @@ function ERPWorkspaceContent() {
             {isSuperAdmin && (
               <div className="mb-3 p-3 bg-white/10 rounded-2xl border border-amber-400/30 space-y-1.5 shadow-xs">
                 <div className="flex items-center justify-between text-[10px] font-mono text-amber-300 font-bold">
-                  <span>⚡ SWITCH SCHOOL:</span>
+                  <span>⚡ Switch Branch:</span>
                   <span className="text-[9px] bg-amber-400/20 px-1.5 py-0.5 rounded border border-amber-400/30">
                     SUPER ADMIN
                   </span>
@@ -3808,7 +3808,7 @@ function ERPWorkspaceContent() {
                   value={selectedSchool?.id || selectedSchool?.school_code || ''}
                   onChange={(e) => { handleSwitchSchool(e.target.value); setMobileMenuOpen(false); }}
                   className="w-full bg-[#122A24] text-white text-xs font-semibold rounded-xl px-2.5 py-2 border border-white/20 focus:outline-none cursor-pointer"
-                  title="Switch School Tenant (Super Admin Only)"
+                  title="Switch Branch Tenant (Super Admin Only)"
                 >
                   {availableSchools.map((sch) => (
                     <option key={sch.id} value={sch.id} className="bg-[#122A24] text-white">
@@ -4271,7 +4271,7 @@ function ERPWorkspaceContent() {
       <div className="flex-1 flex overflow-hidden min-w-0 w-full">
         {/* Navigation Sidebar (Desktop Only) */}
         <aside className="hidden lg:flex w-64 bg-[#122A24] text-white p-4 flex-col gap-1 shrink-0 border-r border-white/10 overflow-y-auto">
-          {/* Giterp Brand Badge */}
+          {/* EduElevate Brand Badge */}
           <button
             type="button"
             onClick={() => setActiveTab(effectiveRole === 'DRIVER' ? 'transport' : 'overview')}
@@ -4282,19 +4282,19 @@ function ERPWorkspaceContent() {
             {selectedSchool?.logo || settingsForm.logo ? (
               <img
                 src={selectedSchool?.logo || settingsForm.logo}
-                alt="School Logo"
+                alt="Center logo"
                 className="w-10 h-10 rounded-xl object-contain shadow-xs bg-white border border-white/20 p-0.5 shrink-0 group-hover:scale-105 transition-transform"
               />
             ) : (
               <img
-                src="/giterp-logo.png"
-                alt="Giterp Logo"
+                src="/eduelevate-logo.png"
+                alt="EduElevate Logo"
                 className="w-10 h-10 rounded-xl object-contain shadow-xs bg-[#122A24] border border-white/20 p-1 shrink-0 group-hover:scale-105 transition-transform"
               />
             )}
             <div className="min-w-0 flex-1">
               <div className="font-display font-bold text-sm tracking-tight text-white flex items-center gap-1.5 group-hover:text-emerald-300 transition-colors">
-                <span className="truncate">{selectedSchool?.school_name || 'Giterp'}</span>
+                <span className="truncate">{selectedSchool?.school_name || 'EduElevate'}</span>
               </div>
               <div suppressHydrationWarning className="text-[10px] text-slate-300 font-mono truncate">
                 {selectedSchool?.school_code || 'DPS2026'} • CBSE Console
@@ -4306,7 +4306,7 @@ function ERPWorkspaceContent() {
           {isSuperAdmin && (
             <div className="mb-3 p-3 bg-white/10 rounded-2xl border border-amber-400/30 space-y-1.5 shadow-xs">
               <div className="flex items-center justify-between text-[10px] font-mono text-amber-300 font-bold">
-                <span>⚡ SWITCH SCHOOL:</span>
+                <span>⚡ Switch Branch:</span>
                 <span className="text-[9px] bg-amber-400/20 px-1.5 py-0.5 rounded border border-amber-400/30">
                   SUPER ADMIN
                 </span>
@@ -4315,7 +4315,7 @@ function ERPWorkspaceContent() {
                 value={selectedSchool?.id || selectedSchool?.school_code || ''}
                 onChange={(e) => handleSwitchSchool(e.target.value)}
                 className="w-full bg-[#122A24] text-white text-xs font-semibold rounded-xl px-2.5 py-2 border border-white/20 focus:outline-none cursor-pointer"
-                title="Switch School Tenant (Super Admin Only)"
+                title="Switch Branch Tenant (Super Admin Only)"
               >
                 {availableSchools.map((sch) => (
                   <option key={sch.id} value={sch.id} className="bg-[#122A24] text-white">
@@ -4664,7 +4664,7 @@ function ERPWorkspaceContent() {
             </button>
           )}
 
-          {/* School Broadcast Alerts / Missed Notices Inbox (Available to All Roles) */}
+          {/* coaching broadcast Alerts / Missed Notices Inbox (Available to All Roles) */}
           <button
             type="button"
             onClick={() => setShowBroadcastInbox(true)}
@@ -8642,7 +8642,7 @@ function ERPWorkspaceContent() {
                         />
                         {['STUDENT', 'TEACHER', 'PARENT'].includes(currentUser?.role || '') && (
                           <p className="text-[10px] text-slate-400 font-mono mt-1">
-                            🔒 Official Registered Name. Contact school administration to request name corrections.
+                            🔒 Official Registered Name. Contact Coaching Administration to request name corrections.
                           </p>
                         )}
                       </div>
@@ -8841,7 +8841,7 @@ function ERPWorkspaceContent() {
                       { label: 'Homework Diary', icon: FileText, status: 'View & Submit', active: true },
                       { label: 'Report Cards', icon: Award, status: 'CBSE Marksheet', active: true },
                       { label: 'Fee Invoices', icon: CreditCard, status: 'Personal Receipts', active: true },
-                      { label: 'School Circulars', icon: Bell, status: 'Read Notices', active: true },
+                      { label: 'center circulars', icon: Bell, status: 'Read Notices', active: true },
                       { label: 'Certificates', icon: Award, status: 'Attested Copies', active: true },
                       { label: 'Faculty Directory', icon: Users, status: 'No Access', active: false },
                       { label: 'Student SIS Roster', icon: GraduationCap, status: 'No Access', active: false },
@@ -9360,7 +9360,7 @@ function ERPWorkspaceContent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block font-semibold text-[var(--ink-navy)] mb-1">Previous School Name</label>
+                    <label className="block font-semibold text-[var(--ink-navy)] mb-1">Previous Center Name</label>
                     <input
                       type="text"
                       value={studentForm.previous_school || ''}
@@ -9622,7 +9622,7 @@ function ERPWorkspaceContent() {
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-xs font-semibold"
                     >
                       <option value="NO">No (Self Conveyance)</option>
-                      <option value="YES">Yes (School Bus / Van)</option>
+                      <option value="YES">Yes (center transport / Van)</option>
                     </select>
                   </div>
 
@@ -10077,10 +10077,10 @@ function ERPWorkspaceContent() {
                         onClick={() => {
                           const isDefaultOrGeneric = !teacherForm.designation ||
                             teacherForm.designation === 'TGT - Trained Graduate Teacher (Classes VI-X)' ||
-                            teacherForm.designation === 'Administrative Officer (School Administration & Operations)' ||
+                            teacherForm.designation === 'Administrative Officer (Coaching Administration & Operations)' ||
                             teacherForm.designation === 'Administrative Officer / Accounts Head' ||
                             teacherForm.designation === 'Accounts Head / Senior Accountant (Finance & Fees)' ||
-                            teacherForm.designation === 'School Bus Driver / Transport Operator' ||
+                            teacherForm.designation === 'center transport Driver / Transport Operator' ||
                             teacherForm.designation === 'Gate Security Guard / Head Watchman' ||
                             teacherForm.designation === 'Librarian / Head of Library';
 
@@ -10088,10 +10088,10 @@ function ERPWorkspaceContent() {
                           if (roleItem.id === 'ADMIN') {
                             updated.teacher_type = 'ADMINISTRATIVE';
                             if (isDefaultOrGeneric) {
-                              updated.designation = 'Administrative Officer (School Administration & Operations)';
-                              updated.department = 'School Administration & Office Operations';
+                              updated.designation = 'Administrative Officer (Coaching Administration & Operations)';
+                              updated.department = 'Coaching Administration & Office Operations';
                               updated.subject_specialization = 'General Administration & Office Operations';
-                              updated.professional_degree = 'MBA / Post Graduate in Management (School Administration)';
+                              updated.professional_degree = 'MBA / Post Graduate in Management (Coaching Administration)';
                             }
                           } else if (roleItem.id === 'ACCOUNTANT') {
                             updated.teacher_type = 'ADMINISTRATIVE';
@@ -10104,7 +10104,7 @@ function ERPWorkspaceContent() {
                           } else if (roleItem.id === 'DRIVER') {
                             updated.teacher_type = 'NON_TEACHING';
                             if (isDefaultOrGeneric) {
-                              updated.designation = 'School Bus Driver / Transport Operator';
+                              updated.designation = 'center transport Driver / Transport Operator';
                               updated.department = 'Transport & Bus Fleet Operations';
                               updated.professional_degree = 'Class 10th / 12th + Heavy Commercial Driving License (Transport)';
                             }
@@ -12728,7 +12728,7 @@ function ERPWorkspaceContent() {
         </div>
       )}
 
-      {/* School Broadcast Notices & Missed Push Alerts Inbox Modal */}
+      {/* coaching broadcast Notices & Missed Push Alerts Inbox Modal */}
       <BroadcastInboxModal
         isOpen={showBroadcastInbox}
         onClose={() => {

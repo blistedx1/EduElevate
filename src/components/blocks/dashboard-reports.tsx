@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -620,38 +620,38 @@ export function DashboardReports({
     const session = selectedSession || '2026-27';
 
     if (reportSubTab === 'fee_analytics') {
-      csvContent += `Central School ERP - Fee Category & Collection Matrix Report - Session ${session}\r\n`;
+      csvContent += `Central Coaching ERP - Fee Category & Collection Matrix Report - Session ${session}\r\n`;
       csvContent += "Class & Section,Total Students,Paid Count,Pending Count,Collected Amount (INR),Pending Dues (INR)\r\n";
       filteredClassFeeMatrix.forEach(r => {
         csvContent += `"${r.className}-${r.section}",${r.totalStudents},${r.paidCount},${r.pendingCount},${r.collected},${r.pendingDues}\r\n`;
       });
     } else if (reportSubTab === 'student_att') {
-      csvContent += `Central School ERP - Student Attendance & CBSE 75% Compliance Register - Session ${session}\r\n`;
+      csvContent += `Central Coaching ERP - Student Attendance & CBSE 75% Compliance Register - Session ${session}\r\n`;
       csvContent += "Admission No,Student Name,Class,Section,Today Status,Total Working Days,Days Present,Days Absent,Attendance %,CBSE 75% Status\r\n";
       filteredStudentAttendanceData.forEach(r => {
         csvContent += `"${r.admissionNo}","${r.name}","${r.className}","${r.section}","${r.todayStatus}",${r.totalDays},${r.presentDays},${r.absentDays},${r.percentage}%,"${r.status}"\r\n`;
       });
     } else if (reportSubTab === 'staff_att') {
-      csvContent += `Central School ERP - Faculty & Staff Biometric Attendance Ledger - Session ${session}\r\n`;
+      csvContent += `Central Coaching ERP - Faculty & Staff Biometric Attendance Ledger - Session ${session}\r\n`;
       csvContent += "Employee Code,Faculty Name,Designation,Subject,Today Attendance Status,Total Days,Days Present,Leaves Taken,Attendance %,Punctuality,Status\r\n";
       filteredStaffAttendanceData.forEach(r => {
         csvContent += `"${r.empCode}","${r.name}","${r.designation}","${r.subject}","${r.todayStatus}",${r.workingDays},${r.presentDays},${r.leavesTaken},${r.percentage}%,${r.punctuality},"${r.status}"\r\n`;
       });
     } else if (reportSubTab === 'exams') {
-      csvContent += `Central School ERP - Academic Assessment Marksheet & Merit Rankings - Session ${session}\r\n`;
+      csvContent += `Central Coaching ERP - Academic Assessment Marksheet & Merit Rankings - Session ${session}\r\n`;
       csvContent += "Rank,Admission No,Student Name,Class,Section,English,Mathematics,Science,Social Science,Hindi,Total (500),Percentage %,CBSE Grade,Result\r\n";
       filteredExamRankingsData.forEach((r, idx) => {
         csvContent += `${idx + 1},"${r.admissionNo}","${r.name}","${r.className}","${r.section}",${r.eng},${r.math},${r.sci},${r.sst},${r.hin},${r.total},${r.percent}%,${r.grade},"${r.result}"\r\n`;
       });
     } else if (reportSubTab === 'transport') {
-      csvContent += `Central School ERP - Institutional Fleet & Transport Route Ledger - Session ${session}\r\n`;
+      csvContent += `Central Coaching ERP - Institutional Fleet & Transport Route Ledger - Session ${session}\r\n`;
       csvContent += "Route No,Bus Registration No,Driver Name,Driver Contact,Key Route Stops,Seating Capacity,Students Boarded,Occupancy %,Fitness Status\r\n";
       filteredTransportFleetData.forEach(r => {
         const occ = ((r.boarded / r.capacity) * 100).toFixed(0);
         csvContent += `"${r.routeNo}","${r.busNo}","${r.driver}","${r.phone}","${r.stops}",${r.capacity},${r.boarded},${occ}%,"${r.status}"\r\n`;
       });
     } else if (reportSubTab === 'student_dossier') {
-      csvContent += `Central School ERP - Student Master Registration Dossier - Session ${session}\r\n`;
+      csvContent += `Central Coaching ERP - Student Master Registration Dossier - Session ${session}\r\n`;
       csvContent += "Admission No,Student Name,Class,Section,Father Name,Mother Name,Contact Phone,DOB,Blood Group,Aadhaar No,PEN ID,APAAR ID,Address,Fee Status\r\n";
       filteredStudentsDossier.forEach(s => {
         const contactPhone = s.emergency_contact_phone || (s as any).emergency_contact || 'N/A';
@@ -660,7 +660,7 @@ export function DashboardReports({
         csvContent += `"${s.admission_no || s.id}","${s.full_name}","${s.class_name}","${s.section}","${s.father_name || 'N/A'}","${s.mother_name || 'N/A'}","${contactPhone}","${s.dob || '2012-05-14'}","${s.blood_group || 'O+'}","${s.aadhaar_no || 'XXXX-XXXX-XXXX'}","${penId}","${s.apaar_id || 'APAAR-PENDING'}","${homeAddress}","${s.fee_status || 'PENDING'}"\r\n`;
       });
     } else if (reportSubTab === 'employee_dossier') {
-      csvContent += `Central School ERP - Faculty & Staff Statutory Employment Dossier - Session ${session}\r\n`;
+      csvContent += `Central Coaching ERP - Faculty & Staff Statutory Employment Dossier - Session ${session}\r\n`;
       csvContent += "Employee Code,Faculty Name,ERP Role,Designation,Primary Subject,Qualification,Experience (Yrs),Phone,Email,OASIS ID,PAN No,Status\r\n";
       filteredTeachersDossier.forEach(t => {
         const empCode = (t as any).employee_code || t.staff_code || t.id;

@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
 import { Database } from '@/lib/db';
 import { requireRole, ADMIN_ROLES } from '@/lib/auth-guard';
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     } = body;
 
     if (!school_id) {
-      return NextResponse.json({ success: false, error: 'School ID is required' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Branch ID is required' }, { status: 400 });
     }
 
     const updated = await Database.updateSchoolSettings(school_id, {

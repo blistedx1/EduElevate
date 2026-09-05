@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
 import { Database } from '@/lib/db';
 import { requireAuth, requireRole, ADMIN_ROLES } from '@/lib/auth-guard';
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const { school_id, title, content, target_audience, posted_by } = body;
 
     if (!school_id || !title || !content) {
-      return NextResponse.json({ success: false, error: 'School ID, Title, and Content are required' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Branch ID, Title, and Content are required' }, { status: 400 });
     }
 
     const notice = await Database.createNotice({

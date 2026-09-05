@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 /**
  * Push Notification Master Utility
  * Guarantees rock-solid push notifications across Desktop, Android PWA, and iOS Web Push
@@ -163,7 +163,7 @@ export async function sendLocalPushNotification(
 
   // 2. Dispatch custom event for in-app floating toast banner
   window.dispatchEvent(
-    new CustomEvent('giterp_broadcast', {
+    new CustomEvent('eduelevate_broadcast', {
       detail: {
         title,
         body: options.body,
@@ -183,7 +183,7 @@ export async function sendLocalPushNotification(
             body: options.body,
             icon: options.icon || '/icons/icon-192.png',
             badge: options.badge || '/icons/icon-192.png',
-            tag: options.tag || 'giterp-alert',
+            tag: options.tag || 'eduelevate-alert',
             vibrate: options.urgent ? [300, 100, 300, 100, 300] : [200, 100, 200],
             requireInteraction: options.urgent === true,
             data: { url: options.url || '/app' }
@@ -196,7 +196,7 @@ export async function sendLocalPushNotification(
       new Notification(title, {
         body: options.body,
         icon: options.icon || '/icons/icon-192.png',
-        tag: options.tag || 'giterp-alert'
+        tag: options.tag || 'eduelevate-alert'
       });
       return true;
     } catch (e) {
@@ -225,8 +225,8 @@ export async function sendTestNotification(): Promise<{ success: boolean; messag
     }
   }
 
-  await sendLocalPushNotification('🔔 Giterp Push Notification Active!', {
-    body: 'CBSE School ERP push alerts are working 100% reliably with sound chime & badge alerts.',
+  await sendLocalPushNotification('🔔 EduElevate Push Notification Active!', {
+    body: 'EduElevate Coaching ERP push alerts are working 100% reliably with sound chime & badge alerts.',
     tag: 'test-notification',
     urgent: true,
     url: '/app'

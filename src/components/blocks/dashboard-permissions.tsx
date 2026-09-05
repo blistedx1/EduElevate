@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -130,7 +130,7 @@ const MODULE_DEFINITIONS: ModuleDefinition[] = [
     name: 'Notice Board & Circulars',
     category: 'Communication',
     icon: Bell,
-    description: 'School circulars, event announcements, holiday notices & official bulletins'
+    description: 'center circulars, event announcements, holiday notices & official bulletins'
   },
   {
     id: 'broadcast',
@@ -352,7 +352,7 @@ export function DashboardPermissions({
       }
 
       if (typeof window !== 'undefined') {
-        localStorage.setItem('giterp_role_permissions', JSON.stringify(permissions));
+        localStorage.setItem('eduelevate_role_permissions', JSON.stringify(permissions));
       }
 
       setSavedSuccess(true);

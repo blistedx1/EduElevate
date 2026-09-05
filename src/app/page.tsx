@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 import React from 'react';
 import Link from 'next/link';
 import { Database } from '@/lib/db';
@@ -6,7 +6,7 @@ import { Database } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  // Load registered schools with zero-delay fallback
+  // Load registered branches with zero-delay fallback
   const schools = await Promise.race([
     Database.getSchools(),
     new Promise<any[]>((resolve) => setTimeout(() => resolve([]), 800))
@@ -19,7 +19,7 @@ export default async function HomePage() {
         <div className="max-w-[1160px] mx-auto px-3.5 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2">
           <Link href="/" className="flex items-center gap-2 sm:gap-3 no-underline min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/giterp-logo.png" alt="EduElevate Logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain shadow-xs bg-[#122A24] border border-[#122A24]/30 p-1 shrink-0" />
+            <img src="/eduelevate-logo.png" alt="EduElevate Logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain shadow-xs bg-[#122A24] border border-[#122A24]/30 p-1 shrink-0" />
             <div className="min-w-0">
               <span className="font-display font-semibold text-base sm:text-xl text-[var(--ink-navy)] tracking-tight block truncate">
                 EduElevate

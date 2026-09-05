@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -1192,7 +1192,7 @@ export function DashboardApprovals({
                   <div className="text-slate-400 mt-4">Signature: ______________</div>
                 </div>
                 <div className="text-right">
-                  <div>Approved By: <strong>Principal / Head of School</strong></div>
+                  <div>Approved By: <strong>Principal / Center Director</strong></div>
                   <div className="text-slate-400 mt-4">Official Seal &amp; Signature: ______________</div>
                 </div>
               </div>

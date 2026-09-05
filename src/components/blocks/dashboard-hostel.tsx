@@ -1,4 +1,4 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service Core v2.0.0 */
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -44,7 +44,7 @@ export interface DashboardHostelProps {
   onUpdateStudent?: (student: Student) => void;
 }
 
-// Initial realistic default rooms in school campus
+// Initial realistic default rooms in coaching center
 const INITIAL_HOSTEL_ROOMS: HostelRoom[] = [
   {
     id: 'room-101',
