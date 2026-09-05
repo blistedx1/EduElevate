@@ -1,6 +1,6 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 (Build 2026.09.03.116) */
-const CACHE_NAME = 'giterp-core-v8-116';
-const API_CACHE_NAME = 'giterp-api-session-v8-116';
+/*! EduElevate Coaching Management Service PWA Core v2.0.0 */
+const CACHE_NAME = 'eduelevate-core-v9-2';
+const API_CACHE_NAME = 'eduelevate-api-session-v9-2';
 const OFFLINE_URL = '/offline.html';
 
 const PRECACHE_ASSETS = [
@@ -9,23 +9,32 @@ const PRECACHE_ASSETS = [
   '/login',
   '/agency',
   '/manifest.webmanifest',
+  '/manifest.json',
   '/offline.html',
   '/icon.png',
-  '/apple-icon.png',
-  '/giterp-logo.png',
-  '/giterp-192.png',
-  '/giterp-512.png',
-  '/sounds/bell-chime.mp3'
+  '/apple-touch-icon.png',
+  '/logo.png',
+  '/icons/icon.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/icon-maskable-192.png',
+  '/icons/icon-maskable-512.png'
 ];
 
-// Install: Cache critical core assets and force activation immediately
+// Install: Cache critical core assets with resilient error tolerance and force activation immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn('[PWA SW] Pre-cache non-fatal warning:', err);
-      });
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.allSettled(
+        PRECACHE_ASSETS.map(async (url) => {
+          try {
+            await cache.add(url);
+          } catch (err) {
+            console.warn('[EduElevate PWA] Precache item non-fatal warning:', url, err);
+          }
+        })
+      );
     })
   );
 });
@@ -169,11 +178,11 @@ self.addEventListener('message', (event) => {
   }
   if (event.data && event.data.type === 'TRIGGER_NOTIFICATION') {
     const { title, options } = event.data;
-    self.registration.showNotification(title || 'Giterp School ERP', {
-      body: options?.body || 'New institutional update.',
+    self.registration.showNotification(title || 'EduElevate Coaching ERP', {
+      body: options?.body || 'New coaching center update.',
       icon: options?.icon || '/icons/icon-192.png',
       badge: options?.badge || '/icons/icon-192.png',
-      tag: options?.tag || 'school-alert',
+      tag: options?.tag || 'coaching-alert',
       vibrate: options?.urgent ? [300, 100, 300, 100, 300] : [200, 100, 200],
       requireInteraction: options?.urgent === true,
       data: options?.data || { url: '/app' }
@@ -187,12 +196,12 @@ self.addEventListener('message', (event) => {
 self.addEventListener('push', (event) => {
   // Default payload — always show something even if the push data is missing/malformed
   let data = {
-    title: 'School ERP Notification',
-    body: 'You have a new update from School Administration.',
+    title: 'EduElevate Coaching Notification',
+    body: 'You have a new update from Coaching Administration.',
     icon: '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
     urgent: false,
-    tag: 'school-alert',
+    tag: 'coaching-alert',
     data: { url: '/app' }
   };
 

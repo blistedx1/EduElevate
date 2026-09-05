@@ -3689,6 +3689,21 @@ function ERPWorkspaceContent() {
           </button>
 
           <button
+            type="button"
+            id="btn-pwa-install-header"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('trigger_pwa_install'));
+              }
+            }}
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-xs font-semibold text-emerald-800 flex items-center gap-1.5 transition-colors border border-emerald-200 cursor-pointer shrink-0"
+            title="Install EduElevate PWA App"
+          >
+            <Download className="h-4 w-4 sm:h-3.5 sm:w-3.5 text-emerald-700" />
+            <span className="hidden md:inline">Install App</span>
+          </button>
+
+          <button
             onClick={handleLogout}
             className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-xs font-semibold text-rose-700 flex items-center gap-1.5 transition-colors border border-rose-200 cursor-pointer shrink-0"
             title="Sign Out"

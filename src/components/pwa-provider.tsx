@@ -1,8 +1,8 @@
-/*! Giterp Multi-School Enterprise ERP Core v1.2.0 */
+/*! EduElevate Coaching Management Service PWA Core v2.0.0 */
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { WifiOff, Download, X, RefreshCw, Bell } from 'lucide-react';
+import { WifiOff, Download, X, RefreshCw, Bell, Smartphone, Laptop, CheckCircle2, Share2, Check } from 'lucide-react';
 import { requestNotificationPermission, sendLocalPushNotification } from '@/lib/push-notifications';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -15,17 +15,22 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
   const [showOfflineAlert, setShowOfflineAlert] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState<boolean>(false);
+  const [showInstallGuide, setShowInstallGuide] = useState<boolean>(false);
+  const [isInstalled, setIsInstalled] = useState<boolean>(false);
   const [showNotificationBanner, setShowNotificationBanner] = useState<boolean>(false);
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
-    // 1. Check initial online state
+    // 1. Check initial online and standalone state
     if (typeof window !== 'undefined') {
       setIsOnline(navigator.onLine);
       if (!navigator.onLine) {
         setShowOfflineAlert(true);
       }
+
+      const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+      setIsInstalled(!!standalone);
 
       const handleOnline = () => {
         setIsOnline(true);
@@ -209,16 +214,28 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
 
       window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-      // 4. Listen for PWA installation completion and immediately request notification permission
+      // 4. Listen for Manual Trigger from App Topbar / Settings
+      const handleManualTrigger = () => {
+        if (deferredPrompt) {
+          handleInstallClick();
+        } else {
+          setShowInstallGuide(true);
+        }
+      };
+      window.addEventListener('trigger_pwa_install', handleManualTrigger);
+
+      // 5. Listen for PWA installation completion
       const handleAppInstalled = async () => {
-        console.log('[PWA] App installed successfully');
+        console.log('[PWA] EduElevate App installed successfully');
+        setIsInstalled(true);
         setShowInstallBanner(false);
+        setShowInstallGuide(false);
         if ('Notification' in window && Notification.permission !== 'granted') {
           try {
             const perm = await requestNotificationPermission();
             if (perm === 'granted') {
-              sendLocalPushNotification('🔔 Giterp App Installed!', {
-                body: 'Push notifications are now active for real-time school circulars, attendance, and fee alerts.',
+              sendLocalPushNotification('🔔 EduElevate App Installed!', {
+                body: 'Push notifications are now active for real-time coaching notices, attendance, and fee alerts.',
                 urgent: true
               });
             }
@@ -227,7 +244,7 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
       };
       window.addEventListener('appinstalled', handleAppInstalled);
 
-      // 5. If running as standalone installed PWA, prompt for notifications immediately
+      // 6. If running as standalone installed PWA, prompt for notifications immediately
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
       if (isStandalone && 'Notification' in window && Notification.permission === 'default') {
         setTimeout(async () => {
@@ -243,7 +260,7 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
         }, 1000);
       }
 
-      // Check notification permission after 2 seconds if default
+      // Check notification permission after 2.5 seconds if default
       setTimeout(() => {
         if ('Notification' in window && Notification.permission === 'default') {
           const dismissed = sessionStorage.getItem('pwa_notif_dismissed');
@@ -251,36 +268,42 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
             setShowNotificationBanner(true);
           }
         }
-      }, 2000);
+      }, 2500);
 
       return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
         window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.removeEventListener('trigger_pwa_install', handleManualTrigger);
         window.removeEventListener('appinstalled', handleAppInstalled);
       };
     }
-  }, []);
+  }, [deferredPrompt]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      setShowInstallGuide(true);
+      return;
+    }
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     console.log('[PWA] User response to install:', outcome);
     setDeferredPrompt(null);
     setShowInstallBanner(false);
 
-    // Immediately request notification permission during install flow
-    if (outcome === 'accepted' && 'Notification' in window && Notification.permission !== 'granted') {
-      try {
-        const perm = await requestNotificationPermission();
-        if (perm === 'granted') {
-          sendLocalPushNotification('🔔 Notifications Enabled!', {
-            body: 'You will receive instant CBSE school circulars and emergency alerts.',
-            urgent: true
-          });
-        }
-      } catch (e) {}
+    if (outcome === 'accepted') {
+      setIsInstalled(true);
+      if ('Notification' in window && Notification.permission !== 'granted') {
+        try {
+          const perm = await requestNotificationPermission();
+          if (perm === 'granted') {
+            sendLocalPushNotification('🔔 Notifications Enabled!', {
+              body: 'You will receive instant coaching circulars, test series scores, and center alerts.',
+              urgent: true
+            });
+          }
+        } catch (e) {}
+      }
     }
   };
 
@@ -294,7 +317,7 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
     setShowNotificationBanner(false);
     if (perm === 'granted') {
       sendLocalPushNotification('🔔 Notifications Enabled!', {
-        body: 'You will receive real-time CBSE school alerts, fee reminders, and attendance updates.',
+        body: 'You will receive real-time coaching alerts, batch schedules, and fee reminders.',
         urgent: true
       });
     }
@@ -313,13 +336,13 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
 
       {/* Floating Offline Notification Banner */}
       {showOfflineAlert && (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[var(--board-1)] text-white border border-white/20 backdrop-blur-md px-5 py-3 rounded-full shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300 text-xs sm:text-sm font-medium">
-          <div className="w-2 h-2 rounded-full bg-[var(--red-pen)] animate-pulse" />
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#122A24] text-white border border-emerald-500/30 backdrop-blur-md px-5 py-3 rounded-full shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300 text-xs sm:text-sm font-medium">
+          <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
           <WifiOff className="w-4 h-4 text-rose-300 shrink-0" />
-          <span>You are currently offline. Running cached register version.</span>
+          <span>Offline mode active. Running from cached register.</span>
           <button
             onClick={() => setShowOfflineAlert(false)}
-            className="ml-1 p-0.5 hover:bg-white/20 rounded-full transition-colors"
+            className="ml-1 p-1 hover:bg-white/20 rounded-full transition-colors cursor-pointer border-none text-white bg-transparent"
             title="Dismiss"
           >
             <X className="w-3.5 h-3.5" />
@@ -335,7 +358,7 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-xs font-display font-bold text-white truncate">Enable Push Alerts</h4>
-            <p className="text-[10.5px] text-slate-300 line-clamp-1">Receive morning absent &amp; emergency broadcasts.</p>
+            <p className="text-[10.5px] text-slate-300 line-clamp-1">Receive test rankings, batch schedules &amp; fee dues.</p>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             <button
@@ -359,15 +382,15 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
 
       {/* App Update Available Toast */}
       {updateAvailable && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-3 bg-[var(--board-1)] text-white border border-white/20 backdrop-blur-md p-4 rounded-xl shadow-2xl animate-in fade-in slide-in-from-top-5 duration-300 text-sm max-w-sm">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-3 bg-[#122A24] text-white border border-emerald-500/40 backdrop-blur-md p-4 rounded-xl shadow-2xl animate-in fade-in slide-in-from-top-5 duration-300 text-sm max-w-sm">
           <RefreshCw className="w-5 h-5 text-emerald-400 shrink-0 animate-spin" />
           <div className="flex-1">
-            <p className="font-display font-semibold text-white">App Update Available</p>
-            <p className="text-xs text-slate-300">A new version of Giterp is ready.</p>
+            <p className="font-display font-semibold text-white">Update Available</p>
+            <p className="text-xs text-slate-300">A new version of EduElevate is ready.</p>
           </div>
           <button
             onClick={handleUpdateApp}
-            className="bg-[var(--red-pen)] hover:bg-[#b03a24] text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg transition-colors"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer border-none"
           >
             Update
           </button>
@@ -375,22 +398,23 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
       )}
 
       {/* Install PWA Prompt Banner */}
-      {showInstallBanner && deferredPrompt && (
-        <div className="fixed bottom-5 right-4 sm:right-6 z-50 flex items-center gap-3.5 bg-[var(--board-1)] text-white border border-white/20 backdrop-blur-xl p-4 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300 max-w-sm">
-          <div className="w-11 h-11 rounded-xl overflow-hidden border border-white/20 shrink-0 shadow-md bg-[#122A24] flex items-center justify-center p-1">
+      {showInstallBanner && deferredPrompt && !isInstalled && (
+        <div className="fixed bottom-5 right-4 sm:right-6 z-50 flex items-center gap-3.5 bg-[#122A24] text-white border border-emerald-500/40 backdrop-blur-xl p-4 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300 max-w-sm">
+          <div className="w-11 h-11 rounded-xl overflow-hidden border border-emerald-500/30 shrink-0 shadow-md bg-[#0D1F1A] flex items-center justify-center p-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/giterp-logo.png" alt="Giterp Logo" className="w-full h-full object-contain" />
+            <img src="/icons/icon-192.png" alt="EduElevate Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-xs font-display font-semibold text-white truncate">Install Giterp App</h4>
-            <p className="text-[11px] text-slate-300 line-clamp-1">Install to your home screen or desktop for fast offline access.</p>
+            <h4 className="text-xs font-display font-semibold text-white truncate">Install EduElevate</h4>
+            <p className="text-[11px] text-slate-300 line-clamp-1">Install to home screen or desktop for fast offline coaching access.</p>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={handleInstallClick}
-              className="bg-[var(--red-pen)] hover:bg-[#b03a24] text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm transition-colors cursor-pointer border-none"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors cursor-pointer border-none flex items-center gap-1"
             >
-              Install
+              <Download className="w-3.5 h-3.5" />
+              <span>Install</span>
             </button>
             <button
               onClick={handleDismissInstall}
@@ -398,6 +422,74 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
               title="Close"
             >
               <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Install Instructions Guide Modal */}
+      {showInstallGuide && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-[#122A24] text-white border border-emerald-500/40 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl relative">
+            <button
+              onClick={() => setShowInstallGuide(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 transition-colors border-none cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3.5 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-[#0D1F1A] border border-emerald-500/40 p-1.5 flex items-center justify-center shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/icon-192.png" alt="EduElevate" className="w-full h-full object-contain" />
+              </div>
+              <div>
+                <h3 className="text-base font-display font-bold text-white">Install EduElevate App</h3>
+                <p className="text-xs text-emerald-400 font-medium">Standalone Coaching Management Portal</p>
+              </div>
+            </div>
+
+            {isInstalled ? (
+              <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-center mb-4">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+                <p className="text-sm font-bold text-white">App is Already Installed!</p>
+                <p className="text-xs text-slate-300 mt-1">
+                  EduElevate is already running or installed on this device. You can open it anytime from your Applications menu or Home Screen.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3.5 mb-6 text-xs text-slate-200">
+                <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-3">
+                  <Laptop className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-white block mb-0.5">Desktop (Chrome / Edge / Brave):</span>
+                    Look for the <span className="text-emerald-400 font-semibold font-mono">Install [⊕]</span> icon in your browser URL bar at the top right, or click browser menu (⋮) &rarr; <span className="text-white font-medium">"Install EduElevate"</span>.
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-3">
+                  <Smartphone className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-white block mb-0.5">Mobile (iOS / Safari):</span>
+                    Tap the <span className="text-emerald-400 font-semibold">Share <Share2 className="w-3 h-3 inline" /></span> button in Safari at the bottom, scroll down and tap <span className="text-white font-medium">"Add to Home Screen"</span>.
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-3">
+                  <Smartphone className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-white block mb-0.5">Mobile (Android / Chrome):</span>
+                    Tap the 3 dots (⋮) menu in Chrome, then tap <span className="text-white font-medium">"Install App"</span> or <span className="text-white font-medium">"Add to Home Screen"</span>.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowInstallGuide(false)}
+              className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors cursor-pointer border-none shadow-md"
+            >
+              Got It
             </button>
           </div>
         </div>
