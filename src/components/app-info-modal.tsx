@@ -105,7 +105,7 @@ export default function AppInfoModal({ isOpen, onClose }: AppInfoModalProps) {
               <div className="text-[10px] text-slate-400 uppercase font-bold">Cloud Database</div>
               <div className="font-bold text-[#122A24] flex items-center gap-1.5">
                 <Database className="w-3.5 h-3.5 text-emerald-700" />
-                <span>MongoDB Atlas</span>
+                <span>CockroachDB Serverless</span>
               </div>
             </div>
 

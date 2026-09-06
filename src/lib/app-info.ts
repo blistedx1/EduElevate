@@ -8,7 +8,7 @@ export const APP_INFO = {
   buildTimestamp: '2026-09-05T23:48:00+05:30',
   releaseDate: '05 Sep 2026',
   releaseTag: 'v2.0.0-coaching.201',
-  engine: 'Next.js 16.3 (Turbopack) • MongoDB Atlas • Coaching Suite • PWA Push',
+  engine: 'Next.js 16.3 (Turbopack) • CockroachDB Serverless • Coaching Suite • PWA Push',
   status: 'LIVE_PRODUCTION'
 };
 

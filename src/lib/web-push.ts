@@ -2,16 +2,16 @@
 import webpush from 'web-push';
 import fs from 'fs';
 import path from 'path';
-import { getDatabase } from '@/lib/mongodb';
+import { query as cockroachQuery, isCockroachConfigured } from '@/lib/cockroach';
 
 // File path for storing subscriptions and broadcast logs locally as fallback
 const SUBSCRIPTIONS_FILE = path.join(process.cwd(), 'data', 'push_subscriptions.json');
 const BROADCASTS_FILE = path.join(process.cwd(), 'data', 'broadcast_notifications.json');
 
 // VAPID Keys Setup — must match keys used at subscription time on the client
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BHPK2Kr3RVjmnjxjUCqpt3Bq3x-dElAKKhWcTP0E3-6nWx80qDLrNOmUcVyiIYb07Ry0Fa-edBtQhpNcAaAtnV0';
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '4SpMYw6G3zfXNQOnTFbhvZU369W63QiznlWCaKMmQCs';
-const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:blistedx@gmail.com';
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BHAg7KTZHvAhm0LMuGHYP57KKiM2qXLu8IveV4ol8VAZET5ThLx2voemwGgh-I8j6Ksoz1A8S-_5cVMensJVmC4';
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || 'LqnxejcqqbxP1AinhpXudn0RXxb_YtBD5t08Y41HtVM';
+const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:emmalover4317@gmail.com';
 
 try {
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
@@ -46,18 +46,28 @@ export interface BroadcastRecord {
   createdAt: string;
 }
 
-// Read saved push subscriptions from MongoDB Atlas (with local JSON fallback)
+// Read saved push subscriptions from CockroachDB (with local JSON fallback)
 export async function getSavedSubscriptions(): Promise<PushSubscriptionRecord[]> {
-  try {
-    const db = await getDatabase();
-    if (db) {
-      const records = await db.collection<PushSubscriptionRecord>('push_subscriptions').find({}).toArray();
-      if (records && records.length > 0) {
-        return records;
+  if (isCockroachConfigured()) {
+    try {
+      const res = await cockroachQuery<any>('SELECT * FROM push_subscriptions ORDER BY created_at DESC;');
+      if (res && res.rows && res.rows.length > 0) {
+        return res.rows.map(r => ({
+          id: r.id,
+          endpoint: r.endpoint,
+          keys: {
+            p256dh: r.p256dh,
+            auth: r.auth
+          },
+          role: r.role,
+          userId: r.user_id,
+          class_name: r.class_name || 'ALL',
+          createdAt: r.created_at
+        }));
       }
+    } catch (e: any) {
+      console.warn('[WebPush] CockroachDB read notice:', e.message);
     }
-  } catch (e) {
-    console.warn('[WebPush] MongoDB read error, falling back to local store:', e);
   }
 
   // Fallback to local file
@@ -71,7 +81,7 @@ export async function getSavedSubscriptions(): Promise<PushSubscriptionRecord[]>
   return [];
 }
 
-// Save or update subscription in MongoDB Atlas & local file
+// Save or update subscription in CockroachDB & local file
 export async function saveSubscription(sub: {
   endpoint: string;
   keys: { p256dh: string; auth: string };
@@ -80,29 +90,36 @@ export async function saveSubscription(sub: {
   class_name?: string;
 }): Promise<boolean> {
   const record: PushSubscriptionRecord = {
-    id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+    id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
     endpoint: sub.endpoint,
     keys: sub.keys,
     role: sub.role || 'ALL',
-    userId: sub.userId || 'guest',
-    class_name: sub.class_name || 'ALL',
+    userId: sub.userId,
+    class_name: sub.class_name,
     createdAt: new Date().toISOString()
   };
 
-  let savedInMongo = false;
+  let savedInDb = false;
 
-  try {
-    const db = await getDatabase();
-    if (db) {
-      await db.collection('push_subscriptions').updateOne(
-        { endpoint: sub.endpoint },
-        { $set: record },
-        { upsert: true }
-      );
-      savedInMongo = true;
+  if (isCockroachConfigured()) {
+    try {
+      await cockroachQuery(`
+        INSERT INTO push_subscriptions (id, school_id, user_id, role, endpoint, p256dh, auth, device_info)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (endpoint) DO UPDATE SET
+          user_id = EXCLUDED.user_id,
+          role = EXCLUDED.role,
+          p256dh = EXCLUDED.p256dh,
+          auth = EXCLUDED.auth;
+      `, [
+        record.id, 'DPS2026', record.userId || '', record.role || 'ALL',
+        record.endpoint, record.keys?.p256dh || '', record.keys?.auth || '',
+        JSON.stringify({})
+      ]);
+      savedInDb = true;
+    } catch (e: any) {
+      console.warn('[WebPush] CockroachDB save notice:', e.message);
     }
-  } catch (e) {
-    console.warn('[WebPush] Failed to save in MongoDB, saving locally:', e);
   }
 
   // Save to local JSON as well
@@ -127,29 +144,12 @@ export async function saveSubscription(sub: {
     fs.writeFileSync(SUBSCRIPTIONS_FILE, JSON.stringify(list, null, 2), 'utf-8');
     return true;
   } catch (e) {
-    return savedInMongo;
+    return savedInDb;
   }
 }
 
 // Read saved broadcast notifications
 export async function getBroadcastHistory(limit = 30): Promise<BroadcastRecord[]> {
-  try {
-    const db = await getDatabase();
-    if (db) {
-      const records = await db
-        .collection<BroadcastRecord>('broadcast_notifications')
-        .find({})
-        .sort({ createdAt: -1 })
-        .limit(limit)
-        .toArray();
-      if (records && records.length > 0) {
-        return records;
-      }
-    }
-  } catch (e) {
-    console.warn('[WebPush] MongoDB broadcast read error, falling back to local file:', e);
-  }
-
   try {
     if (fs.existsSync(BROADCASTS_FILE)) {
       const data = fs.readFileSync(BROADCASTS_FILE, 'utf-8');
@@ -165,15 +165,6 @@ export async function getBroadcastHistory(limit = 30): Promise<BroadcastRecord[]
 
 // Save a broadcast notification to history
 export async function saveBroadcastRecord(record: BroadcastRecord): Promise<void> {
-  try {
-    const db = await getDatabase();
-    if (db) {
-      await db.collection('broadcast_notifications').insertOne(record as any);
-    }
-  } catch (e) {
-    console.warn('[WebPush] Mongo save broadcast notice:', e);
-  }
-
   try {
     let list: BroadcastRecord[] = [];
     if (fs.existsSync(BROADCASTS_FILE)) {
@@ -207,51 +198,31 @@ export async function sendWebPushNotification({
   urgent?: boolean;
   senderName?: string;
   senderRole?: string;
-}) {
+}): Promise<{ sent: number; failed: number; total: number }> {
   const subscriptions = await getSavedSubscriptions();
 
-  // ── Audience-Based Filtering ──────────────────────────────────────
-  // Map broadcast audience targets to the subscription roles they should reach.
-  // Subscriptions with role 'ALL' always receive every broadcast.
-  const AUDIENCE_ROLE_MAP: Record<string, string[]> = {
-    'FACULTY':     ['TEACHER', 'FACULTY', 'PRINCIPAL', 'ADMIN', 'VICE_PRINCIPAL'],
-    'TEACHERS':    ['TEACHER', 'FACULTY', 'PRINCIPAL', 'ADMIN', 'VICE_PRINCIPAL'],
-    'PARENTS':     ['PARENT'],
-    'BUS_PARENTS': ['PARENT', 'BUS_PARENT'],
-    'STUDENTS':    ['STUDENT'],
-  };
-
-  let targetSubs = subscriptions;
-  const upperAudience = (audience || 'ALL').toUpperCase();
-
-  if (upperAudience !== 'ALL') {
-    const allowedRoles = AUDIENCE_ROLE_MAP[upperAudience] || [];
-    if (allowedRoles.length > 0) {
-      targetSubs = subscriptions.filter(sub => {
-        const subRole = (sub.role || '').toUpperCase();
-        // Strict role matching: notifications targeted to specific groups (e.g. PARENTS) ONLY go to those roles
-        return allowedRoles.includes(subRole);
-      });
-    }
-  }
-
-  const results = {
-    total: targetSubs.length,
-    sent: 0,
-    failed: 0,
-    errors: [] as string[]
-  };
+  // Filter subscriptions based on audience target
+  const targetSubs = subscriptions.filter(sub => {
+    if (audience === 'ALL') return true;
+    if (audience === 'TEACHERS' && sub.role === 'TEACHER') return true;
+    if (audience === 'STUDENTS' && (sub.role === 'STUDENT' || sub.role === 'PARENT')) return true;
+    if (audience === 'ADMINS' && (sub.role === 'PRINCIPAL' || sub.role === 'ADMIN' || sub.role === 'AGENCY_SUPERADMIN')) return true;
+    return false;
+  });
 
   const payload = JSON.stringify({
     title,
     body,
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
+    url,
     urgent,
-    tag: `bc-${Date.now()}`,
-    data: { url, audience, urgent, timestamp: new Date().toISOString() }
+    senderName,
+    senderRole,
+    timestamp: new Date().toISOString(),
+    icon: '/icon-192.png',
+    badge: '/badge-72.png'
   });
 
+  const results = { sent: 0, failed: 0, total: targetSubs.length };
   const deadEndpoints: string[] = [];
 
   for (const sub of targetSubs) {
@@ -275,14 +246,13 @@ export async function sendWebPushNotification({
     }
   }
 
-  // Prune dead subscriptions from MongoDB & local file
+  // Prune dead subscriptions from CockroachDB & local file
   if (deadEndpoints.length > 0) {
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('push_subscriptions').deleteMany({ endpoint: { $in: deadEndpoints } });
-      }
-    } catch (e) {}
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM push_subscriptions WHERE endpoint = ANY($1);', [deadEndpoints]);
+      } catch (e) {}
+    }
 
     try {
       const activeSubs = subscriptions.filter(s => !deadEndpoints.includes(s.endpoint));
@@ -312,4 +282,3 @@ export async function sendWebPushNotification({
 export function getVapidPublicKey() {
   return VAPID_PUBLIC_KEY;
 }
-

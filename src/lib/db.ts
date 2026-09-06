@@ -1,7 +1,7 @@
 /*! EduElevate Coaching Management Service Core v2.0.0 */
 import fs from 'fs';
 import path from 'path';
-import { getDatabase, isMongoConfigured } from './mongodb';
+import { queryRows as cockroachQuery, isCockroachConfigured, checkCockroachStatus } from './cockroach';
 import { saveMediaVaultFile } from './media';
 import {
   School,
@@ -184,32 +184,8 @@ loadLocalStore();
 let isIndexesInitialized = false;
 
 async function ensureIndexes() {
-  if (isIndexesInitialized || !isMongoConfigured()) return;
-  isIndexesInitialized = true;
-  try {
-    const db = await getDatabase();
-    if (!db) return;
-
-    // Build indexes in background without blocking API queries
-    Promise.all([
-      db.collection('schools').createIndex({ school_code: 1 }, { unique: true }),
-      db.collection('schools').createIndex({ id: 1 }),
-      db.collection('demo_requests').createIndex({ id: 1 }),
-      // Hierarchical indexes: Branch ID -> Academic Session -> Entity Identifiers
-      db.collection('students').createIndex({ school_id: 1, academic_session: 1, admission_no: 1 }),
-      db.collection('teachers').createIndex({ school_id: 1, academic_session: 1, staff_code: 1 }),
-      db.collection('classes').createIndex({ school_id: 1, academic_session: 1, class_name: 1, section: 1 }),
-      db.collection('notices').createIndex({ school_id: 1, academic_session: 1, created_at: -1 }),
-      db.collection('attendance').createIndex({ school_id: 1, academic_session: 1, date: -1 }),
-      db.collection('fee_invoices').createIndex({ school_id: 1, academic_session: 1, invoice_no: 1 }),
-      db.collection('holidays').createIndex({ school_id: 1, academic_session: 1, start_date: 1, end_date: 1 }),
-      db.collection('exams').createIndex({ school_id: 1, academic_session: 1, date: -1 }),
-    ]).catch((e) => {
-      console.warn('[MongoDB] Index setup note:', e.message);
-    });
-  } catch (e: any) {
-    console.warn('[MongoDB] Index setup note:', e.message);
-  }
+  // CockroachDB indexes are maintained via DDL
+  return;
 }
 
 function sanitizeDoc<T>(doc: any): T {
@@ -253,22 +229,265 @@ function matchesSession(item: any, session?: string): boolean {
   return itemSession === targetSession;
 }
 
+// ----------------------------------------------------
+// COCKROACHDB ROW MAPPERS
+// ----------------------------------------------------
+function mapCockroachSchool(row: any): School {
+  return {
+    id: row.id,
+    school_code: row.school_code,
+    school_name: row.school_name,
+    board: row.board || 'CBSE',
+    city: row.city || '',
+    state: row.state || '',
+    address: row.address || '',
+    pincode: row.pincode || '',
+    udise_code: row.udise_code || '',
+    oasis_code: row.oasis_code || '',
+    affiliation_no: row.affiliation_no || '',
+    phone: row.phone || '',
+    email: row.email || '',
+    website: row.website || '',
+    principal_name: row.principal_name || '',
+    admin_id: row.admin_id || 'admin',
+    admin_name: row.admin_name || row.principal_name || '',
+    admin_pin: row.admin_pin || '123456',
+    logo: row.logo || '',
+    logo_url: row.logo_url || row.logo || '',
+    status: row.status || 'ACTIVE',
+    settings: typeof row.settings === 'object' && row.settings !== null ? row.settings : (row.settings ? JSON.parse(row.settings) : {}),
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachDemoRequest(row: any): DemoRequest {
+  return {
+    id: row.id,
+    school_name: row.school_name,
+    city: row.city || '',
+    strength: row.strength || '',
+    board: row.board || 'CBSE',
+    contact_name: row.contact_name || '',
+    email: row.email || '',
+    phone: row.phone || '',
+    notes: row.notes || '',
+    status: row.status || 'PENDING',
+    assigned_school_code: row.assigned_school_code || '',
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachStudent(row: any): Student {
+  const extra = typeof row.extra_data === 'object' && row.extra_data !== null
+    ? row.extra_data
+    : (row.extra_data ? JSON.parse(row.extra_data) : {});
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    admission_no: row.admission_no,
+    full_name: row.full_name,
+    class_name: row.class_name,
+    section: row.section,
+    roll_no: row.roll_no,
+    gender: row.gender || 'Male',
+    guardian_name: row.guardian_name || '',
+    guardian_phone: row.guardian_phone || '',
+    guardian_email: row.guardian_email || '',
+    fee_status: row.fee_status || 'PENDING',
+    attendance_percent: Number(row.attendance_percent) || 100,
+    status: row.status || 'ACTIVE',
+    passcode: row.passcode || '123456',
+    avatar: row.avatar || '',
+    photo: row.photo || '',
+    dob: row.dob || '',
+    blood_group: row.blood_group || '',
+    aadhaar_no: row.aadhaar_no || '',
+    apaar_id: row.apaar_id || '',
+    house: row.house || '',
+    category: row.category || '',
+    father_name: row.father_name || '',
+    father_phone: row.father_phone || '',
+    mother_name: row.mother_name || '',
+    mother_phone: row.mother_phone || '',
+    city: row.city || '',
+    state: row.state || '',
+    transport_opted: row.transport_opted || 'NO',
+    bus_route_no: row.bus_route_no || '',
+    ...extra,
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachTeacher(row: any): Teacher {
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    staff_code: row.staff_code,
+    employee_code: row.employee_code || row.staff_code,
+    full_name: row.full_name,
+    department: row.department || 'Academic',
+    designation: row.designation || 'Teacher',
+    qualification: row.qualification || '',
+    phone: row.phone || '',
+    email: row.email || '',
+    status: row.status || 'ACTIVE',
+    passcode: row.passcode || '123456',
+    avatar: row.avatar || '',
+    photo: row.photo || '',
+    teacher_type: row.teacher_type || 'TEACHING',
+    subject_specialization: row.subject_specialization || '',
+    classes_taught: row.classes_taught || '',
+    ctet_qualified: row.ctet_qualified || 'NO',
+    professional_degree: row.professional_degree || 'B.Ed',
+    experience_years: Number(row.experience_years) || 5,
+    gender: row.gender || 'Female',
+    aadhaar_no: row.aadhaar_no || '',
+    pan_no: row.pan_no || '',
+    epf_uan_no: row.epf_uan_no || '',
+    basic_pay: Number(row.basic_pay) || 0,
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachClass(row: any): ClassRoom {
+  const subjects = Array.isArray(row.subjects)
+    ? row.subjects
+    : (row.subjects ? JSON.parse(row.subjects) : []);
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    class_name: row.class_name,
+    name: row.name || row.class_name,
+    section: row.section,
+    class_code: row.class_code || '',
+    class_teacher: row.class_teacher || '',
+    room_no: row.room_no || '',
+    capacity: Number(row.capacity) || 40,
+    subjects,
+    no_of_subjects: subjects.length,
+    status: row.status || 'ACTIVE',
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachNotice(row: any): Notice {
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    reference_no: row.reference_no,
+    matter_category: row.matter_category || 'ACAD',
+    title: row.title,
+    content: row.content,
+    target_audience: row.target_audience || 'ALL',
+    posted_by: row.posted_by || 'Admin',
+    date: row.date || '',
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachAttendance(row: any): AttendanceRecord {
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    date: row.date,
+    class_name: row.class_name,
+    section: row.section,
+    total_students: Number(row.total_students) || 0,
+    present_count: Number(row.present_count) || 0,
+    absent_count: Number(row.absent_count) || 0,
+    leave_count: Number(row.leave_count) || 0,
+    marked_by: row.marked_by || 'Admin',
+    student_records: Array.isArray(row.student_records)
+      ? row.student_records
+      : (row.student_records ? JSON.parse(row.student_records) : []),
+    teacher_records: Array.isArray(row.teacher_records)
+      ? row.teacher_records
+      : (row.teacher_records ? JSON.parse(row.teacher_records) : []),
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachFeeInvoice(row: any): FeeInvoice {
+  const extra = typeof row.extra_data === 'object' && row.extra_data !== null
+    ? row.extra_data
+    : (row.extra_data ? JSON.parse(row.extra_data) : {});
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    invoice_no: row.invoice_no,
+    student_id: row.student_id || '',
+    student_name: row.student_name || '',
+    admission_no: row.admission_no || '',
+    class_name: row.class_name || '',
+    month: row.month || '',
+    amount: Number(row.amount) || 0,
+    paid_amount: Number(row.paid_amount) || 0,
+    due_date: row.due_date || '',
+    status: row.status || 'PENDING',
+    payment_mode: row.payment_mode || '',
+    paid_date: row.paid_date || '',
+    ...extra,
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachHoliday(row: any): Holiday {
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    title: row.title,
+    start_date: row.start_date,
+    end_date: row.end_date,
+    total_days: Number(row.total_days) || 1,
+    applicable_to: row.applicable_to || 'ALL',
+    category: row.category || 'GAZETTED',
+    reason: row.reason || '',
+    declared_by: row.declared_by || 'Principal',
+    auto_notice_published: Boolean(row.auto_notice_published),
+    created_at: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+  };
+}
+
+function mapCockroachExam(row: any): ScheduledExamItem {
+  return {
+    id: row.id,
+    school_id: row.school_id,
+    academic_session: row.academic_session || '2026-27',
+    title: row.title,
+    type: row.type || 'SCHOOL_EXAM',
+    class_name: row.class_name,
+    section: row.section,
+    subject_name: row.subject_name,
+    subject_code: row.subject_code || '',
+    date: row.date,
+    time: row.time || '',
+    max_marks: Number(row.max_marks) || 100,
+    pass_marks: Number(row.pass_marks) || 33,
+    status: row.status || 'PENDING'
+  };
+}
+
 export const Database = {
   // DEMO REQUESTS
   async getDemoRequests(): Promise<DemoRequest[]> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        const results = await db.collection('demo_requests')
-          .find({})
-          .sort({ created_at: -1 })
-          .toArray();
-        if (results && results.length > 0) {
-          return results.map(sanitizeDoc<DemoRequest>);
+    if (isCockroachConfigured()) {
+      try {
+        const rows = await cockroachQuery<any>('SELECT * FROM demo_requests ORDER BY created_at DESC');
+        if (rows && rows.length > 0) {
+          return rows.map(mapCockroachDemoRequest);
         }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getDemoRequests error:', e.message);
       }
-    } catch (e) {}
+    }
     return memoryStore.demo_requests;
   },
 
@@ -289,12 +508,19 @@ export const Database = {
       created_at: new Date().toISOString()
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('demo_requests').insertOne({ ...req });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `INSERT INTO demo_requests (id, school_name, city, strength, board, contact_name, email, phone, notes, status, assigned_school_code)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+           ON CONFLICT (id) DO NOTHING`,
+          [req.id, req.school_name, req.city, req.strength, req.board, req.contact_name, req.email, req.phone, req.notes, req.status, req.assigned_school_code || null]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createDemoRequest error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     memoryStore.demo_requests.unshift(req);
     saveLocalStore();
@@ -331,15 +557,17 @@ export const Database = {
       status: 'ACTIVE'
     });
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('demo_requests').updateOne(
-          { id: requestId },
-          { $set: { status: 'APPROVED', assigned_school_code: schoolCode } }
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `UPDATE demo_requests SET status = 'APPROVED', assigned_school_code = $1 WHERE id = $2`,
+          [schoolCode, requestId]
         );
+      } catch (e: any) {
+        console.warn('[CockroachDB] approveDemoRequest error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     const memIdx = memoryStore.demo_requests.findIndex(r => r.id === requestId);
     if (memIdx >= 0) {
@@ -353,15 +581,16 @@ export const Database = {
 
   async rejectDemoRequest(requestId: string): Promise<boolean> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('demo_requests').updateOne(
-          { id: requestId },
-          { $set: { status: 'REJECTED' } }
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `UPDATE demo_requests SET status = 'REJECTED' WHERE id = $1`,
+          [requestId]
         );
+      } catch (e: any) {
+        console.warn('[CockroachDB] rejectDemoRequest error:', e.message);
       }
-    } catch (e) {}
+    }
 
     const memIdx = memoryStore.demo_requests.findIndex(r => r.id === requestId);
     if (memIdx >= 0) {
@@ -379,20 +608,20 @@ export const Database = {
     if (cached && cached.length > 0) return cached;
 
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        const results = await db.collection('schools')
-          .find({ status: 'ACTIVE' })
-          .sort({ created_at: 1 })
-          .toArray();
-        if (results && results.length > 0) {
-          const mapped = results.map(sanitizeDoc<School>);
+    if (isCockroachConfigured()) {
+      try {
+        const rows = await cockroachQuery<any>(
+          `SELECT * FROM schools WHERE status = 'ACTIVE' ORDER BY created_at ASC`
+        );
+        if (rows && rows.length > 0) {
+          const mapped = rows.map(mapCockroachSchool);
           setCached(cacheKey, mapped, 60000);
           return mapped;
         }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getSchools error:', e.message);
       }
-    } catch (e) {}
+    }
 
     const fallback = memoryStore.schools.filter(s => s.status === 'ACTIVE');
     if (fallback.length > 0) {
@@ -467,18 +696,30 @@ export const Database = {
       created_at: new Date().toISOString()
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('schools').updateOne(
-          { school_code: code },
-          { $set: { ...school } },
-          { upsert: true }
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `INSERT INTO schools (id, school_code, school_name, board, city, state, address, pincode, udise_code, oasis_code, affiliation_no, phone, email, website, principal_name, admin_id, admin_name, admin_pin, logo, logo_url, status, settings)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+           ON CONFLICT (id) DO UPDATE SET
+             school_name = EXCLUDED.school_name,
+             email = EXCLUDED.email,
+             admin_pin = EXCLUDED.admin_pin,
+             settings = EXCLUDED.settings`,
+          [
+            school.id, school.school_code, school.school_name, school.board, school.city || '', school.state || '',
+            school.address || '', school.pincode || '', school.udise_code || '', school.oasis_code || '',
+            school.affiliation_no || '', school.phone || '', school.email || '', school.website || '',
+            school.principal_name || '', school.admin_id || 'admin', school.admin_name || '', school.admin_pin || '123456',
+            school.logo || '', school.logo_url || school.logo || '', school.status || 'ACTIVE',
+            JSON.stringify(school.settings || {})
+          ]
         );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createSchool error:', e.message);
       }
-    } catch (e: any) {
-      console.warn('[MongoDB] Notice saving school:', e.message);
     }
+
 
     const idx = memoryStore.schools.findIndex(s => s.school_code === code || s.id === id);
     if (idx >= 0) {
@@ -499,7 +740,6 @@ export const Database = {
     for (const [k, v] of Object.entries(updates)) {
       if (v !== undefined && v !== null && String(v).trim() !== '') {
         if (k === 'admin_pin' && v === 'admin@4317') {
-          // Keep existing school pin or default
           cleanedUpdates[k] = school.admin_pin || '123456';
         } else {
           cleanedUpdates[k] = v;
@@ -512,17 +752,49 @@ export const Database = {
       ...cleanedUpdates
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('schools').updateOne(
-          { $or: [{ id: school.id }, { school_code: school.school_code }] },
-          { $set: cleanedUpdates }
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `UPDATE schools SET
+             school_name = COALESCE($1, school_name),
+             city = COALESCE($2, city),
+             state = COALESCE($3, state),
+             principal_name = COALESCE($4, principal_name),
+             admin_name = COALESCE($5, admin_name),
+             admin_pin = COALESCE($6, admin_pin),
+             phone = COALESCE($7, phone),
+             email = COALESCE($8, email),
+             website = COALESCE($9, website),
+             address = COALESCE($10, address),
+             pincode = COALESCE($11, pincode),
+             logo = COALESCE($12, logo),
+             logo_url = COALESCE($13, logo_url),
+             settings = COALESCE($14::jsonb, settings)
+           WHERE id = $15 OR school_code = $16`,
+          [
+            cleanedUpdates.school_name || null,
+            cleanedUpdates.city || null,
+            cleanedUpdates.state || null,
+            cleanedUpdates.principal_name || null,
+            cleanedUpdates.admin_name || null,
+            cleanedUpdates.admin_pin || null,
+            cleanedUpdates.phone || null,
+            cleanedUpdates.email || null,
+            cleanedUpdates.website || null,
+            cleanedUpdates.address || null,
+            cleanedUpdates.pincode || null,
+            cleanedUpdates.logo || null,
+            cleanedUpdates.logo_url || null,
+            cleanedUpdates.settings ? JSON.stringify(cleanedUpdates.settings) : null,
+            school.id,
+            school.school_code
+          ]
         );
+      } catch (e: any) {
+        console.warn('[CockroachDB] updateSchoolSettings error:', e.message);
       }
-    } catch (e: any) {
-      console.warn('[MongoDB] Notice updating school settings:', e.message);
     }
+
 
     const idx = memoryStore.schools.findIndex(s => s.id === school.id || s.school_code === school.school_code);
     if (idx >= 0) {
@@ -537,7 +809,6 @@ export const Database = {
     return this.updateSchoolSettings(schoolId, updates);
   },
 
-  // AGENCY SUPERADMIN PERMANENT SCHOOL PURGE (MONGODB + LOCAL DB)
   async purgeSchoolData(schoolIdOrCode: string) {
     await ensureIndexes();
     const school = await this.getSchoolById(schoolIdOrCode) || await this.getSchoolByCode(schoolIdOrCode);
@@ -563,49 +834,18 @@ export const Database = {
       schools: 1
     };
 
-    // 1. Purge from MongoDB Atlas (Cluster collections)
-    try {
-      const db = await getDatabase();
-      if (db) {
-        const mongoQuery = {
-          $or: [
-            { school_id: { $in: matchIds } },
-            { schoolId: { $in: matchIds } },
-            { school_code: { $in: matchIds } }
-          ]
-        };
-
-        const resStudents = await db.collection('students').deleteMany(mongoQuery);
-        summary.students = resStudents.deletedCount || 0;
-
-        const resTeachers = await db.collection('teachers').deleteMany(mongoQuery);
-        summary.teachers = resTeachers.deletedCount || 0;
-
-        const resClasses = await db.collection('classes').deleteMany(mongoQuery);
-        summary.classes = resClasses.deletedCount || 0;
-
-        const resAttendance = await db.collection('attendance').deleteMany(mongoQuery);
-        summary.attendance = resAttendance.deletedCount || 0;
-
-        const resInvoices = await db.collection('invoices').deleteMany(mongoQuery);
-        summary.invoices = resInvoices.deletedCount || 0;
-
-        const resNotices = await db.collection('notices').deleteMany(mongoQuery);
-        summary.notices = resNotices.deletedCount || 0;
-
-        const resExams = await db.collection('exams').deleteMany(mongoQuery);
-        summary.exams = resExams.deletedCount || 0;
-
-        await db.collection('schools').deleteOne({
-          $or: [
-            { id: { $in: matchIds } },
-            { school_code: { $in: matchIds } }
-          ]
-        });
+    // 1. Purge from CockroachDB (Cascading deletes across all dependent tables)
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `DELETE FROM schools WHERE id = ANY($1) OR school_code = ANY($1)`,
+          [matchIds]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] purgeSchoolData error:', e.message);
       }
-    } catch (e: any) {
-      console.warn('[MongoDB Purge Notice]', e.message);
     }
+
 
     // 2. Purge from Local memoryStore & JSON file (data/erp_store.json)
     const matchesSchool = (itemSchoolId?: string) => {
@@ -1002,28 +1242,42 @@ export const Database = {
     const targetId = school?.id || cleanId;
     const targetCode = school?.school_code || cleanId;
 
-    // 1. MongoDB Query (Fast Primary Store)
-    try {
-      const db = await getDatabase();
-      if (db) {
+    // 1. CockroachDB Query (Primary Relational Cloud Cluster)
+    if (isCockroachConfigured()) {
+      try {
         const ids = (targetId || targetCode || schoolId)
           ? Array.from(new Set([targetId, targetCode, schoolId, cleanId].filter(Boolean)))
           : [];
-        const filter = buildSessionFilter(ids as string[], targetSession);
-        const results = await db.collection('students')
-          .find(filter)
-          .sort({ admission_no: 1 })
-          .toArray();
-        if (results && results.length > 0) {
-          const mapped = results.map(sanitizeDoc<Student>).map(s => ({
-            ...s,
-            academic_session: s.academic_session || '2026-27'
-          }));
+        let querySql = '';
+        let params: any[] = [];
+        if (ids.length > 0) {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM students WHERE school_id = ANY($1) ORDER BY admission_no ASC`;
+            params = [ids];
+          } else {
+            querySql = `SELECT * FROM students WHERE school_id = ANY($1) AND (academic_session = $2 OR academic_session IS NULL OR academic_session = '') ORDER BY admission_no ASC`;
+            params = [ids, targetSession];
+          }
+        } else {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM students ORDER BY admission_no ASC`;
+            params = [];
+          } else {
+            querySql = `SELECT * FROM students WHERE (academic_session = $1 OR academic_session IS NULL OR academic_session = '') ORDER BY admission_no ASC`;
+            params = [targetSession];
+          }
+        }
+        const rows = await cockroachQuery<any>(querySql, params);
+        if (rows && rows.length > 0) {
+          const mapped = rows.map(mapCockroachStudent);
           setCached(cacheKey, mapped, 45000);
           return mapped;
         }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getStudents error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     // 3. MemoryStore / LocalStore Fallback
     if (targetId || schoolId) {
@@ -1081,12 +1335,54 @@ export const Database = {
       student.photo = `/api/media/${mediaId}`;
     }
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('students').insertOne({ ...student });
+    if (isCockroachConfigured()) {
+      try {
+        const extraData = {
+          cwsn_facility: (student as any).cwsn_facility,
+          admission_type: (student as any).admission_type,
+          admission_date: (student as any).admission_date,
+          father_qualification: (student as any).father_qualification,
+          father_occupation: (student as any).father_occupation,
+          father_income: (student as any).father_income,
+          father_aadhaar: (student as any).father_aadhaar,
+          mother_qualification: (student as any).mother_qualification,
+          mother_occupation: (student as any).mother_occupation,
+          mother_income: (student as any).mother_income,
+          mother_aadhaar: (student as any).mother_aadhaar,
+          residential_address: (student as any).residential_address,
+          permanent_address: (student as any).permanent_address,
+          pincode: (student as any).pincode,
+          is_rte: (student as any).is_rte,
+          hostel_opted: (student as any).hostel_opted,
+          hostel_room_no: (student as any).hostel_room_no,
+          emergency_contact_name: (student as any).emergency_contact_name,
+          emergency_contact_phone: (student as any).emergency_contact_phone
+        };
+        await cockroachQuery(
+          `INSERT INTO students (id, school_id, academic_session, admission_no, full_name, class_name, section, roll_no, gender, guardian_name, guardian_phone, guardian_email, fee_status, attendance_percent, status, passcode, avatar, photo, dob, blood_group, aadhaar_no, apaar_id, house, category, father_name, father_phone, mother_name, mother_phone, city, state, transport_opted, bus_route_no, extra_data)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33)
+           ON CONFLICT (id) DO UPDATE SET
+             full_name = EXCLUDED.full_name,
+             class_name = EXCLUDED.class_name,
+             section = EXCLUDED.section,
+             extra_data = EXCLUDED.extra_data`,
+          [
+            student.id, student.school_id, student.academic_session, student.admission_no, student.full_name,
+            student.class_name, student.section, String(student.roll_no || '1'), student.gender || 'Male',
+            student.guardian_name || '', student.guardian_phone || '', student.guardian_email || '',
+            student.fee_status || 'PENDING', Number(student.attendance_percent) || 100, student.status || 'ACTIVE',
+            student.passcode || '123456', student.avatar || '', student.photo || '', student.dob || '',
+            student.blood_group || '', student.aadhaar_no || '', student.apaar_id || '', student.house || '',
+            student.category || '', student.father_name || '', student.father_phone || '',
+            student.mother_name || '', student.mother_phone || '', student.city || '', student.state || '',
+            (student as any).transport_opted || 'NO', (student as any).bus_route_no || '', JSON.stringify(extraData)
+          ]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createStudent error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     memoryStore.students.push(student);
     saveLocalStore();
@@ -1110,15 +1406,34 @@ export const Database = {
       sanitizedUpdates.photo = `/api/media/${mediaId}`;
     }
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('students').updateOne(
-          { $or: [{ id: studentId }, { admission_no: studentId }] },
-          { $set: sanitizedUpdates }
-        );
+    if (isCockroachConfigured()) {
+      try {
+        const fields: string[] = [];
+        const values: any[] = [];
+        let p = 1;
+        for (const [col, val] of Object.entries(sanitizedUpdates)) {
+          if (val === undefined) continue;
+          if (['id', 'created_at'].includes(col)) continue;
+          if (['admission_no', 'full_name', 'class_name', 'section', 'roll_no', 'gender', 'guardian_name', 'guardian_phone', 'guardian_email', 'fee_status', 'status', 'passcode', 'avatar', 'photo', 'dob', 'blood_group', 'aadhaar_no', 'apaar_id', 'house', 'category', 'father_name', 'father_phone', 'mother_name', 'mother_phone', 'city', 'state', 'transport_opted', 'bus_route_no', 'academic_session'].includes(col)) {
+            fields.push(`${col} = $${p++}`);
+            values.push(val);
+          } else if (col === 'attendance_percent') {
+            fields.push(`attendance_percent = $${p++}`);
+            values.push(Number(val) || 0);
+          }
+        }
+        if (fields.length > 0) {
+          values.push(studentId);
+          await cockroachQuery(
+            `UPDATE students SET ${fields.join(', ')} WHERE id = $${p} OR admission_no = $${p}`,
+            values
+          );
+        }
+      } catch (e: any) {
+        console.warn('[CockroachDB] updateStudent error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     invalidateServerCache('students');
     invalidateServerCache('overview');
@@ -1136,12 +1451,14 @@ export const Database = {
   },
 
   async deleteStudent(studentId: string): Promise<boolean> {
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('students').deleteOne({ id: studentId });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM students WHERE id = $1 OR admission_no = $1', [studentId]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteStudent error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     invalidateServerCache('students');
     invalidateServerCache('overview');
@@ -1166,8 +1483,31 @@ export const Database = {
     }>
   ): Promise<{ promoted: number; retained: number; graduated: number; left: number }> {
     let promoted = 0, retained = 0, graduated = 0, left = 0;
-    const db = await getDatabase();
-    const ops: any[] = [];
+
+    if (isCockroachConfigured()) {
+      for (const p of promotions) {
+        try {
+          if (p.action === 'PROMOTE') {
+            await cockroachQuery(
+              `UPDATE students SET class_name = COALESCE($1, class_name), section = COALESCE($2, section), academic_session = COALESCE($3, academic_session), roll_no = COALESCE($4, roll_no), status = 'ACTIVE' WHERE id = $5`,
+              [p.target_class || null, p.target_section || null, p.target_session || null, p.roll_no || null, p.student_id]
+            );
+          } else if (p.action === 'RETAIN') {
+            await cockroachQuery(
+              `UPDATE students SET section = COALESCE($1, section), roll_no = COALESCE($2, roll_no), academic_session = COALESCE($3, academic_session) WHERE id = $4`,
+              [p.target_section || null, p.roll_no || null, p.target_session || null, p.student_id]
+            );
+          } else if (p.action === 'GRADUATE' || p.action === 'LEFT') {
+            await cockroachQuery(
+              `UPDATE students SET status = 'INACTIVE' WHERE id = $1`,
+              [p.student_id]
+            );
+          }
+        } catch (e: any) {
+          console.warn('[CockroachDB] bulkPromote student error:', e.message);
+        }
+      }
+    }
 
     for (const p of promotions) {
       const idx = memoryStore.students.findIndex(s => s.id === p.student_id);
@@ -1201,22 +1541,7 @@ export const Database = {
         }
 
         memoryStore.students[idx] = { ...student, ...updates };
-
-        if (db) {
-          ops.push({
-            updateOne: {
-              filter: { id: student.id },
-              update: { $set: updates }
-            }
-          });
-        }
       }
-    }
-
-    if (db && ops.length > 0) {
-      try {
-        await db.collection('students').bulkWrite(ops);
-      } catch (e) {}
     }
 
     saveLocalStore();
@@ -1274,20 +1599,34 @@ export const Database = {
       return { ...t, gender: (num % 3 !== 0) ? 'Female' : 'Male' };
     };
 
-    // 1. MongoDB Query (Fast Primary Store)
-    try {
-      const db = await getDatabase();
-      if (db) {
+    // 1. CockroachDB Query (Primary Relational Cloud Cluster)
+    if (isCockroachConfigured()) {
+      try {
         const ids = (targetId || targetCode || schoolId)
           ? Array.from(new Set([targetId, targetCode, schoolId, cleanId].filter(Boolean)))
           : [];
-        const filter = buildSessionFilter(ids as string[], targetSession);
-        const results = await db.collection('teachers')
-          .find(filter)
-          .sort({ staff_code: 1 })
-          .toArray();
-        if (results && results.length > 0) {
-          const mapped = results.map(sanitizeDoc<Teacher>).map(ensureTeacherGender).map(t => ({
+        let querySql = '';
+        let params: any[] = [];
+        if (ids.length > 0) {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM teachers WHERE school_id = ANY($1) ORDER BY staff_code ASC`;
+            params = [ids];
+          } else {
+            querySql = `SELECT * FROM teachers WHERE school_id = ANY($1) AND (academic_session = $2 OR academic_session IS NULL OR academic_session = '') ORDER BY staff_code ASC`;
+            params = [ids, targetSession];
+          }
+        } else {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM teachers ORDER BY staff_code ASC`;
+            params = [];
+          } else {
+            querySql = `SELECT * FROM teachers WHERE (academic_session = $1 OR academic_session IS NULL OR academic_session = '') ORDER BY staff_code ASC`;
+            params = [targetSession];
+          }
+        }
+        const rows = await cockroachQuery<any>(querySql, params);
+        if (rows && rows.length > 0) {
+          const mapped = rows.map(mapCockroachTeacher).map(ensureTeacherGender).map(t => ({
             ...t,
             role: t.role || resolveTeacherRole(t),
             academic_session: t.academic_session || '2026-27'
@@ -1295,8 +1634,11 @@ export const Database = {
           setCached(cacheKey, mapped, 45000);
           return mapped;
         }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getTeachers error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     if (targetId || schoolId) {
       const ids = [targetId, targetCode, schoolId, cleanId].filter(Boolean);
@@ -1353,12 +1695,32 @@ export const Database = {
       teacher.photo = `/api/media/${mediaId}`;
     }
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('teachers').insertOne({ ...teacher });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `INSERT INTO teachers (id, school_id, academic_session, staff_code, employee_code, full_name, department, designation, qualification, phone, email, status, passcode, avatar, photo, teacher_type, subject_specialization, classes_taught, ctet_qualified, professional_degree, experience_years, gender, aadhaar_no, pan_no, epf_uan_no, basic_pay)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
+           ON CONFLICT (id) DO UPDATE SET
+             full_name = EXCLUDED.full_name,
+             email = EXCLUDED.email,
+             avatar = EXCLUDED.avatar,
+             photo = EXCLUDED.photo`,
+          [
+            teacher.id, teacher.school_id, teacher.academic_session, teacher.staff_code,
+            teacher.employee_code || teacher.staff_code, teacher.full_name, teacher.department || 'Academic',
+            teacher.designation || 'Teacher', teacher.qualification || '', teacher.phone || '', teacher.email || '',
+            teacher.status || 'ACTIVE', teacher.passcode || '123456', teacher.avatar || '', teacher.photo || '',
+            teacher.teacher_type || 'TEACHING', teacher.subject_specialization || '', teacher.classes_taught || '',
+            teacher.ctet_qualified || 'NO', teacher.professional_degree || 'B.Ed',
+            Number(teacher.experience_years) || 5, teacher.gender || 'Female', teacher.aadhaar_no || '',
+            teacher.pan_no || '', teacher.epf_uan_no || '', Number(teacher.basic_pay) || 0
+          ]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createTeacher error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     memoryStore.teachers.push(teacher);
     saveLocalStore();
@@ -1382,15 +1744,34 @@ export const Database = {
       sanitizedUpdates.photo = `/api/media/${mediaId}`;
     }
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('teachers').updateOne(
-          { $or: [{ id: teacherId }, { staff_code: teacherId }] },
-          { $set: sanitizedUpdates }
-        );
+    if (isCockroachConfigured()) {
+      try {
+        const fields: string[] = [];
+        const values: any[] = [];
+        let p = 1;
+        for (const [col, val] of Object.entries(sanitizedUpdates)) {
+          if (val === undefined) continue;
+          if (['id', 'created_at'].includes(col)) continue;
+          if (['staff_code', 'employee_code', 'full_name', 'department', 'designation', 'qualification', 'phone', 'email', 'status', 'passcode', 'avatar', 'photo', 'teacher_type', 'subject_specialization', 'classes_taught', 'ctet_qualified', 'professional_degree', 'gender', 'aadhaar_no', 'pan_no', 'epf_uan_no', 'academic_session'].includes(col)) {
+            fields.push(`${col} = $${p++}`);
+            values.push(val);
+          } else if (['experience_years', 'basic_pay'].includes(col)) {
+            fields.push(`${col} = $${p++}`);
+            values.push(Number(val) || 0);
+          }
+        }
+        if (fields.length > 0) {
+          values.push(teacherId);
+          await cockroachQuery(
+            `UPDATE teachers SET ${fields.join(', ')} WHERE id = $${p} OR staff_code = $${p}`,
+            values
+          );
+        }
+      } catch (e: any) {
+        console.warn('[CockroachDB] updateTeacher error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     invalidateServerCache('teachers');
     invalidateServerCache('overview');
@@ -1408,12 +1789,14 @@ export const Database = {
   },
 
   async deleteTeacher(teacherId: string): Promise<boolean> {
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('teachers').deleteOne({ id: teacherId });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM teachers WHERE id = $1 OR staff_code = $1', [teacherId]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteTeacher error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     invalidateServerCache('teachers');
     invalidateServerCache('overview');
@@ -1442,27 +1825,45 @@ export const Database = {
 
     let classesList: ClassRoom[] = [];
 
-    // 1. MongoDB Query (Fast Primary Store)
-    try {
-      const db = await getDatabase();
-      if (db) {
+    // 1. CockroachDB Query (Primary Relational Cloud Cluster)
+    if (isCockroachConfigured()) {
+      try {
         const ids = (targetId || targetCode || schoolId)
           ? Array.from(new Set([targetId, targetCode, schoolId, cleanId].filter(Boolean)))
           : [];
-        const filter = buildSessionFilter(ids as string[], targetSession);
-        const results = await db.collection('classes')
-          .find(filter)
-          .sort({ class_name: 1, section: 1 })
-          .toArray();
-        if (results && results.length > 0) {
-          classesList = results.map(sanitizeDoc<ClassRoom>).map(c => ({
+        let querySql = '';
+        let params: any[] = [];
+        if (ids.length > 0) {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM classes WHERE school_id = ANY($1) ORDER BY class_name ASC, section ASC`;
+            params = [ids];
+          } else {
+            querySql = `SELECT * FROM classes WHERE school_id = ANY($1) AND (academic_session = $2 OR academic_session IS NULL OR academic_session = '') ORDER BY class_name ASC, section ASC`;
+            params = [ids, targetSession];
+          }
+        } else {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM classes ORDER BY class_name ASC, section ASC`;
+            params = [];
+          } else {
+            querySql = `SELECT * FROM classes WHERE (academic_session = $1 OR academic_session IS NULL OR academic_session = '') ORDER BY class_name ASC, section ASC`;
+            params = [targetSession];
+          }
+        }
+        const rows = await cockroachQuery<any>(querySql, params);
+        if (rows && rows.length > 0) {
+          classesList = rows.map(mapCockroachClass).map(c => ({
             ...c,
             academic_session: c.academic_session || targetSession
           }));
         }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getClasses error:', e.message);
       }
-    } catch (e) {}
+    }
 
+    if (classesList.length === 0) {
+    }
 
     if (classesList.length === 0) {
       if (targetId || schoolId) {
@@ -1515,12 +1916,26 @@ export const Database = {
       status: data.status || 'ACTIVE'
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('classes').insertOne({ ...cls });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `INSERT INTO classes (id, school_id, academic_session, class_name, name, section, class_code, class_teacher, room_no, capacity, subjects, no_of_subjects, status)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+           ON CONFLICT (id) DO UPDATE SET
+             subjects = EXCLUDED.subjects,
+             class_teacher = EXCLUDED.class_teacher`,
+          [
+            cls.id, cls.school_id, cls.academic_session, cls.class_name, cls.name || cls.class_name,
+            cls.section, cls.class_code || '', cls.class_teacher || '', cls.room_no || '',
+            cls.capacity || 40, JSON.stringify(cls.subjects || []), cls.no_of_subjects || (cls.subjects || []).length,
+            cls.status || 'ACTIVE'
+          ]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createClass error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     memoryStore.classes.push(cls);
     saveLocalStore();
@@ -1532,15 +1947,38 @@ export const Database = {
     if (updates.subjects && Array.isArray(updates.subjects)) {
       updates.no_of_subjects = updates.subjects.length;
     }
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('classes').updateOne(
-          { id: classId },
-          { $set: updates }
-        );
+
+    if (isCockroachConfigured()) {
+      try {
+        const fields: string[] = [];
+        const values: any[] = [];
+        let p = 1;
+        for (const [col, val] of Object.entries(updates)) {
+          if (val === undefined) continue;
+          if (['id', 'created_at'].includes(col)) continue;
+          if (['class_name', 'name', 'section', 'class_code', 'class_teacher', 'room_no', 'status', 'academic_session'].includes(col)) {
+            fields.push(`${col} = $${p++}`);
+            values.push(val);
+          } else if (['capacity', 'no_of_subjects'].includes(col)) {
+            fields.push(`${col} = $${p++}`);
+            values.push(Number(val) || 0);
+          } else if (col === 'subjects') {
+            fields.push(`subjects = $${p++}::jsonb`);
+            values.push(JSON.stringify(val));
+          }
+        }
+        if (fields.length > 0) {
+          values.push(classId);
+          await cockroachQuery(
+            `UPDATE classes SET ${fields.join(', ')} WHERE id = $${p}`,
+            values
+          );
+        }
+      } catch (e: any) {
+        console.warn('[CockroachDB] updateClass error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     const idx = memoryStore.classes.findIndex(c => c.id === classId);
     if (idx >= 0) {
@@ -1606,12 +2044,14 @@ export const Database = {
 
   async deleteClass(classId: string): Promise<boolean> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('classes').deleteOne({ id: classId });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM classes WHERE id = $1', [classId]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteClass error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     const idx = memoryStore.classes.findIndex(c => c.id === classId);
     if (idx >= 0) {
@@ -1631,23 +2071,39 @@ export const Database = {
     const targetCode = school?.school_code || cleanId;
     const targetSession = session || '2026-27';
 
-    // 1. MongoDB Query (Fast Primary Store)
-    try {
-      const db = await getDatabase();
-      if (db) {
+    // 1. CockroachDB Query (Primary Relational Cloud Cluster)
+    if (isCockroachConfigured()) {
+      try {
         const ids = (targetId || targetCode || schoolId)
           ? Array.from(new Set([targetId, targetCode, schoolId, cleanId].filter(Boolean)))
           : [];
-        const filter = buildSessionFilter(ids as string[], targetSession);
-        const results = await db.collection('notices')
-          .find(filter)
-          .sort({ created_at: -1 })
-          .toArray();
-        if (results) {
-          return results.map(sanitizeDoc<Notice>);
+        let querySql = '';
+        let params: any[] = [];
+        if (ids.length > 0) {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM notices WHERE school_id = ANY($1) ORDER BY created_at DESC`;
+            params = [ids];
+          } else {
+            querySql = `SELECT * FROM notices WHERE school_id = ANY($1) AND (academic_session = $2 OR academic_session IS NULL OR academic_session = '') ORDER BY created_at DESC`;
+            params = [ids, targetSession];
+          }
+        } else {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM notices ORDER BY created_at DESC`;
+            params = [];
+          } else {
+            querySql = `SELECT * FROM notices WHERE (academic_session = $1 OR academic_session IS NULL OR academic_session = '') ORDER BY created_at DESC`;
+            params = [targetSession];
+          }
         }
+        const rows = await cockroachQuery<any>(querySql, params);
+        if (rows && rows.length > 0) {
+          return rows.map(mapCockroachNotice);
+        }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getNotices error:', e.message);
       }
-    } catch (e) {}
+    }
 
 
     if (targetId || schoolId) {
@@ -1737,12 +2193,23 @@ export const Database = {
       created_at: isoTimestamp
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('notices').insertOne({ ...notice });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `INSERT INTO notices (id, school_id, academic_session, reference_no, matter_category, title, content, target_audience, posted_by, date)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+           ON CONFLICT (id) DO NOTHING`,
+          [
+            notice.id, notice.school_id, notice.academic_session, notice.reference_no,
+            notice.matter_category, notice.title, notice.content, notice.target_audience || 'ALL',
+            notice.posted_by || 'Admin', notice.date
+          ]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createNotice error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     memoryStore.notices.unshift(notice);
     saveLocalStore();
@@ -1751,12 +2218,14 @@ export const Database = {
 
   async deleteNotice(noticeId: string): Promise<boolean> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('notices').deleteOne({ id: noticeId });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM notices WHERE id = $1', [noticeId]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteNotice error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     const idx = memoryStore.notices.findIndex(n => n.id === noticeId);
     if (idx >= 0) {
@@ -1780,20 +2249,34 @@ export const Database = {
     const targetId = school?.id || cleanId;
     const targetCode = school?.school_code || cleanId;
 
-    // 1. MongoDB Query (Fast Primary Store)
-    try {
-      const db = await getDatabase();
-      if (db) {
+    // 1. CockroachDB Query (Primary Relational Cloud Cluster)
+    if (isCockroachConfigured()) {
+      try {
         const ids = (targetId || targetCode || schoolId)
           ? Array.from(new Set([targetId, targetCode, schoolId, cleanId].filter(Boolean)))
           : [];
-        const filter = buildSessionFilter(ids as string[], targetSession);
-        const results = await db.collection('attendance')
-          .find(filter)
-          .sort({ date: -1 })
-          .toArray();
-        if (results && results.length > 0) {
-          const sanitized = results.map(sanitizeDoc<AttendanceRecord>);
+        let querySql = '';
+        let params: any[] = [];
+        if (ids.length > 0) {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM attendance WHERE school_id = ANY($1) ORDER BY date DESC`;
+            params = [ids];
+          } else {
+            querySql = `SELECT * FROM attendance WHERE school_id = ANY($1) AND (academic_session = $2 OR academic_session IS NULL OR academic_session = '') ORDER BY date DESC`;
+            params = [ids, targetSession];
+          }
+        } else {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM attendance ORDER BY date DESC`;
+            params = [];
+          } else {
+            querySql = `SELECT * FROM attendance WHERE (academic_session = $1 OR academic_session IS NULL OR academic_session = '') ORDER BY date DESC`;
+            params = [targetSession];
+          }
+        }
+        const rows = await cockroachQuery<any>(querySql, params);
+        if (rows && rows.length > 0) {
+          const sanitized = rows.map(mapCockroachAttendance);
           const dedupMap = new Map<string, AttendanceRecord>();
           sanitized.forEach(item => {
             const key = `${item.date}_${(item.class_name || '').toLowerCase().trim()}_${(item.section || '').toLowerCase().trim()}`;
@@ -1805,8 +2288,11 @@ export const Database = {
           if (list.length > 0) setCached(cacheKey, list, 30000);
           return list;
         }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getAttendance error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     const rawList = (targetId || schoolId)
       ? memoryStore.attendance.filter(a => [targetId, targetCode, schoolId, cleanId].filter(Boolean).includes(a.school_id) && matchesSession(a, targetSession))
@@ -1872,35 +2358,30 @@ export const Database = {
       created_at: data.created_at || new Date().toISOString()
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        if (isFaculty) {
-          await db.collection('attendance').deleteMany({
-            school_id: record.school_id,
-            academic_session: record.academic_session,
-            date: record.date,
-            $or: [
-              { class_name: /faculty|staff/i },
-              { section: /faculty|staff/i }
-            ]
-          });
-          await db.collection('attendance').insertOne({ ...record });
-        } else {
-          await db.collection('attendance').replaceOne(
-            {
-              school_id: record.school_id,
-              academic_session: record.academic_session,
-              date: record.date,
-              class_name: { $regex: new RegExp(`^${record.class_name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
-              section: { $regex: new RegExp(`^${record.section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
-            },
-            { ...record },
-            { upsert: true }
-          );
-        }
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `INSERT INTO attendance (id, school_id, academic_session, date, class_name, section, total_students, present_count, absent_count, leave_count, marked_by, student_records, teacher_records)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+           ON CONFLICT (id) DO UPDATE SET
+             present_count = EXCLUDED.present_count,
+             absent_count = EXCLUDED.absent_count,
+             leave_count = EXCLUDED.leave_count,
+             student_records = EXCLUDED.student_records,
+             teacher_records = EXCLUDED.teacher_records`,
+          [
+            record.id, record.school_id, record.academic_session, record.date,
+            record.class_name, record.section, Number(record.total_students) || 0,
+            Number(record.present_count) || 0, Number(record.absent_count) || 0,
+            Number(record.leave_count) || 0, record.marked_by || 'Admin',
+            JSON.stringify(record.student_records || []), JSON.stringify(record.teacher_records || [])
+          ]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] recordAttendance error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     if (existingMemIdx >= 0) {
       memoryStore.attendance[existingMemIdx] = record;
@@ -1914,12 +2395,14 @@ export const Database = {
   },
 
   async deleteAttendance(id: string): Promise<boolean> {
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('attendance').deleteOne({ id });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM attendance WHERE id = $1', [id]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteAttendance error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     invalidateServerCache('attendance');
     invalidateServerCache('overview');
@@ -1946,25 +2429,42 @@ export const Database = {
     const targetId = school?.id || cleanId;
     const targetCode = school?.school_code || cleanId;
 
-    // 1. MongoDB Query (Fast Primary Store)
-    try {
-      const db = await getDatabase();
-      if (db) {
+    // 1. CockroachDB Query (Primary Relational Cloud Cluster)
+    if (isCockroachConfigured()) {
+      try {
         const ids = (targetId || targetCode || schoolId)
           ? Array.from(new Set([targetId, targetCode, schoolId, cleanId].filter(Boolean)))
           : [];
-        const filter = buildSessionFilter(ids as string[], targetSession);
-        const results = await db.collection('fee_invoices')
-          .find(filter)
-          .sort({ due_date: 1 })
-          .toArray();
-        if (results && results.length > 0) {
-          const mapped = results.map(sanitizeDoc<FeeInvoice>);
+        let querySql = '';
+        let params: any[] = [];
+        if (ids.length > 0) {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM fee_invoices WHERE school_id = ANY($1) ORDER BY due_date ASC`;
+            params = [ids];
+          } else {
+            querySql = `SELECT * FROM fee_invoices WHERE school_id = ANY($1) AND (academic_session = $2 OR academic_session IS NULL OR academic_session = '') ORDER BY due_date ASC`;
+            params = [ids, targetSession];
+          }
+        } else {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM fee_invoices ORDER BY due_date ASC`;
+            params = [];
+          } else {
+            querySql = `SELECT * FROM fee_invoices WHERE (academic_session = $1 OR academic_session IS NULL OR academic_session = '') ORDER BY due_date ASC`;
+            params = [targetSession];
+          }
+        }
+        const rows = await cockroachQuery<any>(querySql, params);
+        if (rows && rows.length > 0) {
+          const mapped = rows.map(mapCockroachFeeInvoice);
           setCached(cacheKey, mapped, 45000);
           return mapped;
         }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getFeeInvoices error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     if (targetId || schoolId) {
       const ids = [targetId, targetCode, schoolId, cleanId].filter(Boolean);
@@ -2029,12 +2529,42 @@ export const Database = {
       }] : [])
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('fee_invoices').insertOne({ ...invoice });
+    if (isCockroachConfigured()) {
+      try {
+        const extraData = {
+          tuition_fee: invoice.tuition_fee,
+          transport_fee: invoice.transport_fee,
+          admission_fee: invoice.admission_fee,
+          annual_fee: invoice.annual_fee,
+          exam_fee: invoice.exam_fee,
+          concession_amount: invoice.concession_amount,
+          concession_reason: invoice.concession_reason,
+          waived_by: invoice.waived_by,
+          waived_date: invoice.waived_date,
+          payment_history: invoice.payment_history
+        };
+        await cockroachQuery(
+          `INSERT INTO fee_invoices (id, school_id, academic_session, invoice_no, student_id, student_name, admission_no, class_name, month, amount, paid_amount, due_date, status, payment_mode, paid_date, extra_data)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+           ON CONFLICT (id) DO UPDATE SET
+             status = EXCLUDED.status,
+             paid_amount = EXCLUDED.paid_amount,
+             payment_mode = EXCLUDED.payment_mode,
+             paid_date = EXCLUDED.paid_date,
+             extra_data = EXCLUDED.extra_data`,
+          [
+            invoice.id, invoice.school_id, invoice.academic_session, invoice.invoice_no,
+            invoice.student_id || '', invoice.student_name || 'Student', invoice.admission_no || '',
+            invoice.class_name || '', invoice.month || '', Number(invoice.amount) || 0,
+            Number(invoice.paid_amount) || 0, invoice.due_date || '', invoice.status || 'PENDING',
+            invoice.payment_mode || '', invoice.paid_date || '', JSON.stringify(extraData)
+          ]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createFeeInvoice error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     memoryStore.fee_invoices.push(invoice);
     saveLocalStore();
@@ -2105,15 +2635,42 @@ export const Database = {
       inv.status = 'PENDING';
     }
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('fee_invoices').updateOne(
-          { id: invoiceId },
-          { $set: { ...inv } }
+    if (isCockroachConfigured()) {
+      try {
+        const extraData = {
+          tuition_fee: inv.tuition_fee,
+          transport_fee: inv.transport_fee,
+          admission_fee: inv.admission_fee,
+          annual_fee: inv.annual_fee,
+          exam_fee: inv.exam_fee,
+          concession_amount: inv.concession_amount,
+          concession_reason: inv.concession_reason,
+          waived_by: inv.waived_by,
+          waived_date: inv.waived_date,
+          payment_history: inv.payment_history
+        };
+        await cockroachQuery(
+          `UPDATE fee_invoices SET
+             status = $1,
+             paid_amount = $2,
+             payment_mode = $3,
+             paid_date = $4,
+             extra_data = $5::jsonb
+           WHERE id = $6`,
+          [
+            inv.status || 'PENDING',
+            Number(inv.paid_amount) || 0,
+            inv.payment_mode || '',
+            inv.paid_date || null,
+            JSON.stringify(extraData),
+            invoiceId
+          ]
         );
+      } catch (e: any) {
+        console.warn('[CockroachDB] updateFeeInvoice error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     saveLocalStore();
     invalidateServerCache('fees');
@@ -2127,12 +2684,14 @@ export const Database = {
 
   async deleteFeeInvoice(invoiceId: string): Promise<boolean> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('fee_invoices').deleteOne({ id: invoiceId });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM fee_invoices WHERE id = $1', [invoiceId]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteFeeInvoice error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     invalidateServerCache('fees');
     invalidateServerCache('overview');
@@ -2155,23 +2714,39 @@ export const Database = {
     const targetCode = school?.school_code || cleanId;
     const targetSession = session || '2026-27';
 
-    // 1. MongoDB Query (Fast Primary Store)
-    try {
-      const db = await getDatabase();
-      if (db) {
+    // 1. CockroachDB Query (Primary Relational Cloud Cluster)
+    if (isCockroachConfigured()) {
+      try {
         const ids = (targetId || targetCode || schoolId)
           ? Array.from(new Set([targetId, targetCode, schoolId, cleanId].filter(Boolean)))
           : [];
-        const filter = buildSessionFilter(ids as string[], targetSession);
-        const results = await db.collection('holidays')
-          .find(filter)
-          .sort({ start_date: 1 })
-          .toArray();
-        if (results && results.length > 0) {
-          return results.map(sanitizeDoc<Holiday>);
+        let querySql = '';
+        let params: any[] = [];
+        if (ids.length > 0) {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM holidays WHERE school_id = ANY($1) ORDER BY start_date ASC`;
+            params = [ids];
+          } else {
+            querySql = `SELECT * FROM holidays WHERE school_id = ANY($1) AND (academic_session = $2 OR academic_session IS NULL OR academic_session = '') ORDER BY start_date ASC`;
+            params = [ids, targetSession];
+          }
+        } else {
+          if (targetSession === 'ALL') {
+            querySql = `SELECT * FROM holidays ORDER BY start_date ASC`;
+            params = [];
+          } else {
+            querySql = `SELECT * FROM holidays WHERE (academic_session = $1 OR academic_session IS NULL OR academic_session = '') ORDER BY start_date ASC`;
+            params = [targetSession];
+          }
         }
+        const rows = await cockroachQuery<any>(querySql, params);
+        if (rows && rows.length > 0) {
+          return rows.map(mapCockroachHoliday);
+        }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getHolidays error:', e.message);
       }
-    } catch (e) {}
+    }
 
 
     const rawList = (targetId || schoolId)
@@ -2210,12 +2785,24 @@ export const Database = {
       created_at: new Date().toISOString()
     };
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('holidays').insertOne({ ...holiday });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(
+          `INSERT INTO holidays (id, school_id, academic_session, title, start_date, end_date, total_days, applicable_to, category, reason, declared_by, auto_notice_published)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+           ON CONFLICT (id) DO NOTHING`,
+          [
+            holiday.id, holiday.school_id, holiday.academic_session, holiday.title,
+            holiday.start_date, holiday.end_date, Number(holiday.total_days) || 1,
+            holiday.applicable_to || 'ALL', holiday.category || 'GAZETTED', holiday.reason || '',
+            holiday.declared_by || 'Admin Directorate', Boolean(holiday.auto_notice_published)
+          ]
+        );
+      } catch (e: any) {
+        console.warn('[CockroachDB] createHoliday error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     if (!Array.isArray(memoryStore.holidays)) memoryStore.holidays = [];
     memoryStore.holidays.push(holiday);
@@ -2251,12 +2838,14 @@ export const Database = {
   },
 
   async deleteHoliday(id: string): Promise<boolean> {
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('holidays').deleteOne({ id });
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM holidays WHERE id = $1', [id]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteHoliday error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     if (Array.isArray(memoryStore.holidays)) {
       const idx = memoryStore.holidays.findIndex(h => h.id === id);
@@ -2368,26 +2957,37 @@ export const Database = {
   // ==========================================
   async getScheduledExams(schoolId?: string, session?: string, className?: string, examType?: string): Promise<ScheduledExamItem[]> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        const query: any = {};
-        if (schoolId) query.school_id = schoolId;
-        if (session) query.academic_session = session;
-        if (className) query.class_name = className;
-        if (examType && examType !== 'ALL') query.type = examType;
-        const docs = await db.collection('exams').find(query).sort({ date: 1, created_at: -1 }).toArray();
-        if (docs && docs.length > 0) {
-          return docs.map((d: any) => {
-            const { _id, ...rest } = d;
-            return {
-              ...rest,
-              id: rest.id || _id?.toString()
-            } as ScheduledExamItem;
-          });
+    if (isCockroachConfigured()) {
+      try {
+        const conditions: string[] = [];
+        const params: any[] = [];
+        let p = 1;
+        if (schoolId) {
+          conditions.push(`school_id = $${p++}`);
+          params.push(schoolId);
         }
+        if (session) {
+          conditions.push(`academic_session = $${p++}`);
+          params.push(session);
+        }
+        if (className) {
+          conditions.push(`LOWER(class_name) = LOWER($${p++})`);
+          params.push(className);
+        }
+        if (examType && examType !== 'ALL') {
+          conditions.push(`type = $${p++}`);
+          params.push(examType);
+        }
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const rows = await cockroachQuery<any>(`SELECT * FROM exams ${whereClause} ORDER BY date ASC, created_at DESC`, params);
+        if (rows && rows.length > 0) {
+          return rows.map(mapCockroachExam);
+        }
+      } catch (e: any) {
+        console.warn('[CockroachDB] getScheduledExams error:', e.message);
       }
-    } catch (e) {}
+    }
+
 
     let res = [...(memoryStore.exams || [])];
     if (schoolId) res = res.filter(e => !e.school_id || e.school_id === schoolId);
@@ -2407,12 +3007,26 @@ export const Database = {
       created_at: e.created_at || new Date().toISOString()
     }));
 
-    try {
-      const db = await getDatabase();
-      if (db) {
-        await db.collection('exams').insertMany(normalizedExams.map(e => ({ ...e })));
+    if (isCockroachConfigured()) {
+      for (const e of normalizedExams) {
+        try {
+          await cockroachQuery(
+            `INSERT INTO exams (id, school_id, academic_session, title, type, class_name, section, subject_name, subject_code, date, time, max_marks, pass_marks, status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+             ON CONFLICT (id) DO NOTHING`,
+            [
+              e.id, e.school_id || 'DPS2026', e.academic_session || '2026-27', e.title,
+              e.type || 'SCHOOL_EXAM', e.class_name, e.section, e.subject_name,
+              e.subject_code || '', e.date, e.time || '', Number(e.max_marks) || 100,
+              Number(e.pass_marks) || 33, e.status || 'PENDING'
+            ]
+          );
+        } catch (err: any) {
+          console.warn('[CockroachDB] createScheduledExam error:', err.message);
+        }
       }
-    } catch (e) {}
+    }
+
 
     if (!memoryStore.exams) memoryStore.exams = [];
     memoryStore.exams.unshift(...normalizedExams);
@@ -2422,19 +3036,33 @@ export const Database = {
 
   async updateScheduledExam(id: string, updates: Partial<ScheduledExamItem>): Promise<boolean> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        let objectId: any = null;
-        try {
-          const { ObjectId } = require('mongodb');
-          if (ObjectId.isValid(id)) objectId = new ObjectId(id);
-        } catch (_) {}
-
-        const filter = objectId ? { $or: [{ id }, { _id: objectId }] } : { id };
-        await db.collection('exams').updateOne(filter, { $set: updates });
+    if (isCockroachConfigured()) {
+      try {
+        const fields: string[] = [];
+        const values: any[] = [];
+        let p = 1;
+        for (const [col, val] of Object.entries(updates)) {
+          if (val === undefined) continue;
+          if (['id', 'created_at'].includes(col)) continue;
+          if (['title', 'type', 'class_name', 'section', 'subject_name', 'subject_code', 'date', 'time', 'status', 'academic_session'].includes(col)) {
+            fields.push(`${col} = $${p++}`);
+            values.push(val);
+          } else if (['max_marks', 'pass_marks'].includes(col)) {
+            fields.push(`${col} = $${p++}`);
+            values.push(Number(val) || 0);
+          }
+        }
+        if (fields.length > 0) {
+          values.push(id);
+          await cockroachQuery(
+            `UPDATE exams SET ${fields.join(', ')} WHERE id = $${p}`,
+            values
+          );
+        }
+      } catch (e: any) {
+        console.warn('[CockroachDB] updateScheduledExam error:', e.message);
       }
-    } catch (e) {}
+    }
 
     if (!memoryStore.exams) memoryStore.exams = [];
     const idx = memoryStore.exams.findIndex(e => e.id === id);
@@ -2448,19 +3076,13 @@ export const Database = {
 
   async deleteScheduledExam(id: string): Promise<boolean> {
     await ensureIndexes();
-    try {
-      const db = await getDatabase();
-      if (db) {
-        let objectId: any = null;
-        try {
-          const { ObjectId } = require('mongodb');
-          if (ObjectId.isValid(id)) objectId = new ObjectId(id);
-        } catch (_) {}
-
-        const filter = objectId ? { $or: [{ id }, { _id: objectId }] } : { id };
-        await db.collection('exams').deleteOne(filter);
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery('DELETE FROM exams WHERE id = $1', [id]);
+      } catch (e: any) {
+        console.warn('[CockroachDB] deleteScheduledExam error:', e.message);
       }
-    } catch (e) {}
+    }
 
     if (!memoryStore.exams) memoryStore.exams = [];
     const idx = memoryStore.exams.findIndex(e => e.id === id);
@@ -2479,6 +3101,13 @@ export const Database = {
     const teachers = await this.getTeachers();
     const invoices = await this.getFeeInvoices();
 
+    let cockroachStats = null;
+    if (isCockroachConfigured()) {
+      try {
+        cockroachStats = await checkCockroachStatus();
+      } catch (_) {}
+    }
+
     return {
       schools: schools.length,
       demo_requests: requests.length,
@@ -2486,7 +3115,8 @@ export const Database = {
       teachers: teachers.length,
       fee_invoices: invoices.length,
       exams: (memoryStore.exams || []).length,
-      mongodb_connected: isMongoConfigured()
+      cockroach_connected: isCockroachConfigured(),
+      cockroach_status: cockroachStats
     };
   }
 };

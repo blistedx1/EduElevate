@@ -1,6 +1,5 @@
-/*! EduElevate Coaching Management Service Core v2.0.0 */
 import { NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/mongodb';
+import { query as cockroachQuery, isCockroachConfigured } from '@/lib/cockroach';
 
 export interface TelemetryPayload {
   routeId: string;
@@ -29,34 +28,61 @@ export async function GET(req: Request) {
     const now = Date.now();
     const timeoutMs = 25000; // Consider offline if no ping in 25s
 
-    // Try reading from MongoDB Atlas Cloud for multi-serverless sync
-    try {
-      const db = await getDatabase();
-      if (db) {
-        const col = db.collection<TelemetryPayload>('transport_telemetry');
+    // Read from CockroachDB Serverless
+    if (isCockroachConfigured()) {
+      try {
         if (routeId) {
-          const doc = await col.findOne({ routeId });
-          const isOnline = doc ? (now - doc.timestamp < timeoutMs && doc.active) : false;
-          return NextResponse.json({
-            success: true,
-            routeId,
-            isOnline,
-            telemetry: doc || null
-          });
-        } else {
-          const docs = await col.find({}).toArray();
-          const all: Record<string, TelemetryPayload & { isOnline: boolean }> = {};
-          for (const d of docs) {
-            all[d.routeId] = {
-              ...d,
-              isOnline: (now - d.timestamp < timeoutMs && d.active)
-            };
+          const res = await cockroachQuery<any>('SELECT * FROM transport_telemetry WHERE bus_id = $1 LIMIT 1;', [routeId]);
+          if (res && res.rows && res.rows.length > 0) {
+            const row = res.rows[0];
+            const ts = new Date(row.timestamp).getTime();
+            const isOnline = now - ts < timeoutMs && row.status !== 'STOPPED';
+            return NextResponse.json({
+              success: true,
+              routeId,
+              isOnline,
+              telemetry: {
+                routeId: row.bus_id,
+                vehicleNo: 'UP-32-AB-9876',
+                driver: row.driver_phone || 'Driver',
+                latitude: Number(row.lat) || 0,
+                longitude: Number(row.lng) || 0,
+                speedKmh: Number(row.speed) || 0,
+                heading: Number(row.heading) || 0,
+                accuracyMeters: 5,
+                active: row.status !== 'STOPPED',
+                timestamp: ts,
+                lastUpdatedText: new Date(row.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              }
+            });
           }
-          return NextResponse.json({ success: true, telemetries: all });
+        } else {
+          const res = await cockroachQuery<any>('SELECT * FROM transport_telemetry ORDER BY timestamp DESC;');
+          if (res && res.rows && res.rows.length > 0) {
+            const all: Record<string, TelemetryPayload & { isOnline: boolean }> = {};
+            for (const row of res.rows) {
+              const ts = new Date(row.timestamp).getTime();
+              all[row.bus_id] = {
+                routeId: row.bus_id,
+                vehicleNo: 'UP-32-AB-9876',
+                driver: row.driver_phone || 'Driver',
+                latitude: Number(row.lat) || 0,
+                longitude: Number(row.lng) || 0,
+                speedKmh: Number(row.speed) || 0,
+                heading: Number(row.heading) || 0,
+                accuracyMeters: 5,
+                active: row.status !== 'STOPPED',
+                timestamp: ts,
+                lastUpdatedText: new Date(row.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                isOnline: (now - ts < timeoutMs && row.status !== 'STOPPED')
+              };
+            }
+            return NextResponse.json({ success: true, telemetries: all });
+          }
         }
+      } catch (e: any) {
+        console.warn('[Telemetry CockroachDB Notice]', e.message);
       }
-    } catch (dbErr) {
-      // Fallback to in-memory store
     }
 
     // In-memory fallback
@@ -124,19 +150,26 @@ export async function POST(req: Request) {
     // Update in-memory fallback
     memoryStore.set(routeId, payload);
 
-    // Persist to MongoDB Atlas for real-time global multi-device sync
-    try {
-      const db = await getDatabase();
-      if (db) {
-        const col = db.collection('transport_telemetry');
-        await col.updateOne(
-          { routeId },
-          { $set: payload },
-          { upsert: true }
-        );
+    // Persist to CockroachDB Cloud
+    if (isCockroachConfigured()) {
+      try {
+        await cockroachQuery(`
+          INSERT INTO transport_telemetry (bus_id, school_id, route_name, lat, lng, speed, heading, status, driver_phone)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ON CONFLICT (bus_id) DO UPDATE SET
+            lat = EXCLUDED.lat,
+            lng = EXCLUDED.lng,
+            speed = EXCLUDED.speed,
+            heading = EXCLUDED.heading,
+            status = EXCLUDED.status,
+            timestamp = CURRENT_TIMESTAMP;
+        `, [
+          routeId, 'DPS2026', routeId, payload.latitude, payload.longitude,
+          payload.speedKmh, payload.heading, payload.active ? 'IN_TRANSIT' : 'STOPPED', ''
+        ]);
+      } catch (e: any) {
+        console.warn('[Telemetry CockroachDB Sync Notice]', e.message);
       }
-    } catch (e) {
-      console.warn('[Telemetry MongoDB Sync Notice]', e);
     }
 
     return NextResponse.json({

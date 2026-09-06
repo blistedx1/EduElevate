@@ -114,7 +114,7 @@ export function DashboardOverview({
     return () => clearTimeout(t);
   }, []);
 
-  // Pure Live MongoDB Daily Attendance Calculation for TODAY strictly
+  // Pure Live CockroachDB Daily Attendance Calculation for TODAY strictly
   const now = new Date();
   const localDateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const isoDateStr = now.toISOString().split('T')[0];
@@ -209,7 +209,7 @@ export function DashboardOverview({
     return true;
   });
 
-  // Display Notices (From MongoDB - Filtered for Student Audience when role is STUDENT)
+  // Display Notices (From CockroachDB - Filtered for Student Audience when role is STUDENT)
   const displayNotices = useMemo(() => {
     let list = notices || [];
     if (userRole === 'STUDENT') {

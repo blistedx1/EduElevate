@@ -451,7 +451,7 @@ export function DashboardAgency() {
               Onboarding & Tenant Approvals
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Review incoming school applications, approve credentials, and manage active MongoDB institutional databases.
+              Review incoming school applications, approve credentials, and manage active CockroachDB institutional databases.
             </p>
           </div>
 
@@ -525,7 +525,7 @@ export function DashboardAgency() {
               Gmail SMTP
             </div>
             <div className="font-mono text-[11px] text-emerald-600 mt-1 font-medium">
-              ✦ blistedx@gmail.com
+              ✦ emmalover4317@gmail.com
             </div>
           </div>
 
@@ -669,7 +669,7 @@ export function DashboardAgency() {
                         type="button"
                         onClick={() => handleOpenPurgeModal(s)}
                         className="inline-flex items-center gap-1 font-mono text-[11px] text-rose-600 hover:text-white hover:bg-rose-600 border border-rose-200 px-2 py-1 rounded transition-colors cursor-pointer"
-                        title="Purge Branch Data (MongoDB + Local DB)"
+                        title="Purge Branch Data (CockroachDB + Local DB)"
                       >
                         <Trash2 className="w-3 h-3" />
                         <span>Purge</span>
@@ -838,7 +838,7 @@ export function DashboardAgency() {
                 <li>All Notices, Exams &amp; Settings</li>
               </ul>
               <p className="text-[11px] font-semibold text-rose-700 pt-1">
-                Data will be erased from both <span className="underline">MongoDB Atlas</span> and <span className="underline">Local DB</span>.
+                Data will be erased from both <span className="underline">CockroachDB Serverless</span> and <span className="underline">Local DB</span>.
               </p>
             </div>
 

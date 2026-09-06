@@ -51,8 +51,8 @@ function getTransporter() {
 }
 
 export async function sendDemoRequestEmail(payload: DemoRequestPayload): Promise<{ success: boolean; message: string }> {
-  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'blistedx@gmail.com';
-  const smtpUser = process.env.SMTP_USER || 'blistedx@gmail.com';
+  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'emmalover4317@gmail.com';
+  const smtpUser = process.env.SMTP_USER || 'emmalover4317@gmail.com';
 
   console.log(`\n======================================================`);
   console.log(`📬 NEW DEMO REQUEST RECEIVED: ${payload.schoolName} (${payload.city})`);

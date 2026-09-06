@@ -26,6 +26,7 @@ export interface School {
   logo_url?: string;
   role_permissions?: RolePermissionMatrix;
   status: 'ACTIVE' | 'PENDING' | 'INACTIVE';
+  settings?: Record<string, any>;
   created_at?: string;
 }
 
@@ -233,6 +234,7 @@ export interface Teacher {
   city?: string;
   pincode?: string;
   emergency_contact_phone?: string;
+  created_at?: string;
 }
 
 export interface SubjectItem {
@@ -259,6 +261,7 @@ export interface ClassRoom {
   subjects?: SubjectItem[];
   no_of_subjects?: number;
   status?: 'ACTIVE' | 'INACTIVE';
+  created_at?: string;
 }
 
 export interface TimetableEntry {

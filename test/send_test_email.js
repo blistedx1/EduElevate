@@ -25,7 +25,7 @@ async function testEmail() {
             Your Gmail notification setup for <strong>EduGit ERP</strong> is working properly.
           </p>
           <div style="background: #122A24; color: #F3EFDD; padding: 12px; border-radius: 6px; font-size: 13px; margin: 20px 0;">
-            ✓ You will receive all demo & onboarding requests directly at <strong>blistedx@gmail.com</strong>.
+            ✓ You will receive all demo & onboarding requests directly at <strong>emmalover4317@gmail.com</strong>.
           </div>
           <p style="font-size: 12px; color: #7d7a6c; margin-bottom: 0;">
             Sent automatically by EduGit Cloud Platform.
@@ -35,7 +35,7 @@ async function testEmail() {
     `
   });
 
-  console.log('✅ Email successfully sent to blistedx@gmail.com! Message ID:', info.messageId);
+  console.log('✅ Email successfully sent to emmalover4317@gmail.com! Message ID:', info.messageId);
 }
 
 testEmail().catch(err => {

@@ -588,7 +588,7 @@ export function DashboardExams({
     return initialScheduledExams;
   });
 
-  // Sync with MongoDB API on mount or session change
+  // Sync with CockroachDB API on mount or session change
   useEffect(() => {
     const fetchExams = async () => {
       try {

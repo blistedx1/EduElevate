@@ -48,12 +48,12 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4. Execute Dual Database Purge (MongoDB Atlas + Local DB)
+    // 4. Execute Database Purge (CockroachDB Serverless + Local Fallback)
     const result = await Database.purgeSchoolData(school_id);
 
     return NextResponse.json({
       success: true,
-      message: `School "${result.school_name}" [${result.school_code}] and all its records have been permanently purged from both MongoDB Atlas and Local DB.`,
+      message: `School "${result.school_name}" [${result.school_code}] and all its records have been permanently purged from CockroachDB Serverless and Local DB.`,
       result
     });
   } catch (error: any) {

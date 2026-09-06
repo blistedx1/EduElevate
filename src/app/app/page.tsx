@@ -737,9 +737,9 @@ function ERPWorkspaceContent() {
   const showAdminToast = useCallback((msg: string, customSubtitle?: string) => {
     if (!msg) return;
     const cleanMsg = msg
-      .replace(/Live MongoDB real-time sync active!/gi, 'Network restored: Live sync active')
-      .replace(/MongoDB Atlas/gi, 'Cloud Database')
-      .replace(/MongoDB/gi, 'Database');
+      .replace(/Live (MongoDB|CockroachDB) real-time sync active!/gi, 'Network restored: Live sync active')
+      .replace(/MongoDB Atlas|CockroachDB Serverless/gi, 'Cloud Database')
+      .replace(/MongoDB|CockroachDB/gi, 'Database');
 
     triggerTaskCelebration(cleanMsg, undefined, customSubtitle);
   }, [triggerTaskCelebration]);
@@ -854,7 +854,7 @@ function ERPWorkspaceContent() {
   const [attendanceClassFilter, setAttendanceClassFilter] = useState<string>('ALL');
   const [attendanceDateFilter, setAttendanceDateFilter] = useState<string>('');
 
-  // MongoDB Cloud Sync & Diagnostic State
+  // CockroachDB Cloud Sync & Diagnostic State
   const [mongoSyncLoading, setMongoSyncLoading] = useState(false);
   const [mongoSyncData, setMongoSyncData] = useState<any>(null);
   const [mongoSyncMsg, setMongoSyncMsg] = useState('');
@@ -1718,7 +1718,7 @@ function ERPWorkspaceContent() {
       if (freshAttendance.length > 0 || !hasHydrated) setAttendance(freshAttendance);
       if (freshInvoices.length > 0 || !hasHydrated) setInvoices(freshInvoices);
 
-      // Save real MongoDB session data as offline backup (safely guarded against QuotaExceededError)
+      // Save real session data as offline backup (safely guarded against QuotaExceededError)
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem('last_active_school_id', cleanId);
@@ -1741,11 +1741,11 @@ function ERPWorkspaceContent() {
 
           localStorage.setItem(`eduelevate_offline_backup_${cleanId}_${targetSession}`, backupPayload);
         } catch (storageErr) {
-          console.warn('[Storage] Local storage quota reached. Offline cache bypassed; live MongoDB memory active.');
+          console.warn('[Storage] Local storage quota reached. Offline cache bypassed; live CockroachDB memory active.');
         }
       }
     } catch (e) {
-      console.error('Failed to load live school data from MongoDB:', e);
+      console.error('Failed to load live school data from CockroachDB:', e);
     } finally {
       setIsSyncingLive(false);
       setLoading(false);
@@ -2618,7 +2618,7 @@ function ERPWorkspaceContent() {
     }
   };
 
-  // MongoDB Cloud Sync Handlers
+  // CockroachDB Cloud Sync Handlers
   const handleCheckMongoCloud = async () => {
     setMongoSyncLoading(true);
     setMongoSyncMsg('');
@@ -2627,9 +2627,9 @@ function ERPWorkspaceContent() {
       const data = await res.json();
       setMongoSyncData(data);
       if (data.mongoStatus?.connected) {
-        showAdminToast('MongoDB Atlas Cloud is Connected & Ready!');
+        showAdminToast('CockroachDB Cloud is Connected & Ready!');
       } else {
-        setMongoSyncMsg(data.mongoStatus?.error || 'MongoDB Atlas connection could not be established.');
+        setMongoSyncMsg(data.mongoStatus?.error || 'CockroachDB connection could not be established.');
       }
     } catch (e: any) {
       setMongoSyncMsg(e.message);
@@ -2645,10 +2645,10 @@ function ERPWorkspaceContent() {
       const res = await apiFetch('/api/sync/mongodb', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        showAdminToast(data.message || 'All records successfully synchronized to MongoDB Atlas!');
+        showAdminToast(data.message || 'All records successfully synchronized to CockroachDB Serverless!');
         handleCheckMongoCloud();
       } else {
-        setMongoSyncMsg(data.error || 'Failed to sync with MongoDB Atlas.');
+        setMongoSyncMsg(data.error || 'Failed to sync with CockroachDB.');
       }
     } catch (e: any) {
       setMongoSyncMsg(e.message);
@@ -3485,7 +3485,7 @@ function ERPWorkspaceContent() {
             <span>Offline Mode • Displaying Last Synced Session Data ({selectedSession})</span>
           </span>
           <span className="text-[10.5px] text-slate-300 hidden sm:inline">
-            Live MongoDB sync will resume automatically once internet is connected
+            Live CockroachDB sync will resume automatically once internet is connected
           </span>
         </div>
       )}
@@ -8368,7 +8368,7 @@ function ERPWorkspaceContent() {
 
                   <div className="pt-3 border-t border-[#E8F0EA] flex items-center justify-between">
                     <span className="text-[11px] text-[#2D5A4E] font-mono">
-                      All settings auto-sync to MongoDB Atlas Cloud.
+                      All settings auto-sync to CockroachDB Serverless Cloud.
                     </span>
                     <button
                       type="submit"
@@ -8380,7 +8380,7 @@ function ERPWorkspaceContent() {
                 </form>
               </div>
 
-              {/* MONGODB ATLAS CLOUD SYNCHRONIZATION & DIAGNOSTICS CARD */}
+              {/* COCKROACHDB SERVERLESS CLOUD SYNCHRONIZATION & DIAGNOSTICS CARD */}
               <div className="bg-white p-6 sm:p-7 rounded-3xl border border-[#DCE8E0] shadow-xs space-y-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E8F0EA]">
                   <div className="flex items-center gap-2.5">
@@ -8389,10 +8389,10 @@ function ERPWorkspaceContent() {
                     </span>
                     <div>
                       <h2 className="font-display font-bold text-base text-[#122A24]">
-                        MongoDB Atlas Cloud Storage &amp; Backup Hub
+                        CockroachDB Serverless Cloud Storage &amp; Backup Hub
                       </h2>
                       <p className="text-[11px] text-[#2D5A4E]">
-                        Real-time persistent synchronization between local storage engine and MongoDB Atlas Cloud.
+                        Real-time persistent synchronization between local storage engine and CockroachDB Serverless Cloud.
                       </p>
                     </div>
                   </div>
@@ -8411,7 +8411,7 @@ function ERPWorkspaceContent() {
                       className="px-4 py-1.5 bg-[#122A24] hover:bg-[#1C443A] text-white rounded-full text-xs font-semibold cursor-pointer shadow-xs transition-all flex items-center gap-1.5 border-none disabled:opacity-60"
                     >
                       <Download className="h-3.5 w-3.5 rotate-180" />
-                      <span>Push &amp; Sync to Atlas Cloud</span>
+                      <span>Push &amp; Sync to CockroachDB</span>
                     </button>
                   </div>
                 </div>
@@ -8420,20 +8420,11 @@ function ERPWorkspaceContent() {
                   <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
                     <div className="flex items-center gap-2 font-bold">
                       <AlertTriangle className="h-4 w-4 text-amber-700 shrink-0" />
-                      <span>MongoDB Atlas Status Notice:</span>
+                      <span>CockroachDB Serverless Status Notice:</span>
                     </div>
                     <p className="leading-relaxed font-mono text-[11px]">
                       {mongoSyncMsg}
                     </p>
-                    <div className="p-3 bg-white/80 rounded-xl border border-amber-200 text-[11px] text-[#122A24] space-y-1 font-sans">
-                      <div className="font-bold text-emerald-800">How to enable 100% unrestricted Cloud Sync in 30 seconds:</div>
-                      <ol className="list-decimal pl-4 space-y-0.5 text-[#2D5A4E]">
-                        <li>Go to <strong><a href="https://cloud.mongodb.com" target="_blank" rel="noreferrer" className="underline text-emerald-700">cloud.mongodb.com</a></strong> and log into your Atlas project.</li>
-                        <li>Click <strong>Security → Network Access</strong> in the left sidebar.</li>
-                        <li>Click <strong>+ Add IP Address</strong> → Choose <strong>&quot;Allow Access from Anywhere&quot; (0.0.0.0/0)</strong> → Click <strong>Confirm</strong>.</li>
-                        <li>Return here and click <strong>&quot;Push &amp; Sync to Atlas Cloud&quot;</strong>!</li>
-                      </ol>
-                    </div>
                   </div>
                 )}
 
@@ -8480,7 +8471,7 @@ function ERPWorkspaceContent() {
                           </span>
                         </div>
                         <p className="text-[11px] text-rose-800 mt-0.5">
-                          Erase this entire institution (all students, staff, attendance, marks, invoices, and settings) from MongoDB Atlas and Local DB. Protected with Captcha.
+                          Erase this entire institution (all students, staff, attendance, marks, invoices, and settings) from CockroachDB Serverless and Local DB. Protected with Captcha.
                         </p>
                       </div>
                     </div>
@@ -8789,7 +8780,7 @@ function ERPWorkspaceContent() {
                               </>
                             ) : (
                               <>
-                                <li>Changes sync immediately to MongoDB Atlas &amp; local database.</li>
+                                <li>Changes sync immediately to CockroachDB Serverless &amp; local database.</li>
                                 <li>Session remains authenticated across all page navigations.</li>
                                 <li>Multi-school workspace access is strictly isolated.</li>
                               </>
@@ -11424,7 +11415,7 @@ function ERPWorkspaceContent() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-[#E8F0EA] text-xs text-[#2D5A4E]">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>All changes auto-sync to CBSE Academic Registers &amp; MongoDB database.</span>
+                <span>All changes auto-sync to CBSE Academic Registers &amp; CockroachDB database.</span>
               </div>
               <button
                 type="button"
@@ -12620,7 +12611,7 @@ function ERPWorkspaceContent() {
                 <li>All Notices, Exams &amp; Settings</li>
               </ul>
               <p className="text-[11px] font-semibold text-rose-700 pt-1">
-                Data will be erased from both <span className="underline">MongoDB Atlas</span> and <span className="underline">Local DB</span>.
+                Data will be erased from both <span className="underline">CockroachDB Serverless</span> and <span className="underline">Local DB</span>.
               </p>
             </div>
 
